@@ -1,0 +1,122 @@
+:root {
+	--gray-dark: #1a1a1a;
+	--gray-light: #333333;
+	--cyan-light: #00ffcc;
+	--white: #f0f0f0;
+	--black: #000000;
+	--cyan-dark: #00cc99;
+}
+
+body {
+	margin: 0;
+	font: 1.25rem/1.5 'Roboto Mono', monospace;
+	background: var(--gray-dark);
+	color: var(--white);
+}
+
+header, footer {
+	background: var(--black);
+	padding: 1.5rem;
+	text-align: center;
+	border-bottom: 5px solid var(--cyan-light);
+}
+
+header {
+	border-bottom: 5px solid var(--cyan-light);
+}
+
+h1, h2 {
+	text-transform: uppercase;
+	margin: 0;
+	padding-bottom: 0.75rem;
+	font-weight: 900;
+}
+
+h1 {
+	font-size: 3.5rem;
+	letter-spacing: -0.1rem;
+	color: var(--cyan-light);
+	border-bottom: 5px solid var(--cyan-light);
+}
+
+h2 {
+	font-size: 2.5rem;
+	color: var(--cyan-light);
+	border-bottom: 5px solid var(--cyan-light);
+}
+
+p {
+	color: var(--white);
+	margin: 1.5rem 0;
+	line-height: 1.6;
+}
+
+a {
+	color: var(--cyan-light);
+	text-decoration: none;
+	font-weight: 700;
+	padding: 0.25rem 0.5rem;
+	background: var(--black);
+	border: 2px solid var(--cyan-light);
+	transition: all 0.2s ease;
+}
+
+a:hover {
+	color: var(--black);
+	background: var(--cyan-light);
+	border: 2px solid var(--black);
+}
+
+.block {
+	background: var(--black);
+	margin: 1.5rem auto;
+	padding: 1.5rem;
+	max-width: 700px;
+	border: 5px solid var(--cyan-light);
+}
+
+.block h2 {
+	color: var(--cyan-light);
+	border-bottom: 5px solid var(--cyan-light);
+}
+
+.propaganda {
+	font-size: 1.75rem;
+	font-weight: 900;
+	margin-top: 1.5rem;
+	color: var(--cyan-light);
+	text-align: center;
+	text-transform: uppercase;
+}
+
+footer {
+	display: flex;
+	justify-content: center;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	background: var(--black);
+	border-top: 5px solid var(--cyan-light);
+	padding: 0.5rem; /* Reduced padding */
+	height: auto; /* Ensure the height adjusts to content */
+}
+
+footer > a {
+	padding: 0.75rem; /* Reduced padding */
+	width: 33%;
+	text-align: center;
+	border: 2px solid var(--cyan-light);
+	margin: 0.25rem; /* Reduced margin */
+	background: var(--black);
+	font-size: 0.875rem; /* Reduced font size */
+}
+
+footer a + a {
+	border-left: 2px solid var(--cyan-light);
+}
+
+main {
+	padding: 2rem 1rem;
+	margin-bottom: 120px;
+}
