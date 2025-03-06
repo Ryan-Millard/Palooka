@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <WebSocketsServer.h>
+#include <LittleFS.h>
 
 // Web server running on port 80
 WebServer server(80);
@@ -14,11 +15,18 @@ String generateSSID() {
 	WiFi.macAddress(mac);
 	char macStr[18];
 	snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-	return String("ESP32_") + macStr;
+	return String("Palooka ") + macStr;
 }
 
 void setup() {
 	Serial.begin(115200);
+
+	// Initialize LittleFS
+	if(!LittleFS.begin(true)) {
+		Serial.println("An Error has occurred while mounting LittleFS");
+		return;
+	}
+	Serial.println("LittleFS mounted successfully");
 
 	// Generate SSID with MAC address
 	String ssid = generateSSID();
@@ -31,8 +39,16 @@ void setup() {
 	Serial.println("SSID: " + ssid);
 	Serial.println("IP Address: " + WiFi.softAPIP().toString());
 
+	// Serve static files
+	server.on("/", HTTP_GET, []() {
+			serveFile("/index.html", "text/html");
+			});
+
+	server.on("/index.css", HTTP_GET, []() {
+			serveFile("/index.css", "text/css");
+			});
+
 	// Start the web server
-	server.on("/", handleRoot);
 	server.begin();
 
 	// Start the WebSocket server
@@ -47,7 +63,20 @@ void loop() {
 	webSocket.loop();
 }
 
-// Handle root URL
-void handleRoot() {
-	server.send(200, "text/plain", "Hello from ESP32!");
+// Function to serve files from LittleFS
+void serveFile(const char* path, const char* contentType) {
+	Serial.print("Attempting to serve: ");
+	Serial.println(path);
+
+	File file = LittleFS.open(path, "r");
+	if (!file) {
+		Serial.println("File not found!");
+		server.send(404, "text/plain", "File not found");
+		return;
+	}
+
+	Serial.print("File found, size: ");
+	Serial.println(file.size());
+	server.streamFile(file, contentType);
+	file.close();
 }
