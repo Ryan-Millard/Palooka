@@ -49,4 +49,4 @@ env.cpp
 *.bat
 
 # Binary Files
-.bin
+*.bin
