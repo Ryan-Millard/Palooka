@@ -16,12 +16,11 @@ body {
 
 header, footer {
 	background: var(--black);
-	padding: 1.5rem;
 	text-align: center;
-	border-bottom: 5px solid var(--cyan-light);
 }
 
 header {
+	padding: 1.5rem;
 	border-bottom: 5px solid var(--cyan-light);
 }
 
@@ -97,8 +96,8 @@ footer {
 	left: 0;
 	width: 100%;
 	background: var(--black);
-	border-top: 5px solid var(--cyan-light);
-	padding: 0.5rem; /* Reduced padding */
+	border-top: 3px solid var(--cyan-light);
+	padding: 0.5rem 0; /* Reduced padding */
 	height: auto; /* Ensure the height adjusts to content */
 }
 
