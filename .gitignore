@@ -1,0 +1,49 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Vim swap files
+*.swp
+
+# Vim backup files
+*.bak
+*.tmp
+
+# Vim undo files
+*.undo
+
+# ENV files containing sensitive info (e.g. API keys)
+env.h
+env.cpp
+
+# Ignore Windows batch files
+*.bat
