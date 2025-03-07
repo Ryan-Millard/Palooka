@@ -25,8 +25,8 @@ namespace PalookaNetwork
 			serveFile("/index.html", "text/html");
 		});
 
-		server.on("/index.css", HTTP_GET, [this]() {
-			serveFile("/index.css", "text/css");
+		server.on("/styles/index.css", HTTP_GET, [this]() {
+			serveFile("/styles/index.css", "text/css");
 		});
 
 		server.begin(); // Start the web server
