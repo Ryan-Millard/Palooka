@@ -20,7 +20,7 @@ namespace PalookaNetwork
 		Serial.println("SSID: " + SSID);
 		Serial.println("IP Address: " + WiFi.softAPIP().toString());
 
-		serverSetup();
+		registerServerRoutes();
 
 		server.begin(); // Start the web server
 
@@ -45,35 +45,19 @@ namespace PalookaNetwork
 		return SSID_BASE + macStr;
 	}
 
-	void AccessPoint::serverSetup()
-	{
-		// Serve static files
-		server.on("/", HTTP_GET, [this]() {
-			serveFile("/index.html", "text/html");
-		});
+	void AccessPoint::registerServerRoutes() {
+		// Register routes dynamically
+		for(size_t i{0}; i < NUM_ROUTES; i++) {
+			const Route& route{ROUTES[i]};
 
-		server.on("/styles/index.css", HTTP_GET, [this]() {
-			serveFile("/styles/index.css", "text/css");
-		});
+			server.on(route.endpoint, HTTP_GET, [this, route]() {
+				serveFile(route.filePath, route.contentType);
+			});
+		}
 
-		server.on("/controller", HTTP_GET, [this]() {
-			serveFile("/controller.html", "text/html");
-		});
-		server.on("/styles/controller.css", HTTP_GET, [this]() {
-			serveFile("/styles/controller.css", "text/css");
-		});
-		server.on("/scripts/controller.js", HTTP_GET, [this]() {
-			serveFile("/scripts/controller.js", "text/js");
-		});
-		server.on("/scripts/fullscreen.js", HTTP_GET, [this]() {
-			serveFile("/scripts/fullscreen.js", "text/js");
-		});
-
-		server.on("/setup", HTTP_GET, [this]() {
-			serveFile("/setup.html", "text/html");
-		});
-		server.on("/styles/setup.css", HTTP_GET, [this]() {
-			serveFile("/styles/setup.css", "text/css");
+		// Handle 404 errors
+		server.onNotFound([this]() {
+			server.send(404, "text/plain", "Not found - Palooka Network");
 		});
 	}
 
