@@ -45,5 +45,8 @@
 env.h
 env.cpp
 
-# Ignore Windows batch files
+# Windows batch files
 *.bat
+
+# Binary Files
+*.bin
