@@ -1,5 +1,5 @@
-#ifndef FILESYSTEM_H
-#define FILESYSTEM_H
+#ifndef FILESYSTEM_FSMANAGER_H
+#define FILESYSTEM_FSMANAGER_H
 
 #include <LittleFS.h>
 
