@@ -65,6 +65,9 @@ namespace PalookaNetwork
 		server.on("/scripts/controller.js", HTTP_GET, [this]() {
 			serveFile("/scripts/controller.js", "text/js");
 		});
+		server.on("/scripts/fullscreen.js", HTTP_GET, [this]() {
+			serveFile("/scripts/fullscreen.js", "text/js");
+		});
 
 		server.on("/setup", HTTP_GET, [this]() {
 			serveFile("/setup.html", "text/html");
