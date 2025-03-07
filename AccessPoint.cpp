@@ -20,14 +20,7 @@ namespace PalookaNetwork
 		Serial.println("SSID: " + SSID);
 		Serial.println("IP Address: " + WiFi.softAPIP().toString());
 
-		// Serve static files
-		server.on("/", HTTP_GET, [this]() {
-			serveFile("/index.html", "text/html");
-		});
-
-		server.on("/styles/index.css", HTTP_GET, [this]() {
-			serveFile("/styles/index.css", "text/css");
-		});
+		serverSetup();
 
 		server.begin(); // Start the web server
 
@@ -50,6 +43,28 @@ namespace PalookaNetwork
 		char macStr[18];
 		snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 		return SSID_BASE + macStr;
+	}
+
+	void AccessPoint::serverSetup()
+	{
+		// Serve static files
+		server.on("/", HTTP_GET, [this]() {
+			serveFile("/index.html", "text/html");
+		});
+
+		server.on("/styles/index.css", HTTP_GET, [this]() {
+			serveFile("/styles/index.css", "text/css");
+		});
+
+		server.on("/controller", HTTP_GET, [this]() {
+			serveFile("/controller.html", "text/html");
+		});
+		server.on("/styles/controller.css", HTTP_GET, [this]() {
+			serveFile("/styles/controller.css", "text/css");
+		});
+		server.on("/scripts/controller.js", HTTP_GET, [this]() {
+			serveFile("/scripts/controller.js", "text/js");
+		});
 	}
 
 	void AccessPoint::serveFile(const char* filePath, const char* contentType)

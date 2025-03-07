@@ -26,6 +26,7 @@ namespace PalookaNetwork
 			WebSocketsServer webSocket;
 
 			const String generateSSID(const String& SSID_BASE);
+			void serverSetup();
 			void serveFile(const char* filePath, const char* contentType);
 	};
 }

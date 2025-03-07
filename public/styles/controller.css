@@ -1,0 +1,24 @@
+.joystick-container {
+	width: 30vw;
+	height: 30vw;
+	background: var(--black);
+	border: 3px solid var(--cyan-light);
+	border-radius: 50%;
+	position: relative;
+	touch-action: none; /* Prevent default touch behaviors */
+	box-shadow: 0 0 15px var(--cyan-dark);
+}
+
+.joystick-knob {
+	width: 20%;
+	height: 20%;
+	background: var(--cyan-dark);
+	border-radius: 50%;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	cursor: pointer;
+	border: 3px solid var(--cyan-light);
+	box-shadow: 0 0 15px var(--cyan-dark);
+}
