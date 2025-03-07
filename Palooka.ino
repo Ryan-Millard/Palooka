@@ -3,11 +3,10 @@
 #include <WebSocketsServer.h>
 #include <LittleFS.h>
 
-// Web server running on port 80
-WebServer server(80);
+#include "FileSystem.h"
 
-// WebSocket server running on port 81
-WebSocketsServer webSocket(81);
+WebServer server(80); // On port 80
+WebSocketsServer webSocket(81); // On port 81
 
 // Function to generate the SSID with MAC address
 String generateSSID() {
@@ -15,18 +14,16 @@ String generateSSID() {
 	WiFi.macAddress(mac);
 	char macStr[18];
 	snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-	return String("Palooka ") + macStr;
+	return String("Palooka_") + macStr;
 }
 
 void setup() {
 	Serial.begin(115200);
 
 	// Initialize LittleFS
-	if(!LittleFS.begin(true)) {
-		Serial.println("An Error has occurred while mounting LittleFS");
+	if(!FileSystem::FSManager::begin()) {
 		return;
 	}
-	Serial.println("LittleFS mounted successfully");
 
 	// Generate SSID with MAC address
 	String ssid = generateSSID();
@@ -39,14 +36,18 @@ void setup() {
 	Serial.println("SSID: " + ssid);
 	Serial.println("IP Address: " + WiFi.softAPIP().toString());
 
+	// TODO: implement serve static files for server
+
 	// Serve static files
 	server.on("/", HTTP_GET, []() {
-			serveFile("/index.html", "text/html");
-			});
+		File file = FileSystem::FSManager::getFile("/index.html");
+		serveFile(file, "text/html");
+	});
 
 	server.on("/index.css", HTTP_GET, []() {
-			serveFile("/index.css", "text/css");
-			});
+		File file = FileSystem::FSManager::getFile("/index.css");
+		serveFile(file, "text/css");
+	});
 
 	// Start the web server
 	server.begin();
@@ -64,13 +65,14 @@ void loop() {
 }
 
 // Function to serve files from LittleFS
-void serveFile(const char* path, const char* contentType) {
-	Serial.print("Attempting to serve: ");
-	Serial.println(path);
+void serveFile(File& file, const char* contentType) {
+	Serial.print("Attempting to serve");
 
-	File file = LittleFS.open(path, "r");
-	if (!file) {
-		Serial.println("File not found!");
+	if (!file || file.isDirectory()) {
+		if(file)
+		{
+			file.close();
+		}
 		server.send(404, "text/plain", "File not found");
 		return;
 	}
@@ -78,5 +80,5 @@ void serveFile(const char* path, const char* contentType) {
 	Serial.print("File found, size: ");
 	Serial.println(file.size());
 	server.streamFile(file, contentType);
-	file.close();
+	file.close(); // Explicit close after streaming
 }
