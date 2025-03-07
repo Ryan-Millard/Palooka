@@ -65,6 +65,13 @@ namespace PalookaNetwork
 		server.on("/scripts/controller.js", HTTP_GET, [this]() {
 			serveFile("/scripts/controller.js", "text/js");
 		});
+
+		server.on("/setup", HTTP_GET, [this]() {
+			serveFile("/setup.html", "text/html");
+		});
+		server.on("/styles/setup.css", HTTP_GET, [this]() {
+			serveFile("/styles/setup.css", "text/css");
+		});
 	}
 
 	void AccessPoint::serveFile(const char* filePath, const char* contentType)
