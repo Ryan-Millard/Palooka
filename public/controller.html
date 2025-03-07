@@ -7,13 +7,25 @@
 		<link rel="stylesheet" href="styles/controller.css">
 	</head>
 	<body>
-		<button onclick="toggleFullscreen()">Toggle Fullscreen</button>
+		<header>
+			<h1>Palooka</h1>
+		</header>
 
-		<div id="myJoystick" class="joystick-container">
-			<div class="joystick-knob"></div>
-		</div>
+		<main id="mainContent">
+			<button onclick="toggleFullscreen(document.getElementById('mainContent'))">Toggle Fullscreen</button>
 
-		<script src="scripts/controller.js"></script>
-		<script src="scripts/fullscreen.js"></script>
+			<div id="myJoystick" class="joystick-container">
+				<div class="joystick-knob"></div>
+			</div>
+
+			<script src="scripts/controller.js"></script>
+			<script src="scripts/fullscreen.js"></script>
+		</main>
+
+		<footer>
+			<a href="#">Home</a>
+			<a href="setup">Setup</a>
+			<a class="current" href="controller">Controller</a>
+		</footer>
 	</body>
 </html>
