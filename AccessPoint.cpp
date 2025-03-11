@@ -3,6 +3,14 @@
 namespace PalookaNetwork
 {
 	// Public
+	AccessPoint::AccessPoint(const Route* routes, const size_t num_routes,
+			uint16_t webServerPort, uint16_t webSocketPort,
+			const String& SSID_BASE)
+		: ROUTES(routes), NUM_ROUTES(num_routes),
+		server(webServerPort), webSocket(webSocketPort),
+		SSID(generateSSID(SSID_BASE))
+	{}
+
 	bool AccessPoint::begin()
 	{
 		if(!FileSystem::FSManager::begin()) // Initialize LittleFS
@@ -94,7 +102,7 @@ namespace PalookaNetwork
 			return;
 		}
 
-		// Check for individual motor control data
+		// Individual wheel control data from the HTML slider
 		if(doc.containsKey("motor") && doc.containsKey("value"))
 		{
 			const char* motor = doc["motor"];
@@ -103,12 +111,27 @@ namespace PalookaNetwork
 			Serial.print(motor);
 			Serial.print(", Value: ");
 			Serial.println(value);
-			// Add your motor control logic here
 
-			// Check for joystick data
+			switch(motor[0])
+			{
+				case 'A':
+				case 'a':
+					robot.moveRightWheel(value);
+					break;
+				case 'B':
+				case 'b':
+					robot.moveLeftWheel(value);
+					break;
+
+				default:
+					Serial.println("Unknown motor supplied.");
+					break;
+			}
+
 			return;
 		}
 
+		// Dual wheel control from the HTML Joystick
 		if(doc.containsKey("x") && doc.containsKey("y"))
 		{
 			float x = doc["x"];
@@ -117,7 +140,7 @@ namespace PalookaNetwork
 			Serial.print(x);
 			Serial.print(", Y: ");
 			Serial.println(y);
-			// Add your joystick handling logic here
+			robot.move(x, y);
 			return;
 		}
 

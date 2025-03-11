@@ -8,6 +8,7 @@
 #include <ArduinoJson.h>
 
 #include "FileSystem.h"
+#include "FlipperBot.h"
 
 namespace PalookaNetwork
 {
@@ -25,8 +26,9 @@ namespace PalookaNetwork
 			const Route* ROUTES;  // Pointer to routes array
 			const size_t NUM_ROUTES;  // Number of routes
 
-			AccessPoint(const Route* routes, const size_t num_routes, uint16_t webServerPort = 80, uint16_t webSocketPort = 81, const String& SSID_BASE = "Palooka_")
-				: ROUTES(routes), NUM_ROUTES(num_routes), server(webServerPort), webSocket(webSocketPort), SSID(generateSSID(SSID_BASE)) {}
+			AccessPoint(const Route* routes, const size_t num_routes,
+					uint16_t webServerPort = 80, uint16_t webSocketPort = 81,
+					const String& SSID_BASE = "Palooka_");
 
 			bool begin();
 			void handleWebSocketMessage(uint8_t *payload, size_t length);
@@ -35,6 +37,7 @@ namespace PalookaNetwork
 		private:
 			WebServer server;
 			WebSocketsServer webSocket;
+			PalookaBot::FlipperBot robot;
 
 			const String generateSSID(const String& SSID_BASE);
 			void registerServerRoutes();

@@ -2,7 +2,6 @@ body {
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
-
 #controller {
 	width: 100vw; /* Fallback */
 	width: 100lvw;
@@ -16,36 +15,45 @@ body {
 	margin: 0 auto;
 	overflow: hidden;
 }
-
 .control-element {
 	position: absolute;
 	border: none;
 	box-sizing: border-box;
 	padding: 10px;
 	user-select: none;
+	transform-origin: center center;
 }
-
 .edit-mode .control-element {
 	cursor: move;
 	border: 2px solid var(--cyan-dark);
 }
-
 .resize-handle {
-	width: 24px;
-	height: 24px;
-	background: var(--white);
+	font-size: 12px;
+	padding: 0 5%;
+	background: var(--black);
+	border: 1px solid var(--cyan-light);
 	position: absolute;
 	bottom: 0;
 	right: 0;
 	cursor: nwse-resize;
 	display: none;
-	border-radius: 50%;
 }
-
-.edit-mode .resize-handle {
+.rotate-handle {
+	font-size: 12px;
+	padding: 0 5%;
+	border: 1px solid var(--cyan-light);
+	background: var(--black);
+	position: absolute;
+	top: -12px;
+	left: 50%;
+	transform: translateX(-50%);
+	cursor: grab;
+	display: none;
+}
+.edit-mode .resize-handle,
+.edit-mode .rotate-handle {
 	display: block;
 }
-
 .joystick {
 	width: 100%;
 	aspect-ratio: 1/1;
@@ -55,7 +63,6 @@ body {
 	position: relative;
 	box-shadow: 0 0 15px var(--cyan-dark);
 }
-
 .joystick-handle {
 	width: 40%;
 	height: 40%;
@@ -68,17 +75,14 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
-
 .slider-element {
 	max-height: fit-content;
 }
-
 .slider-container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
-
 .slider {
 	-webkit-appearance: none;
 	width: 100%;
@@ -112,7 +116,6 @@ body {
 	border-radius: 50%;
 	cursor: pointer;
 }
-
 .button-container {
 	width: 100%;
 	height: 100%;
@@ -120,7 +123,6 @@ body {
 	justify-content: center;
 	align-items: center;
 }
-
 .control-button {
 	padding: 10px;
 	min-width: 80px;
@@ -130,7 +132,6 @@ body {
 	height: 100%;
 	touch-action: manipulation;
 }
-
 .control-panel {
 	display: flex;
 	flex-wrap: wrap;
@@ -139,17 +140,14 @@ body {
 .control-panel > * {
 	flex: 1;
 }
-
 .mode-toggle {
 	width: auto;
 	height: auto;
 	padding: 10px 20px; /* Adjust as needed for size */
 }
-
 .footer-spacer {
 	height: 30vh;
 }
-
 #inputType {
 	text-align: center;
 }
