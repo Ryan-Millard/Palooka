@@ -2,14 +2,14 @@
 #include "AccessPoint.h"
 
 const PalookaNetwork::Route AP_ROUTES[]{
-	{"/", "/index.html", "text/html"},
-	{"/styles/index.css", "/styles/index.css", "text/css"},
-	{"/controller", "/controller.html", "text/html"},
-	{"/styles/controller.css", "/styles/controller.css", "text/css"},
-	{"/scripts/controller.js", "/scripts/controller.js", "text/javascript"}, // <- Added comma here
-	{"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
-	{"/setup", "/setup.html", "text/html"},
-	{"/styles/setup.css", "/styles/setup.css", "text/css"}
+	/* Home Page */ {"/", "/index.html", "text/html"},
+	/* Base Styles */ {"/styles/index.css", "/styles/index.css", "text/css"},
+	/* Controller Page */ {"/controller", "/controller.html", "text/html"},
+	/* Controller Styles */ {"/styles/controller.css", "/styles/controller.css", "text/css"},
+	/* Controller JS */ {"/scripts/controller.js", "/scripts/controller.js", "text/javascript"}, // <- Added comma here
+	/* Fullscreen JS */ {"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
+	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
+	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"}
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 
