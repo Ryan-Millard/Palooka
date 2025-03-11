@@ -12,6 +12,7 @@ namespace PalookaBot
 	{
 	}
 
+	// Expects that x and y are either equal to or between -1 and 1
 	void FlipperBot::move(const short x, const short y) const
 	{
 		// Calculate motor speeds for differential drive
