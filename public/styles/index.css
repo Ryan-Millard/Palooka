@@ -7,6 +7,10 @@
 	--cyan-dark: #00cc99;
 }
 
+* {
+	font: 1.25rem/1.5 'Roboto Mono', monospace;
+}
+
 body {
 	margin: 0;
 	font: 1.25rem/1.5 'Roboto Mono', monospace;
@@ -17,6 +21,7 @@ body {
 header, footer {
 	background: var(--black);
 	text-align: center;
+	box-shadow: 0 0 15px var(--cyan-dark);
 }
 
 header {
@@ -50,17 +55,18 @@ p {
 	line-height: 1.6;
 }
 
-a {
+/* Current page has inverted styles */
+a, button, .clickable, .current:hover {
 	color: var(--cyan-light);
+	background: var(--black);
 	text-decoration: none;
 	font-weight: 700;
 	padding: 0.25rem 0.5rem;
-	background: var(--black);
 	border: 2px solid var(--cyan-light);
 	transition: all 0.2s ease;
+	box-shadow: 0 0 15px var(--cyan-dark);
 }
-
-a:hover {
+a:active, button:active, .clickable:active, .current {
 	color: var(--black);
 	background: var(--cyan-light);
 	border: 2px solid var(--black);
@@ -72,6 +78,7 @@ a:hover {
 	padding: 1.5rem;
 	max-width: 700px;
 	border: 5px solid var(--cyan-light);
+	box-shadow: 0 0 15px var(--cyan-dark);
 }
 
 .block h2 {
@@ -79,13 +86,14 @@ a:hover {
 	border-bottom: 5px solid var(--cyan-light);
 }
 
-.propaganda {
+.emphasis {
 	font-size: 1.75rem;
 	font-weight: 900;
 	margin-top: 1.5rem;
 	color: var(--cyan-light);
 	text-align: center;
 	text-transform: uppercase;
+	box-shadow: 0 0 15px var(--cyan-dark);
 }
 
 footer {

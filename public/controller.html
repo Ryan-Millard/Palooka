@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link rel="stylesheet" href="styles/index.css">
+		<link rel="stylesheet" href="styles/controller.css">
+	</head>
+	<body>
+		<header>
+			<h1>Palooka</h1>
+		</header>
+
+		<div class="block control-panel">
+			<button onclick="toggleFullscreen(document.getElementById('controller'))">Toggle Fullscreen</button>
+			<button class="mode-toggle" id="modeToggle" onclick="toggleMode()">Edit Layout</button>
+			<select id="inputType" class="clickable">
+				<option value="joystick">Joystick</option>
+				<option value="sliders">Sliders</option>
+			</select>
+		</div>
+
+		<div id="controller" class="edit-mode">
+			<!-- Buttons -->
+			<div class="control-element button-element" id="button1" data-aspect-ratio="2">
+				<div class="button-container">
+					<button class="control-button">Btn 1</button>
+				</div>
+				<div class="resize-handle"></div>
+			</div>
+
+			<div class="control-element button-element" id="button2" data-aspect-ratio="2">
+				<div class="button-container">
+					<button class="control-button">Btn 2</button>
+				</div>
+				<div class="resize-handle"></div>
+			</div>
+
+			<!-- Joystick Control Element -->
+			<div class="control-element joystick-element" id="joystickControl" data-aspect-ratio="1">
+				<div class="joystick">
+					<div class="joystick-handle"></div>
+				</div>
+				<div class="resize-handle"></div>
+			</div>
+
+			<!-- Slider Control Elements -->
+			<div class="control-element slider-element" id="sliderLeft" data-aspect-ratio="2">
+				<div class="slider-container">
+					<input type="range" class="slider" id="motorA" min="-255" max="255" value="0"
+						 oninput="updateMotor('A', this.value)"
+						 onmouseup="this.value=0; updateMotor('A', 0)"
+						 ontouchend="this.value=0; updateMotor('A', 0)">
+					<span>Left</span>
+				</div>
+				<div class="resize-handle"></div>
+			</div>
+			<div class="control-element slider-element" id="sliderRight" data-aspect-ratio="2">
+				<div class="slider-container">
+					<input type="range" class="slider" id="motorB" min="-255" max="255" value="0"
+						 oninput="updateMotor('B', this.value)"
+						 onmouseup="this.value=0; updateMotor('B', 0)"
+						 ontouchend="this.value=0; updateMotor('B', 0)">
+					<span>Right</span>
+				</div>
+				<div class="resize-handle"></div>
+			</div>
+		</div>
+
+		<div class="footer-spacer"></div>
+
+		<footer>
+			<a href="/">Home</a>
+			<a href="setup">Setup</a>
+			<a class="current" href="controller">Controller</a>
+		</footer>
+
+		<script src="scripts/controller.js"></script>
+		<script src="scripts/fullscreen.js"></script>
+	</body>
+</html>
