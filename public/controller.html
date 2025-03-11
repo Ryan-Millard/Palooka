@@ -46,14 +46,20 @@
 			<!-- Slider Control Elements -->
 			<div class="control-element slider-element" id="sliderLeft" data-aspect-ratio="2">
 				<div class="slider-container">
-					<input type="range" class="slider" min="0" max="100" value="50">
+					<input type="range" class="slider" id="motorA" min="-255" max="255" value="0"
+						 oninput="updateMotor('A', this.value)"
+						 onmouseup="this.value=0; updateMotor('A', 0)"
+						 ontouchend="this.value=0; updateMotor('A', 0)">
 					<span>Left</span>
 				</div>
 				<div class="resize-handle"></div>
 			</div>
 			<div class="control-element slider-element" id="sliderRight" data-aspect-ratio="2">
 				<div class="slider-container">
-					<input type="range" class="slider" min="0" max="100" value="50">
+					<input type="range" class="slider" id="motorB" min="-255" max="255" value="0"
+						 oninput="updateMotor('B', this.value)"
+						 onmouseup="this.value=0; updateMotor('B', 0)"
+						 ontouchend="this.value=0; updateMotor('B', 0)">
 					<span>Right</span>
 				</div>
 				<div class="resize-handle"></div>

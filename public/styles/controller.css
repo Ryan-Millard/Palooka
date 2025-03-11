@@ -4,13 +4,15 @@ body {
 }
 
 #controller {
-	width: 90vw;
-	height: 90vh;
+	width: 100vw; /* Fallback */
+	width: 100lvw;
+	height: 100vh; /* Fallback */
+	height: 100lvh;
 	border: 3px solid var(--cyan-light);
+	box-sizing: border-box;
 	box-shadow: 0 0 15px var(--cyan-dark);
 	background-color: var(--black);
 	position: relative;
-	touch-action: none;
 	margin: 0 auto;
 	overflow: hidden;
 }
@@ -78,7 +80,37 @@ body {
 }
 
 .slider {
+	-webkit-appearance: none;
 	width: 100%;
+	border-radius: 25px;
+	background-color: var(--black);
+	box-shadow: 0 0 15px var(--cyan-dark);
+	border: 3px solid var(--cyan-light);
+}
+.slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px; /* Thumb width */
+	height: 20px; /* Thumb height */
+	border: 3px solid var(--cyan-light);
+	border-radius: 50%;
+	background-color: var(--cyan-dark);
+	box-shadow: 0 0 15px var(--cyan-light);
+	cursor: pointer; /* Cursor change on hover */
+}
+.slider::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	background: red;
+	border-radius: 50%;
+	cursor: pointer;
+}
+.slider::-ms-thumb {
+	width: 20px;
+	height: 20px;
+	background: red;
+	border-radius: 50%;
+	cursor: pointer;
 }
 
 .button-container {
@@ -101,7 +133,11 @@ body {
 
 .control-panel {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-evenly;
+}
+.control-panel > * {
+	flex: 1;
 }
 
 .mode-toggle {
@@ -112,4 +148,8 @@ body {
 
 .footer-spacer {
 	height: 30vh;
+}
+
+#inputType {
+	text-align: center;
 }

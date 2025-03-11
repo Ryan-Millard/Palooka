@@ -12,6 +12,12 @@ let maxJoystickDistance = 0;
 // Mode Toggle
 document.getElementById('inputType').addEventListener('change', changeInputType);
 
+function updateMotor(motor, value) {
+	const data = JSON.stringify({ motor, value });
+	console.log(data);
+	ws.send(data);
+}
+
 // Send joystick data to the ESP32
 function sendJoystickData(x, y) {
 	const data = JSON.stringify({ x, y });
