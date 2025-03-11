@@ -5,6 +5,7 @@
 #include <WebServer.h>
 #include <WebSocketsServer.h>
 #include <LittleFS.h>
+#include <ArduinoJson.h>
 
 #include "FileSystem.h"
 
@@ -28,6 +29,7 @@ namespace PalookaNetwork
 				: ROUTES(routes), NUM_ROUTES(num_routes), server(webServerPort), webSocket(webSocketPort), SSID(generateSSID(SSID_BASE)) {}
 
 			bool begin();
+			void handleWebSocketMessage(uint8_t *payload, size_t length);
 			void handleClients();
 
 		private:

@@ -25,6 +25,9 @@ namespace PalookaNetwork
 		server.begin(); // Start the web server
 
 		webSocket.begin(); // Start the WebSocket server
+		webSocket.onEvent([this](uint8_t num, WStype_t type, uint8_t *payload, size_t length) {
+			if(type == WStype_TEXT) { handleWebSocketMessage(payload, length); }
+		});
 
 		return true;
 	}
@@ -78,5 +81,47 @@ namespace PalookaNetwork
 		Serial.println(file.size());
 		server.streamFile(file, contentType);
 		file.close(); // Explicit close after streaming
+	}
+
+	void AccessPoint::handleWebSocketMessage(uint8_t *payload, size_t length)
+	{
+		StaticJsonDocument<200> doc;
+		DeserializationError error = deserializeJson(doc, payload, length);
+		if(error)
+		{
+			Serial.print("JSON parse error: ");
+			Serial.println(error.c_str());
+			return;
+		}
+
+		// Check for individual motor control data
+		if(doc.containsKey("motor") && doc.containsKey("value"))
+		{
+			const char* motor = doc["motor"];
+			int value = doc["value"];
+			Serial.print("Motor: ");
+			Serial.print(motor);
+			Serial.print(", Value: ");
+			Serial.println(value);
+			// Add your motor control logic here
+
+			// Check for joystick data
+			return;
+		}
+
+		if(doc.containsKey("x") && doc.containsKey("y"))
+		{
+			float x = doc["x"];
+			float y = doc["y"];
+			Serial.print("Joystick X: ");
+			Serial.print(x);
+			Serial.print(", Y: ");
+			Serial.println(y);
+			// Add your joystick handling logic here
+			return;
+		}
+
+		// Error - none of the pre-defined JSON structures were matched
+		Serial.println("Unknown JSON structure.");
 	}
 }
