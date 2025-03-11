@@ -4,7 +4,8 @@ const ws = new WebSocket("ws://" + hostName + ":81"); // IP of the ESP32 AP, por
 let isEditMode = true;
 let activeElement = null;
 let isResizing = false;
-let startX, startY, startWidth, startHeight, startLeft, startTop;
+let isRotating = false;
+let startX, startY, startWidth, startHeight, startLeft, startTop, startRotation;
 let joystickActive = false;
 let joystickCenter = { x: 0, y: 0 };
 let maxJoystickDistance = 0;
@@ -20,7 +21,16 @@ function updateMotor(motor, value) {
 
 // Send joystick data to the ESP32
 function sendJoystickData(x, y) {
-	const data = JSON.stringify({ x, y });
+	// Get current rotation of joystick in radians
+	const joystickElement = document.getElementById('joystickControl');
+	const rotationDeg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
+	const rotationRad = (rotationDeg * Math.PI) / 180;
+
+	// Apply rotation transformation to the joystick coordinates
+	const rotatedX = x * Math.cos(rotationRad) - y * Math.sin(rotationRad);
+	const rotatedY = x * Math.sin(rotationRad) + y * Math.cos(rotationRad);
+
+	const data = JSON.stringify({ x: rotatedX, y: rotatedY });
 	console.log(data);
 	ws.send(data);
 }
@@ -66,6 +76,10 @@ function initAspectRatios() {
 			const aspectRatio = width / height;
 			element.setAttribute('data-aspect-ratio', aspectRatio.toFixed(4));
 		}
+		// Initialize rotation attribute if not set
+		if (!element.hasAttribute('data-rotation')) {
+			element.setAttribute('data-rotation', '0');
+		}
 	});
 }
 
@@ -89,6 +103,7 @@ function startDrag(e) {
 	}
 
 	isResizing = e.target.classList.contains('resize-handle');
+	isRotating = e.target.classList.contains('rotate-handle');
 	activeElement = e.currentTarget;
 	startX = e.clientX || (e.touches && e.touches[0].clientX);
 	startY = e.clientY || (e.touches && e.touches[0].clientY);
@@ -98,6 +113,7 @@ function startDrag(e) {
 	startHeight = parseInt(computedStyle.height);
 	startLeft = parseInt(computedStyle.left);
 	startTop = parseInt(computedStyle.top);
+	startRotation = parseFloat(activeElement.getAttribute('data-rotation') || '0');
 
 	document.addEventListener('pointermove', handleDrag);
 	document.addEventListener('pointerup', stopDrag);
@@ -115,7 +131,25 @@ function handleDrag(e) {
 	const deltaY = currentY - startY;
 	const containerRect = document.getElementById('controller').getBoundingClientRect();
 
-	if (isResizing) {
+	if (isRotating) {
+		// Calculate rotation based on the center of the element
+		const rect = activeElement.getBoundingClientRect();
+		const centerX = rect.left + rect.width / 2;
+		const centerY = rect.top + rect.height / 2;
+
+		// Calculate start and current angle from center
+		const startAngle = Math.atan2(startY - centerY, startX - centerX);
+		const currentAngle = Math.atan2(currentY - centerY, currentX - centerX);
+
+		// Calculate angle difference in degrees
+		let rotation = startRotation + ((currentAngle - startAngle) * 180 / Math.PI);
+
+		// Optional: snap to 15-degree increments
+		rotation = Math.round(rotation / 15) * 15;
+
+		activeElement.style.transform = `rotate(${rotation}deg)`;
+		activeElement.setAttribute('data-rotation', rotation.toString());
+	} else if (isResizing) {
 		// Resize with aspect ratio for button, joystick, and slider elements if applicable
 		if (activeElement.classList.contains('button-element') ||
 			activeElement.classList.contains('joystick-element') ||
@@ -162,6 +196,7 @@ function handleDrag(e) {
 function stopDrag(e) {
 	activeElement = null;
 	isResizing = false;
+	isRotating = false;
 	document.removeEventListener('pointermove', handleDrag);
 	document.removeEventListener('pointerup', stopDrag);
 	document.removeEventListener('touchmove', handleDrag);
@@ -169,6 +204,14 @@ function stopDrag(e) {
 	saveLayout();
 }
 // --- End New Drag Logic ---
+
+// Apply rotations from stored data
+function applyRotations() {
+	document.querySelectorAll('.control-element').forEach(element => {
+		const rotation = element.getAttribute('data-rotation') || '0';
+		element.style.transform = `rotate(${rotation}deg)`;
+	});
+}
 
 // Joystick functionality for Use Mode
 function initJoystick() {
@@ -208,7 +251,6 @@ function startJoystickTouch(e) {
 function moveJoystickMouse(e) {
 	if (!joystickActive || isEditMode) return;
 	const joystick = document.querySelector('.joystick');
-	const handle = document.querySelector('.joystick-handle');
 	const joystickRect = joystick.getBoundingClientRect();
 	const relX = e.clientX - joystickRect.left;
 	const relY = e.clientY - joystickRect.top;
@@ -227,15 +269,51 @@ function moveJoystickTouch(e) {
 
 function updateJoystickPosition(relX, relY) {
 	const handle = document.querySelector('.joystick-handle');
-	const deltaX = relX - joystickCenter.x;
-	const deltaY = relY - joystickCenter.y;
-	const angle = Math.atan2(deltaY, deltaX);
-	const distance = Math.min(maxJoystickDistance, Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+	const joystick = document.querySelector('.joystick');
+	const joystickRect = joystick.getBoundingClientRect();
+	const joystickElement = document.getElementById('joystickControl');
+
+	// Calculate joystick center
+	joystickCenter = {
+		x: joystickRect.width / 2,
+		y: joystickRect.height / 2
+	};
+
+	// Get current rotation in radians
+	const rotationDeg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
+	const rotationRad = (rotationDeg * Math.PI) / 180;
+
+	// Calculate delta from center in the rotated coordinate system
+	let deltaX = relX - joystickCenter.x;
+	let deltaY = relY - joystickCenter.y;
+
+	// Apply reverse rotation to get the deltas in the joystick's local coordinate system
+	// This ensures the handle appears under the user's finger
+	const cosRot = Math.cos(rotationRad);
+	const sinRot = Math.sin(rotationRad);
+	const rotatedDeltaX = deltaX * cosRot + deltaY * sinRot;
+	const rotatedDeltaY = -deltaX * sinRot + deltaY * cosRot;
+
+	// Calculate distance (constrained by max distance)
+	const distance = Math.min(maxJoystickDistance,
+		Math.sqrt(rotatedDeltaX * rotatedDeltaX + rotatedDeltaY * rotatedDeltaY));
+
+	// Calculate angle in local coordinate system
+	const angle = Math.atan2(rotatedDeltaY, rotatedDeltaX);
+
+	// Calculate new position
 	const newX = distance * Math.cos(angle);
 	const newY = distance * Math.sin(angle);
+
+	// Set handle position
 	handle.style.transform = `translate(calc(-50% + ${newX}px), calc(-50% + ${newY}px))`;
-	const joystickX = newX / maxJoystickDistance;
-	const joystickY = newY / maxJoystickDistance;
+
+	// For sending data to the device, use the original (screen coordinate) deltas
+	// normalized to the range [-1, 1]
+	const joystickX = Math.max(-1, Math.min(1, deltaX / maxJoystickDistance));
+	const joystickY = Math.max(-1, Math.min(1, deltaY / maxJoystickDistance));
+
+	// Send normalized values
 	sendJoystickData(joystickX, joystickY);
 }
 
@@ -291,7 +369,8 @@ function saveLayout() {
 			top: element.style.top,
 			width: element.style.width,
 			height: element.style.height,
-			aspectRatio: element.getAttribute('data-aspect-ratio') || 'auto'
+			aspectRatio: element.getAttribute('data-aspect-ratio') || 'auto',
+			rotation: element.getAttribute('data-rotation') || '0'
 		});
 	});
 	localStorage.setItem('controllerLayout', JSON.stringify(layout));
@@ -312,6 +391,10 @@ function loadLayout() {
 					if (item.aspectRatio && item.aspectRatio !== 'auto') {
 						element.setAttribute('data-aspect-ratio', item.aspectRatio);
 					}
+					if (item.rotation) {
+						element.setAttribute('data-rotation', item.rotation);
+						element.style.transform = `rotate(${item.rotation}deg)`;
+					}
 				}
 			});
 		} catch (e) {
@@ -322,19 +405,19 @@ function loadLayout() {
 
 // Save the selected control type when it changes
 document.getElementById('inputType').addEventListener('change', function() {
-  const selectedType = this.value;
-  localStorage.setItem('controlType', selectedType);
-  // Optionally, update the UI based on the selection
-  changeInputType();
+	const selectedType = this.value;
+	localStorage.setItem('controlType', selectedType);
+	// Optionally, update the UI based on the selection
+	changeInputType();
 });
 
 // On page load, set the select to the saved control type (if any)
 function loadControlType() {
-  const savedType = localStorage.getItem('controlType');
-  if (savedType) {
-    document.getElementById('inputType').value = savedType;
-    changeInputType(); // Update the UI accordingly
-  }
+	const savedType = localStorage.getItem('controlType');
+	if (savedType) {
+		document.getElementById('inputType').value = savedType;
+		changeInputType(); // Update the UI accordingly
+	}
 }
 
 // Initialize
@@ -342,6 +425,7 @@ window.onload = () => {
 	initAspectRatios();
 	loadControlType();
 	loadLayout();
+	applyRotations();
 	changeInputType();
 	updateControlInteractivity();
 	toggleMode();
