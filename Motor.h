@@ -1,7 +1,7 @@
-#ifndef MOTOR_H
-#define MOTOR_H
+#ifndef PALOOKABOT_MOTOR_H
+#define PALOOKABOT_MOTOR_H
 
-namespace HardwareDevices
+namespace PalookaBot
 {
 	class Motor
 	{

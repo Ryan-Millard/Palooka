@@ -2,7 +2,7 @@
 
 #include "Motor.h"
 
-namespace HardwareDevices
+namespace PalookaBot
 {
 	// Private
 	void Motor::initPins()
