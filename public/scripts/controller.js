@@ -241,6 +241,7 @@ function updateJoystickPosition(relX, relY) {
 
 function stopJoystickMouse() {
 	if (!joystickActive) return;
+	sendJoystickData(0, 0); // Reset the actual device
 	resetJoystick();
 	document.removeEventListener('mousemove', moveJoystickMouse);
 	document.removeEventListener('mouseup', stopJoystickMouse);
@@ -248,6 +249,7 @@ function stopJoystickMouse() {
 
 function stopJoystickTouch() {
 	if (!joystickActive) return;
+	sendJoystickData(0, 0); // Reset the actual device
 	resetJoystick();
 	document.removeEventListener('touchmove', moveJoystickTouch);
 	document.removeEventListener('touchend', stopJoystickTouch);
