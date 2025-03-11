@@ -1,30 +1,115 @@
-#mainContent {
+body {
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+#controller {
+	width: 90vw;
+	height: 90vh;
+	border: 3px solid var(--cyan-light);
+	box-shadow: 0 0 15px var(--cyan-dark);
+	background-color: var(--black);
+	position: relative;
+	touch-action: none;
+	margin: 0 auto;
+	overflow: hidden;
+}
+
+.control-element {
+	position: absolute;
+	border: none;
+	box-sizing: border-box;
+	padding: 10px;
+	user-select: none;
+}
+
+.edit-mode .control-element {
+	cursor: move;
+	border: 2px solid var(--cyan-dark);
+}
+
+.resize-handle {
+	width: 24px;
+	height: 24px;
+	background: var(--white);
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	cursor: nwse-resize;
+	display: none;
+	border-radius: 50%;
+}
+
+.edit-mode .resize-handle {
+	display: block;
+}
+
+.joystick {
+	width: 100%;
+	aspect-ratio: 1/1;
+	border-radius: 50%;
+	background: var(--black);
+	border: 3px solid var(--cyan-light);
+	position: relative;
+	box-shadow: 0 0 15px var(--cyan-dark);
+}
+
+.joystick-handle {
+	width: 40%;
+	height: 40%;
+	background: var(--cyan-dark);
+	border: 3px solid var(--cyan-light);
+	box-shadow: 0 0 15px var(--cyan-dark);
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.slider-element {
+	max-height: fit-content;
+}
+
+.slider-container {
 	display: flex;
-	justify-content: space-between;
+	flex-direction: column;
 	align-items: center;
 }
 
-.joystick-container {
-	width: 50vw;
-	aspect-ratio: 1/1;
-	background: var(--black);
-	border: 3px solid var(--cyan-light);
-	border-radius: 50%;
-	position: relative;
-	touch-action: none; /* Prevent default touch behaviors */
-	box-shadow: 0 0 15px var(--cyan-dark);
+.slider {
+	width: 100%;
 }
 
-.joystick-knob {
-	width: 20%;
-	height: 20%;
-	background: var(--cyan-dark);
-	border-radius: 50%;
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	cursor: pointer;
-	border: 3px solid var(--cyan-light);
-	box-shadow: 0 0 15px var(--cyan-dark);
+.button-container {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.control-button {
+	padding: 10px;
+	min-width: 80px;
+	min-height: 40px;
+	font-size: 16px;
+	width: 100%;
+	height: 100%;
+	touch-action: manipulation;
+}
+
+.control-panel {
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.mode-toggle {
+	width: auto;
+	height: auto;
+	padding: 10px 20px; /* Adjust as needed for size */
+}
+
+.footer-spacer {
+	height: 30vh;
 }
