@@ -27,10 +27,11 @@ function sendJoystickData(x, y) {
 	const rotationRad = (rotationDeg * Math.PI) / 180;
 
 	// Apply rotation transformation to the joystick coordinates
-	const rotatedX = x * Math.cos(rotationRad) - y * Math.sin(rotationRad);
-	const rotatedY = x * Math.sin(rotationRad) + y * Math.cos(rotationRad);
+	const finalX = (x * Math.cos(rotationRad) - y * Math.sin(rotationRad)) * -1; // * -1 to swap left and right directions
+																				// This fixes the joystick's turning
+	const finalY = x * Math.sin(rotationRad) + y * Math.cos(rotationRad);
 
-	const data = JSON.stringify({ x: rotatedX, y: rotatedY });
+	const data = JSON.stringify({ x: finalX, y: finalY});
 	console.log(data);
 	ws.send(data);
 }
