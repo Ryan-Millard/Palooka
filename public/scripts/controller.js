@@ -234,8 +234,8 @@ function updateJoystickPosition(relX, relY) {
 	const newX = distance * Math.cos(angle);
 	const newY = distance * Math.sin(angle);
 	handle.style.transform = `translate(calc(-50% + ${newX}px), calc(-50% + ${newY}px))`;
-	const joystickX = (newX / maxJoystickDistance).toFixed(2);
-	const joystickY = (newY / maxJoystickDistance).toFixed(2);
+	const joystickX = newX / maxJoystickDistance;
+	const joystickY = newY / maxJoystickDistance;
 	sendJoystickData(joystickX, joystickY);
 }
 
