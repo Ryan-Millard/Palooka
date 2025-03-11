@@ -122,75 +122,85 @@ function startDrag(e) {
 }
 
 function handleDrag(e) {
-	if (!activeElement || !isEditMode) return;
-	e.preventDefault();
+    if (!activeElement || !isEditMode) return;
+    e.preventDefault();
 
-	const currentX = e.clientX || (e.touches && e.touches[0].clientX);
-	const currentY = e.clientY || (e.touches && e.touches[0].clientY);
-	const deltaX = currentX - startX;
-	const deltaY = currentY - startY;
-	const containerRect = document.getElementById('controller').getBoundingClientRect();
+    const currentX = e.clientX || (e.touches && e.touches[0].clientX);
+    const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+    const deltaX = currentX - startX;
+    const deltaY = currentY - startY;
+    const containerRect = document.getElementById('controller').getBoundingClientRect();
 
-	if (isRotating) {
-		// Calculate rotation based on the center of the element
-		const rect = activeElement.getBoundingClientRect();
-		const centerX = rect.left + rect.width / 2;
-		const centerY = rect.top + rect.height / 2;
+    if (isRotating) {
+        // Calculate rotation based on the center of the element
+        const rect = activeElement.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
 
-		// Calculate start and current angle from center
-		const startAngle = Math.atan2(startY - centerY, startX - centerX);
-		const currentAngle = Math.atan2(currentY - centerY, currentX - centerX);
+        // Calculate start and current angle from center
+        const startAngle = Math.atan2(startY - centerY, startX - centerX);
+        const currentAngle = Math.atan2(currentY - centerY, currentX - centerX);
 
-		// Calculate angle difference in degrees
-		let rotation = startRotation + ((currentAngle - startAngle) * 180 / Math.PI);
+        // Calculate angle difference in degrees
+        let rotation = startRotation + ((currentAngle - startAngle) * 180 / Math.PI);
 
-		// Optional: snap to 15-degree increments
-		rotation = Math.round(rotation / 15) * 15;
+        // Optional: snap to 15-degree increments
+        rotation = Math.round(rotation / 15) * 15;
 
-		activeElement.style.transform = `rotate(${rotation}deg)`;
-		activeElement.setAttribute('data-rotation', rotation.toString());
-	} else if (isResizing) {
-		// Resize with aspect ratio for button, joystick, and slider elements if applicable
-		if (activeElement.classList.contains('button-element') ||
-			activeElement.classList.contains('joystick-element') ||
-			activeElement.classList.contains('slider-element')) {
-			const aspectRatio = parseFloat(activeElement.getAttribute('data-aspect-ratio'));
-			let newWidth = Math.max(40, startWidth + deltaX);
-			let newHeight = newWidth / aspectRatio;
-			const maxWidth = containerRect.width - startLeft;
-			const maxHeight = containerRect.height - startTop;
-			if (newWidth > maxWidth) {
-				newWidth = maxWidth;
-				newHeight = newWidth / aspectRatio;
-			}
-			if (newHeight > maxHeight) {
-				newHeight = maxHeight;
-				newWidth = newHeight * aspectRatio;
-			}
-			activeElement.style.width = newWidth + 'px';
-			activeElement.style.height = newHeight + 'px';
-		} else {
-			// Free resizing for other elements
-			let newWidth = Math.max(40, startWidth + deltaX);
-			let newHeight = Math.max(40, startHeight + deltaY);
-			const maxWidth = containerRect.width - startLeft;
-			const maxHeight = containerRect.height - startTop;
-			newWidth = Math.min(newWidth, maxWidth);
-			newHeight = Math.min(newHeight, maxHeight);
-			activeElement.style.width = newWidth + 'px';
-			activeElement.style.height = newHeight + 'px';
-		}
-	} else {
-		// Drag: update position and keep element within container bounds
-		let newLeft = startLeft + deltaX;
-		let newTop = startTop + deltaY;
-		const elementWidth = activeElement.offsetWidth;
-		const elementHeight = activeElement.offsetHeight;
-		newLeft = Math.max(0, Math.min(newLeft, containerRect.width - elementWidth));
-		newTop = Math.max(0, Math.min(newTop, containerRect.height - elementHeight));
-		activeElement.style.left = newLeft + 'px';
-		activeElement.style.top = newTop + 'px';
-	}
+        activeElement.style.transform = `rotate(${rotation}deg)`;
+        activeElement.setAttribute('data-rotation', rotation.toString());
+    } else if (isResizing) {
+        // Get rotation in radians
+        const rotationDeg = parseFloat(activeElement.getAttribute('data-rotation') || '0');
+        const rotationRad = (rotationDeg * Math.PI) / 180;
+
+        // Calculate delta in the rotated coordinate system
+        const cosRot = Math.cos(rotationRad);
+        const sinRot = Math.sin(rotationRad);
+        const rotatedDeltaX = deltaX * cosRot + deltaY * sinRot;
+        const rotatedDeltaY = -deltaX * sinRot + deltaY * cosRot;
+
+        // Resize with aspect ratio for button, joystick, and slider elements if applicable
+        if (activeElement.classList.contains('button-element') ||
+            activeElement.classList.contains('joystick-element') ||
+            activeElement.classList.contains('slider-element')) {
+            const aspectRatio = parseFloat(activeElement.getAttribute('data-aspect-ratio'));
+            let newWidth = Math.max(40, startWidth + rotatedDeltaX);
+            let newHeight = newWidth / aspectRatio;
+            const maxWidth = containerRect.width - startLeft;
+            const maxHeight = containerRect.height - startTop;
+            if (newWidth > maxWidth) {
+                newWidth = maxWidth;
+                newHeight = newWidth / aspectRatio;
+            }
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * aspectRatio;
+            }
+            activeElement.style.width = newWidth + 'px';
+            activeElement.style.height = newHeight + 'px';
+        } else {
+            // Free resizing for other elements
+            let newWidth = Math.max(40, startWidth + rotatedDeltaX);
+            let newHeight = Math.max(40, startHeight + rotatedDeltaY);
+            const maxWidth = containerRect.width - startLeft;
+            const maxHeight = containerRect.height - startTop;
+            newWidth = Math.min(newWidth, maxWidth);
+            newHeight = Math.min(newHeight, maxHeight);
+            activeElement.style.width = newWidth + 'px';
+            activeElement.style.height = newHeight + 'px';
+        }
+    } else {
+        // Drag: update position and keep element within container bounds
+        let newLeft = startLeft + deltaX;
+        let newTop = startTop + deltaY;
+        const elementWidth = activeElement.offsetWidth;
+        const elementHeight = activeElement.offsetHeight;
+        newLeft = Math.max(0, Math.min(newLeft, containerRect.width - elementWidth));
+        newTop = Math.max(0, Math.min(newTop, containerRect.height - elementHeight));
+        activeElement.style.left = newLeft + 'px';
+        activeElement.style.top = newTop + 'px';
+    }
 }
 
 function stopDrag(e) {
