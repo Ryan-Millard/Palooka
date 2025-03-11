@@ -24,35 +24,28 @@ namespace PalookaBot
 	}
 
 	// Public
-	void Motor::rotate(short speed) const
+	void Motor::rotate(short velocity) const
 	{
-		Serial.print("Speed before usage: ");
-		Serial.println(speed);
-
-		if(speed == 0)
+		if(velocity == 0)
 		{
 			stop();
-			Serial.print("Speed after usage: ");
-			Serial.println(speed);
 			return;
 		}
 
-		speed = constrain(speed, -255, 255);  // Limit to valid PWM range
-		speed = (isInverted) ? (speed * -1 /* Invert speed back to normalise it */) : speed;
+		velocity = constrain(velocity, -255, 255);  // Limit to valid PWM range
+		velocity = (isInverted) ? (velocity * -1 /* Invert velocity back to normalise it */) : velocity;
 
 		bool isForwardDirection{true};
-		if(speed < 0)
+		if(velocity < 0)
 		{
 			isForwardDirection = false;
-			speed = 255 - abs(speed); // Fix polarity (speed is made positive to allow subtraction)
-									 // Ensures speed > 0 as well
+			velocity = 255 - abs(velocity); // Fix polarity (velocity is made positive to allow subtraction)
+									 // Ensures velocity > 0 as well
 		}
 
 		digitalWrite(DIRECTION_PIN, isForwardDirection ? LOW : HIGH);
 
-		analogWrite(PWM_OUT_PIN, speed);
-		Serial.print("Speed after usage: ");
-		Serial.println(speed);
+		analogWrite(PWM_OUT_PIN, velocity);
 	}
 
 	void Motor::stop() const
