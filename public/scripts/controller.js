@@ -28,7 +28,7 @@ function sendJoystickData(x, y) {
 
 	// Apply rotation transformation to the joystick coordinates
 	const finalX = (x * Math.cos(rotationRad) - y * Math.sin(rotationRad)) * -1; // * -1 to swap left and right directions
-																				// This fixes the joystick's turning
+	// This fixes the joystick's turning
 	const finalY = x * Math.sin(rotationRad) + y * Math.cos(rotationRad);
 
 	const data = JSON.stringify({ x: finalX, y: finalY});
@@ -123,85 +123,85 @@ function startDrag(e) {
 }
 
 function handleDrag(e) {
-    if (!activeElement || !isEditMode) return;
-    e.preventDefault();
+	if (!activeElement || !isEditMode) return;
+	e.preventDefault();
 
-    const currentX = e.clientX || (e.touches && e.touches[0].clientX);
-    const currentY = e.clientY || (e.touches && e.touches[0].clientY);
-    const deltaX = currentX - startX;
-    const deltaY = currentY - startY;
-    const containerRect = document.getElementById('controller').getBoundingClientRect();
+	const currentX = e.clientX || (e.touches && e.touches[0].clientX);
+	const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+	const deltaX = currentX - startX;
+	const deltaY = currentY - startY;
+	const containerRect = document.getElementById('controller').getBoundingClientRect();
 
-    if (isRotating) {
-        // Calculate rotation based on the center of the element
-        const rect = activeElement.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+	if (isRotating) {
+		// Calculate rotation based on the center of the element
+		const rect = activeElement.getBoundingClientRect();
+		const centerX = rect.left + rect.width / 2;
+		const centerY = rect.top + rect.height / 2;
 
-        // Calculate start and current angle from center
-        const startAngle = Math.atan2(startY - centerY, startX - centerX);
-        const currentAngle = Math.atan2(currentY - centerY, currentX - centerX);
+		// Calculate start and current angle from center
+		const startAngle = Math.atan2(startY - centerY, startX - centerX);
+		const currentAngle = Math.atan2(currentY - centerY, currentX - centerX);
 
-        // Calculate angle difference in degrees
-        let rotation = startRotation + ((currentAngle - startAngle) * 180 / Math.PI);
+		// Calculate angle difference in degrees
+		let rotation = startRotation + ((currentAngle - startAngle) * 180 / Math.PI);
 
-        // Optional: snap to 15-degree increments
-        rotation = Math.round(rotation / 15) * 15;
+		// Optional: snap to 15-degree increments
+		rotation = Math.round(rotation / 15) * 15;
 
-        activeElement.style.transform = `rotate(${rotation}deg)`;
-        activeElement.setAttribute('data-rotation', rotation.toString());
-    } else if (isResizing) {
-        // Get rotation in radians
-        const rotationDeg = parseFloat(activeElement.getAttribute('data-rotation') || '0');
-        const rotationRad = (rotationDeg * Math.PI) / 180;
+		activeElement.style.transform = `rotate(${rotation}deg)`;
+		activeElement.setAttribute('data-rotation', rotation.toString());
+	} else if (isResizing) {
+		// Get rotation in radians
+		const rotationDeg = parseFloat(activeElement.getAttribute('data-rotation') || '0');
+		const rotationRad = (rotationDeg * Math.PI) / 180;
 
-        // Calculate delta in the rotated coordinate system
-        const cosRot = Math.cos(rotationRad);
-        const sinRot = Math.sin(rotationRad);
-        const rotatedDeltaX = deltaX * cosRot + deltaY * sinRot;
-        const rotatedDeltaY = -deltaX * sinRot + deltaY * cosRot;
+		// Calculate delta in the rotated coordinate system
+		const cosRot = Math.cos(rotationRad);
+		const sinRot = Math.sin(rotationRad);
+		const rotatedDeltaX = deltaX * cosRot + deltaY * sinRot;
+		const rotatedDeltaY = -deltaX * sinRot + deltaY * cosRot;
 
-        // Resize with aspect ratio for button, joystick, and slider elements if applicable
-        if (activeElement.classList.contains('button-element') ||
-            activeElement.classList.contains('joystick-element') ||
-            activeElement.classList.contains('slider-element')) {
-            const aspectRatio = parseFloat(activeElement.getAttribute('data-aspect-ratio'));
-            let newWidth = Math.max(40, startWidth + rotatedDeltaX);
-            let newHeight = newWidth / aspectRatio;
-            const maxWidth = containerRect.width - startLeft;
-            const maxHeight = containerRect.height - startTop;
-            if (newWidth > maxWidth) {
-                newWidth = maxWidth;
-                newHeight = newWidth / aspectRatio;
-            }
-            if (newHeight > maxHeight) {
-                newHeight = maxHeight;
-                newWidth = newHeight * aspectRatio;
-            }
-            activeElement.style.width = newWidth + 'px';
-            activeElement.style.height = newHeight + 'px';
-        } else {
-            // Free resizing for other elements
-            let newWidth = Math.max(40, startWidth + rotatedDeltaX);
-            let newHeight = Math.max(40, startHeight + rotatedDeltaY);
-            const maxWidth = containerRect.width - startLeft;
-            const maxHeight = containerRect.height - startTop;
-            newWidth = Math.min(newWidth, maxWidth);
-            newHeight = Math.min(newHeight, maxHeight);
-            activeElement.style.width = newWidth + 'px';
-            activeElement.style.height = newHeight + 'px';
-        }
-    } else {
-        // Drag: update position and keep element within container bounds
-        let newLeft = startLeft + deltaX;
-        let newTop = startTop + deltaY;
-        const elementWidth = activeElement.offsetWidth;
-        const elementHeight = activeElement.offsetHeight;
-        newLeft = Math.max(0, Math.min(newLeft, containerRect.width - elementWidth));
-        newTop = Math.max(0, Math.min(newTop, containerRect.height - elementHeight));
-        activeElement.style.left = newLeft + 'px';
-        activeElement.style.top = newTop + 'px';
-    }
+		// Resize with aspect ratio for button, joystick, and slider elements if applicable
+		if (activeElement.classList.contains('button-element') ||
+			activeElement.classList.contains('joystick-element') ||
+			activeElement.classList.contains('slider-element')) {
+			const aspectRatio = parseFloat(activeElement.getAttribute('data-aspect-ratio'));
+			let newWidth = Math.max(40, startWidth + rotatedDeltaX);
+			let newHeight = newWidth / aspectRatio;
+			const maxWidth = containerRect.width - startLeft;
+			const maxHeight = containerRect.height - startTop;
+			if (newWidth > maxWidth) {
+				newWidth = maxWidth;
+				newHeight = newWidth / aspectRatio;
+			}
+			if (newHeight > maxHeight) {
+				newHeight = maxHeight;
+				newWidth = newHeight * aspectRatio;
+			}
+			activeElement.style.width = newWidth + 'px';
+			activeElement.style.height = newHeight + 'px';
+		} else {
+			// Free resizing for other elements
+			let newWidth = Math.max(40, startWidth + rotatedDeltaX);
+			let newHeight = Math.max(40, startHeight + rotatedDeltaY);
+			const maxWidth = containerRect.width - startLeft;
+			const maxHeight = containerRect.height - startTop;
+			newWidth = Math.min(newWidth, maxWidth);
+			newHeight = Math.min(newHeight, maxHeight);
+			activeElement.style.width = newWidth + 'px';
+			activeElement.style.height = newHeight + 'px';
+		}
+	} else {
+		// Drag: update position and keep element within container bounds
+		let newLeft = startLeft + deltaX;
+		let newTop = startTop + deltaY;
+		const elementWidth = activeElement.offsetWidth;
+		const elementHeight = activeElement.offsetHeight;
+		newLeft = Math.max(0, Math.min(newLeft, containerRect.width - elementWidth));
+		newTop = Math.max(0, Math.min(newTop, containerRect.height - elementHeight));
+		activeElement.style.left = newLeft + 'px';
+		activeElement.style.top = newTop + 'px';
+	}
 }
 
 function stopDrag(e) {
@@ -414,6 +414,120 @@ function loadLayout() {
 	}
 }
 
+// Add this function to scripts/controller.js
+function setDefaultLayout() {
+  // Only set default if no saved layout exists
+  if (!localStorage.getItem('controllerLayout')) {
+    const controller = document.getElementById('controller');
+    const containerWidth = controller.clientWidth;
+    const containerHeight = controller.clientHeight;
+
+    // Calculate grid-based layout to prevent overlap
+    const gridColumns = 3;
+    const gridRows = 5;
+    const cellWidth = containerWidth / gridColumns;
+    const cellHeight = containerHeight / gridRows;
+    const padding = 10; // Padding inside each cell
+
+    // JOYSTICK - takes up 2x2 grid cells in the top-left
+    const joystick = document.getElementById('joystickControl');
+    joystick.style.left = padding + 'px';
+    joystick.style.top = padding + 'px';
+    joystick.style.width = (cellWidth * 2) - (padding * 2) + 'px';
+    joystick.style.height = (cellWidth * 2) - (padding * 2) + 'px'; // Keep it square
+
+    // SLIDER LEFT - takes up 1 column, row 3
+    const sliderLeft = document.getElementById('sliderLeft');
+    sliderLeft.style.left = padding + 'px';
+    sliderLeft.style.top = (cellHeight * 2) + padding + 'px';
+    sliderLeft.style.width = (cellWidth * 2) - (padding * 2) + 'px';
+    sliderLeft.style.height = cellHeight - (padding * 2) + 'px';
+
+    // SLIDER RIGHT - takes up 1 column, row 4
+    const sliderRight = document.getElementById('sliderRight');
+    sliderRight.style.left = padding + 'px';
+    sliderRight.style.top = (cellHeight * 3) + padding + 'px';
+    sliderRight.style.width = (cellWidth * 2) - (padding * 2) + 'px';
+    sliderRight.style.height = cellHeight - (padding * 2) + 'px';
+
+    // BUTTON 1 - top right corner
+    const button1 = document.getElementById('button1');
+    button1.style.left = (cellWidth * 2) + padding + 'px';
+    button1.style.top = padding + 'px';
+    button1.style.width = cellWidth - (padding * 2) + 'px';
+    button1.style.height = cellHeight - (padding * 2) + 'px';
+
+    // BUTTON 2 - below button 1
+    const button2 = document.getElementById('button2');
+    button2.style.left = (cellWidth * 2) + padding + 'px';
+    button2.style.top = cellHeight + padding + 'px';
+    button2.style.width = cellWidth - (padding * 2) + 'px';
+    button2.style.height = cellHeight - (padding * 2) + 'px';
+
+    // Set all rotations to 0
+    document.querySelectorAll('.control-element').forEach(element => {
+      element.setAttribute('data-rotation', '0');
+      element.style.transform = 'rotate(0deg)';
+
+      // Calculate and set aspect ratio
+      const width = parseInt(element.style.width);
+      const height = parseInt(element.style.height);
+      if (height > 0) {
+        const aspectRatio = width / height;
+        element.setAttribute('data-aspect-ratio', aspectRatio.toFixed(4));
+      }
+    });
+
+    // After setting default layout, save it
+    saveLayout();
+  }
+}
+
+// Function to check if elements overlap
+function checkForOverlaps() {
+  const elements = document.querySelectorAll('.control-element');
+  const elementRects = [];
+
+  // Get all element boundaries
+  elements.forEach(element => {
+    const rect = element.getBoundingClientRect();
+    elementRects.push({
+      element: element,
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      bottom: rect.bottom
+    });
+  });
+
+  // Check each element against all others
+  for (let i = 0; i < elementRects.length; i++) {
+    for (let j = i + 1; j < elementRects.length; j++) {
+      const a = elementRects[i];
+      const b = elementRects[j];
+
+      // Check if elements overlap
+      if (!(a.right < b.left ||
+            a.left > b.right ||
+            a.bottom < b.top ||
+            a.top > b.bottom)) {
+        console.warn('Overlap detected between',
+                    a.element.id, 'and', b.element.id);
+
+        // Add a visual indicator (for debugging)
+        a.element.style.borderColor = 'red';
+        b.element.style.borderColor = 'red';
+      }
+    }
+  }
+}
+
+// Add this to end of window.onload to verify no overlaps
+function verifyNoOverlaps() {
+  // Use setTimeout to ensure layout is completed
+  setTimeout(checkForOverlaps, 500);
+}
+
 // Save the selected control type when it changes
 document.getElementById('inputType').addEventListener('change', function() {
 	const selectedType = this.value;
@@ -431,13 +545,52 @@ function loadControlType() {
 	}
 }
 
+// Add this to ensure layout adapts to screen size changes
+let lastWidth = window.innerWidth;
+let lastHeight = window.innerHeight;
+
+window.addEventListener('resize', () => {
+  // Only trigger if size change is significant (>20%)
+  const widthChange = Math.abs(window.innerWidth - lastWidth) / lastWidth;
+  const heightChange = Math.abs(window.innerHeight - lastHeight) / lastHeight;
+
+  if (widthChange > 0.2 || heightChange > 0.2) {
+    // Update last dimensions
+    lastWidth = window.innerWidth;
+    lastHeight = window.innerHeight;
+
+    // If in edit mode, offer to reset layout
+    if (isEditMode && confirm('Screen size changed significantly. Reset layout?')) {
+      localStorage.removeItem('controllerLayout');
+      setDefaultLayout();
+      applyRotations();
+    }
+  }
+});
+
 // Initialize
 window.onload = () => {
-	initAspectRatios();
-	loadControlType();
-	loadLayout();
-	applyRotations();
-	changeInputType();
-	updateControlInteractivity();
-	toggleMode();
+  // Initialize aspect ratios first
+  initAspectRatios();
+
+  // Load saved preferences
+  loadControlType();
+  loadLayout();
+
+  // If no saved layout, set default grid-based layout
+  setDefaultLayout();
+
+  // Apply other settings
+  applyRotations();
+  changeInputType();
+  updateControlInteractivity();
+
+  // Wait for layout to settle, then check for overlaps
+  setTimeout(() => {
+    // Only for development/debugging
+    // checkForOverlaps();
+
+    // Finally toggle to use mode
+    toggleMode();
+  }, 100);
 };
