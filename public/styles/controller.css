@@ -1,6 +1,12 @@
+#mainContent {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
 .joystick-container {
-	width: 30vw;
-	height: 30vw;
+	width: 50vw;
+	aspect-ratio: 1/1;
 	background: var(--black);
 	border: 3px solid var(--cyan-light);
 	border-radius: 50%;
