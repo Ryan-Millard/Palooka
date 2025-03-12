@@ -6,7 +6,7 @@ const PalookaNetwork::Route AP_ROUTES[]{
 	/* Base Styles */ {"/styles/index.css", "/styles/index.css", "text/css"},
 	/* Controller Page */ {"/controller", "/controller.html", "text/html"},
 	/* Controller Styles */ {"/styles/controller.css", "/styles/controller.css", "text/css"},
-	/* Controller JS */ {"/scripts/controller.js", "/scripts/controller.js", "text/javascript"}, // <- Added comma here
+	/* Controller JS */ {"/scripts/controller.js", "/scripts/controller.js", "text/javascript"},
 	/* Fullscreen JS */ {"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
 	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
 	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"}
