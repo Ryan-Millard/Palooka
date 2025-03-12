@@ -75,7 +75,7 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
-.slider-element {
+.always-visible-slider-element, .slider-element {
 	max-height: fit-content;
 }
 .slider-container {

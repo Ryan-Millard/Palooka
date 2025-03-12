@@ -102,29 +102,32 @@ namespace PalookaNetwork
 			return;
 		}
 
-		// Individual wheel control data from the HTML slider
-		if(doc.containsKey("motor") && doc.containsKey("value"))
+		// Slider control data from the HTML slider
+		// For: a robot wheen or flipper
+		if(doc.containsKey("sliderName") && doc.containsKey("value"))
 		{
-			const char* motor = doc["motor"];
+			const char* robotLimb = doc["sliderName"]; // Robot robotLimb (i.e. wheel or flipper)
 			int value = doc["value"];
-			Serial.print("Motor: ");
-			Serial.print(motor);
+			Serial.print("Limb: ");
+			Serial.print(robotLimb);
 			Serial.print(", Value: ");
 			Serial.println(value);
 
-			switch(motor[0])
+			switch(robotLimb[0])
 			{
-				case 'A':
-				case 'a':
+				case 'R': case 'r': // Right motor
 					robot.moveRightWheel(value);
 					break;
-				case 'B':
-				case 'b':
+				case 'L': case 'l': // Left motor
 					robot.moveLeftWheel(value);
 					break;
 
+				case 'F': case 'f': // Flipper arm
+					robot.moveFlipper(value);
+					break;
+
 				default:
-					Serial.println("Unknown motor supplied.");
+					Serial.println("Unknown robot robotLimb JSON supplied.");
 					break;
 			}
 
