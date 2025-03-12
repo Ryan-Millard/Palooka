@@ -7,8 +7,8 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 
-#include "FileSystem.h"
-#include "FlipperBot.h"
+#include <FileSystem/FileSystem.h>
+#include <PalookaBot/FlipperBot.h>
 
 namespace PalookaNetwork
 {
