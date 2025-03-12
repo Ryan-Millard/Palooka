@@ -4,26 +4,17 @@
 
 namespace PalookaBot
 {
-	// Private
-	void Motor::initPins()
+	// ========== Private ==========
+
+	// ========== Public ==========
+	Motor::Motor(const byte PWM_OUT_PIN, const byte DIRECTION_PIN, const bool isInverted)
+				: PWM_OUT_PIN(PWM_OUT_PIN), DIRECTION_PIN(DIRECTION_PIN), isInverted(isInverted)
 	{
-		// Initialize pins
-		pinMode(EN8V_PIN, OUTPUT);
-		pinMode(EN5V_PIN, OUTPUT);
-		pinMode(DVR_SLEEP_PIN, OUTPUT);
+		// Set up required GPIO pins
 		pinMode(PWM_OUT_PIN, OUTPUT);
 		pinMode(DIRECTION_PIN, OUTPUT);
 	}
 
-	void Motor::enableDrivers()
-	{
-		// Enable power and wake up driver
-		digitalWrite(EN8V_PIN, HIGH);
-		digitalWrite(EN5V_PIN, HIGH);
-		digitalWrite(DVR_SLEEP_PIN, HIGH);
-	}
-
-	// Public
 	void Motor::rotate(short velocity) const
 	{
 		if(velocity == 0)
