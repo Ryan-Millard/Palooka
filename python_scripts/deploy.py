@@ -2,12 +2,19 @@
 # Usage: pio run -t deploy
 
 Import("env")
+import sys
 
 def deploy_firmware_and_filesystem(source, target, env):
     # Upload firmware
-    env.Execute("pio run -t upload")
+    result = env.Execute("pio run -t upload")
+    if result != 0:
+        print("Firmware upload failed. Exiting.")
+        sys.exit(result)
     # Upload filesystem
-    env.Execute("pio run -t uploadfs")
+    result = env.Execute("pio run -t uploadfs")
+    if result != 0:
+        print("Filesystem upload failed. Exiting.")
+        sys.exit(result)
 
 # Register the custom target "deploy"
 env.AddTarget("deploy", None, deploy_firmware_and_filesystem)
