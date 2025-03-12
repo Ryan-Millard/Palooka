@@ -2,46 +2,62 @@
 
 namespace PalookaBot
 {
-	// Public
+	// ========== Private ==========
+	// No additional private members or helper functions are declared here.
+
+	// ========== Public ==========
+	// The constructor sets up the wheels and powers up the robot by enabling the necessary voltage rails.
 	FlipperBot::FlipperBot(const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
 			const byte EN8V_PIN, const byte EN5V_PIN, const byte DVR_SLEEP_PIN)
-		: wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN, EN8V_PIN, EN5V_PIN, DVR_SLEEP_PIN),
-		// Invert left wheel to allow it to travel in the same direction as the right wheel
-		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, EN8V_PIN, EN5V_PIN, DVR_SLEEP_PIN, true /* Inverted */)
+		: wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN), // Initialize the right wheel with its designated pins.
+		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */) // Invert the left wheel so that both wheels drive in the same forward direction.
 	{
+		// ========== Power up robot ==========
+		// Configure the power and sleep control pins as outputs.
+		pinMode(EN8V_PIN, OUTPUT); // Set the pin controlling the 8V rail as an output.
+		pinMode(EN5V_PIN, OUTPUT); // Set the pin controlling the 5V rail as an output.
+		pinMode(DVR_SLEEP_PIN, OUTPUT); // Set the DVR sleep pin as an output.
+		// Activate the power rails and wake the motor driver.
+		digitalWrite(EN8V_PIN, HIGH); // Enable power on the 8V rail.
+		digitalWrite(EN5V_PIN, HIGH); // Enable power on the 5V rail.
+		digitalWrite(DVR_SLEEP_PIN, HIGH); // Wake the motor driver from sleep.
 	}
 
-	// Expects that x and y are either equal to or between -1 and 1
+	// The move() function takes x (turn) and y (forward/backward) inputs, each expected to be in the range [-1, 1].
+	// It calculates individual wheel speeds using differential drive logic.
 	void FlipperBot::move(const float x, const float y) const
 	{
+		// Compute preliminary speed values for each wheel.
 		float left = y + x;
 		float right = y - x;
 
-		// Normalize to keep within [-1, 1] range
+		// Normalize the values if either exceeds the [-1, 1] range.
 		float maxVal = std::max(std::abs(left), std::abs(right));
 		if (maxVal > 1.0f) {
 			left /= maxVal;
 			right /= maxVal;
 		}
 
+		// Convert normalized values to a PWM scale from 0 to 255.
 		int leftVelocity = left * 255;
 		int rightVelocity = right * 255;
-		Serial.print("leftVelocity: "); Serial.println(leftVelocity);
-		Serial.print("rightVelocity: "); Serial.println(rightVelocity);
 
+		// Issue commands to rotate the wheels at the computed speeds.
 		wheelLeft.rotate(leftVelocity);
 		wheelRight.rotate(rightVelocity);
 	}
+	// Directly commands the left wheel with a specified velocity (-255 to 255).
 	void FlipperBot::moveLeftWheel(const short velocity) const
 	{
 		wheelLeft.rotate(velocity);
 	}
+	// Directly commands the right wheel with a specified velocity (-255 to 255).
 	void FlipperBot::moveRightWheel(const short velocity) const
 	{
 		wheelRight.rotate(velocity);
 	}
-
+	// Stops both wheels, thereby halting all robot movement.
 	void FlipperBot::stopMoving() const
 	{
 		wheelLeft.stop();
