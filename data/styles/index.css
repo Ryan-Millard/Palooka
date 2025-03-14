@@ -127,3 +127,23 @@ main {
 	padding: 2rem 1rem;
 	margin-bottom: 120px;
 }
+
+#flag {
+	max-height: 50vh;
+	box-shadow: 0 0 15px var(--cyan-dark);
+	border: 2px solid var(--cyan-light);
+}
+
+.centered-children {
+	text-align: center;
+}
+
+.textInput {
+	background-color: var(--black);
+	color: var(--white);
+	border: none;
+	border-bottom: 2px solid var(--cyan-light);
+	width: 80%;
+	padding: 10px;
+	outline: none;
+}

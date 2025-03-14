@@ -12,14 +12,18 @@ const PalookaNetwork::Route AP_ROUTES[]{
 	/* Controller JS */ {"/scripts/controller.js", "/scripts/controller.js", "text/javascript"},
 	/* Fullscreen JS */ {"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
 	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
-	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"}
+	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"},
+	/* Flag image */ {"/img/flag.svg", "/img/flag.svg", "image/svg+xml"}
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 
 PalookaBot::FlipperBot robot;
 QueueHandle_t robotQueue;
 
-void robotControlTask(void* pvParameters) {
+void robotControlTask(void* pvParameters)
+{
+	robot.playStartupTone();
+
 	// Create a robot instance and a JSON document to hold incoming commands.
 	StaticJsonDocument<200> jsonCmd;
 
@@ -78,7 +82,6 @@ void setup() {
 	}
 
 	robot.begin();
-	robot.playStartupTone();
 	// Create a queue for robot commands (queue length of 10).
 	robotQueue = xQueueCreate(10, sizeof(StaticJsonDocument<200>));
 

@@ -8,12 +8,14 @@ namespace PalookaBot
 	FlipperBot::FlipperBot(const byte FLIPPER_PIN,
 			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
+			const byte LED_PIN,
 			const byte EN8V_PIN, const byte EN5V_PIN, const byte DVR_SLEEP_PIN)
 		: EN8V_PIN(EN8V_PIN), EN5V_PIN(EN5V_PIN), DVR_SLEEP_PIN(DVR_SLEEP_PIN),
 		FLIPPER_PIN(FLIPPER_PIN),
 		FLIPPER_MAX_ANGLE(180), FLIPPER_MIN_ANGLE(0),
 		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN), 
-		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */)
+		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */),
+		LED_PIN(LED_PIN)
 	{
 		// No initialization in constructor body - all done in begin()
 	}
@@ -32,6 +34,8 @@ namespace PalookaBot
 		pinMode(EN5V_PIN, OUTPUT);
 		pinMode(DVR_SLEEP_PIN, OUTPUT);
 
+		pinMode(LED_PIN, OUTPUT);
+
 		// Activate the power rails and wake the motor driver.
 		digitalWrite(EN8V_PIN, HIGH);
 		digitalWrite(EN5V_PIN, HIGH);
@@ -45,22 +49,37 @@ namespace PalookaBot
 		flipper.attach(FLIPPER_PIN, 500, 2500);
 	}
 
+	void FlipperBot::setLedOn(const bool isOn) const
+	{
+		digitalWrite(LED_PIN, isOn ? HIGH : LOW);
+		Serial.print("LED isOn: ");
+		Serial.println(isOn);
+	}
+
 	void FlipperBot::playTone(const int frequency, const int duration_ms) const
 	{
-		wheelRight.playTone(frequency, duration_ms);
+		static bool rightIsLastWheelUsed{true};
+
+		if(rightIsLastWheelUsed)
+		{
+			wheelRight.playTone(frequency, duration_ms);
+			return;
+		}
+
+		wheelLeft.playTone(frequency, duration_ms);
 	}
 	void FlipperBot::playStartupTone() const
 	{
-		playTone(987, 300);  // 8b: B (987 Hz) for 300 ms
-							 // delay(50);           // Short delay between notes
+		// Note frequencies in Hz (approximation for the melody)
+		// melody: 			A4,  A4,  A4,  G4,  F4,  E4,  D4,  A4,  A4,  A4,  G4,  F4,  E4,  C#4, D4
+		int melody[] =    {440, 440, 440, 392, 350, 330, 294, 440, 440, 440, 392, 350, 330, 278, 294};
+		int durations[] = {300, 300, 400, 200, 400, 200, 300, 300, 300, 400, 200, 400, 200, 500, 1000};
 
-		playTone(1175, 150); // 16d6: D6 (1175 Hz) for 150 ms
-							 // delay(50);           // Short delay between notes
-
-		playTone(1047, 150); // 16c6: C6 (1047 Hz) for 150 ms
-							 // delay(50);           // Short delay between notes
-
-		playTone(1319, 300); // 8e6: E6 (1319 Hz) for 300 ms
+		for(int i = 0; i < 15; ++i) // Playing 15 notes
+		{
+			playTone(melody[i], durations[i]);
+			delay(50); // Small delay between notes for a smooth transition
+		}
 	}
 
 	void FlipperBot::moveFlipper(byte angle)
