@@ -10,82 +10,90 @@
 			<h1>Palooka</h1>
 		</header>
 
-		<div class="block control-panel">
-			<button onclick="toggleFullscreen(document.getElementById('controller'))">Toggle Fullscreen</button>
-			<button class="mode-toggle" id="modeToggle" onclick="toggleMode()">Edit Layout</button>
-			<select id="inputType" class="clickable">
-				<option value="joystick">Joystick</option>
-				<option value="sliders">Sliders</option>
-			</select>
-		</div>
+		<main style="padding: 2rem 0;">
+			<div id="controls-container">
+				<details open id="controlsDetails">
+					<summary class="clickable"></summary>
+					<div class="control-panel">
+						<input type="checkbox" id="fullscreenToggler" onchange="toggleFullscreen(document.getElementById('controls-container'))">
+						<label for="fullscreenToggler" class="clickable"></label>
+						<button id="modeToggle" onclick="toggleMode()">Edit</button>
+						<select id="inputType" class="clickable">
+							<option value="joystick">Joystick</option>
+							<option value="sliders">Sliders</option>
+						</select>
+					</div>
+				</details>
 
-		<div id="controller" class="edit-mode">
-			<!-- Buttons -->
-			<div class="control-element button-element" id="button1" data-aspect-ratio="2">
-				<div class="button-container">
-					<button class="control-button">Btn 1</button>
-				</div>
-				<div class="rotate-handle">Rotate</div>
-				<div class="resize-handle">Resize</div>
-			</div>
+				<div id="controller" class="edit-mode">
+					<!-- Buttons -->
+					<div class="control-element button-element" id="button1" data-aspect-ratio="2">
+						<div class="button-container">
+							<button class="control-button">Btn 1</button>
+						</div>
+						<div class="rotate-handle">Rotate</div>
+						<div class="resize-handle">Resize</div>
+					</div>
 
-			<div class="control-element button-element" id="button2" data-aspect-ratio="2">
-				<div class="button-container">
-					<button class="control-button">Btn 2</button>
-				</div>
-				<div class="rotate-handle">Rotate</div>
-				<div class="resize-handle">Resize</div>
-			</div>
+					<div class="control-element button-element" id="button2" data-aspect-ratio="2">
+						<div class="button-container">
+							<button class="control-button">Btn 2</button>
+						</div>
+						<div class="rotate-handle">Rotate</div>
+						<div class="resize-handle">Resize</div>
+					</div>
 
-			<!-- Joystick Control Element -->
-			<div class="control-element joystick-element" id="joystickControl" data-aspect-ratio="1">
-				<div class="joystick">
-					<div class="joystick-handle"></div>
-				</div>
-				<div class="rotate-handle">Rotate</div>
-				<div class="resize-handle">Resize</div>
-			</div>
+					<!-- Joystick Control Element -->
+					<div class="control-element joystick-element" id="joystickControl" data-aspect-ratio="1">
+						<div class="joystick">
+							<div class="joystick-handle"></div>
+						</div>
+						<div class="rotate-handle">Rotate</div>
+						<div class="resize-handle">Resize</div>
+					</div>
 
-			<!-- Slider Control Elements -->
-			<div class="control-element slider-element" id="sliderLeft" data-aspect-ratio="2">
-				<div class="slider-container">
-					<!-- Right Motor -->
-					<label for="motorR">Right Motor</label>
-					<input type="range" class="slider" id="motorR" min="-255" max="255" value="0"
-						 oninput="sendSliderData('R', this.value)"
-						 onmouseup="this.value=0; sendSliderData('R', 0)"
-						 ontouchend="this.value=0; sendSliderData('R', 0)">
-				</div>
-				<div class="rotate-handle">Rotate</div>
-				<div class="resize-handle">Resize</div>
-			</div>
+					<!-- Slider Control Elements -->
+					<div class="control-element slider-element" id="sliderLeft" data-aspect-ratio="2">
+						<div class="slider-container">
+							<!-- Right Motor -->
+							<label for="motorR">Right Motor</label>
+							<input type="range" class="slider" id="motorR" min="-255" max="255" value="0"
+																								oninput="sendSliderData('R', this.value)"
+																								onmouseup="this.value=0; sendSliderData('R', 0)"
+																								ontouchend="this.value=0; sendSliderData('R', 0)">
+						</div>
+						<div class="rotate-handle">Rotate</div>
+						<div class="resize-handle">Resize</div>
+					</div>
 
-			<div class="control-element always-visible-slider-element" id="sliderCenter" data-aspect-ratio="2">
-				<div class="slider-container">
-					<!-- Flipper Arm -->
-					<input type="range" class="slider" id="flipper" min="0" max="180" value="0"
-						 oninput="sendSliderData('F', this.value)"
-						 onmouseup="this.value=0; sendSliderData('F', 0)"
-						 ontouchend="this.value=0; sendSliderData('F', 0)">
-					<label for="motorL">Flipper Arm</label>
-				</div>
-				<div class="rotate-handle">Rotate</div>
-				<div class="resize-handle">Resize</div>
-			</div>
+					<div class="control-element always-visible-slider-element" id="sliderCenter" data-aspect-ratio="2">
+						<div class="slider-container">
+							<!-- Flipper Arm -->
+							<input type="range" class="slider" id="flipper" min="0" max="180" value="0"
+																							  oninput="sendSliderData('F', this.value)"
+																							  onmouseup="this.value=0; sendSliderData('F', 0)"
+																							  ontouchend="this.value=0; sendSliderData('F', 0)">
+							<label for="motorL">Flipper Arm</label>
+						</div>
+						<div class="rotate-handle">Rotate</div>
+						<div class="resize-handle">Resize</div>
+					</div>
 
-			<div class="control-element slider-element" id="sliderRight" data-aspect-ratio="2">
-				<div class="slider-container">
-					<!-- Left Motor -->
-					<input type="range" class="slider" id="motorL" min="-255" max="255" value="0"
-						 oninput="sendSliderData('L', this.value)"
-						 onmouseup="this.value=0; sendSliderData('L', 0)"
-						 ontouchend="this.value=0; sendSliderData('L', 0)">
-					<label for="motorL">Left Motor</label>
+					<div class="control-element slider-element" id="sliderRight" data-aspect-ratio="2">
+						<div class="slider-container">
+							<!-- Left Motor -->
+							<input type="range" class="slider" id="motorL" min="-255" max="255" value="0"
+																								oninput="sendSliderData('L', this.value)"
+																								onmouseup="this.value=0; sendSliderData('L', 0)"
+																								ontouchend="this.value=0; sendSliderData('L', 0)">
+							<label for="motorL">Left Motor</label>
+						</div>
+						<div class="rotate-handle">Rotate</div>
+						<div class="resize-handle">Resize</div>
+					</div>
 				</div>
-				<div class="rotate-handle">Rotate</div>
-				<div class="resize-handle">Resize</div>
 			</div>
-		</div>
+		</main>
 
 		<div class="footer-spacer"></div>
 

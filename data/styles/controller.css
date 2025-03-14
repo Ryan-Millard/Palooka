@@ -2,11 +2,19 @@ body {
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
-#controller {
+
+#controls-container {
 	width: 100vw; /* Fallback */
 	width: 100lvw;
 	height: 100vh; /* Fallback */
 	height: 100lvh;
+	margin-top: 5vh;
+	display: flex;
+	flex-direction: column;
+}
+
+#controller {
+	flex-grow: 1; /* Allows the controller to take up the remaining space */
 	border: 3px solid var(--cyan-light);
 	box-sizing: border-box;
 	box-shadow: 0 0 15px var(--cyan-dark);
@@ -14,7 +22,10 @@ body {
 	position: relative;
 	margin: 0 auto;
 	overflow: hidden;
+	min-height: 500px; /* Optional: Ensures a minimum height */
+	width: 100%; /* Ensures it doesn't exceed the container's width */
 }
+
 .control-element {
 	max-height: fit-content;
 	min-width: fit-content;
@@ -150,18 +161,33 @@ body {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-evenly;
+	margin-bottom: 0;
+	border-bottom: none;
 }
 .control-panel > * {
 	flex: 1;
-}
-.mode-toggle {
-	width: auto;
-	height: auto;
-	padding: 10px 20px; /* Adjust as needed for size */
 }
 .footer-spacer {
 	height: 30vh;
 }
 #inputType {
 	text-align: center;
+}
+
+#controlsDetails[open] summary::before {
+	content: "Hide Controls";
+}
+#controlsDetails:not([open]) summary::before {
+	content: "Show Controls";
+}
+
+
+#fullscreenToggler {
+	display: none;
+}
+#fullscreenToggler:checked + label::before {
+	content: "Exit";
+}
+#fullscreenToggler + label::before {
+	content: "Fullscreen";
 }
