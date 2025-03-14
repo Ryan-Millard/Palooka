@@ -40,7 +40,7 @@ function toggleMode() {
 	isEditMode = !isEditMode;
 	document.getElementById('controller').classList.toggle('edit-mode');
 	document.getElementById('modeToggle').textContent = 
-		isEditMode ? 'Save Layout' : 'Edit Layout';
+		isEditMode ? 'Save' : 'Edit';
 	saveLayout();
 	updateControlInteractivity();
 	if (!isEditMode) {
@@ -192,13 +192,43 @@ function handleDrag(e) {
 			activeElement.style.height = newHeight + 'px';
 		}
 	} else {
-		// Drag: update position and keep element within container bounds
+		// DRAGGING - Rotation-aware bounds check
 		let newLeft = startLeft + deltaX;
 		let newTop = startTop + deltaY;
+
 		const elementWidth = activeElement.offsetWidth;
 		const elementHeight = activeElement.offsetHeight;
-		newLeft = Math.max(0, Math.min(newLeft, containerRect.width - elementWidth));
-		newTop = Math.max(0, Math.min(newTop, containerRect.height - elementHeight));
+		const rotationDeg = parseFloat(activeElement.getAttribute('data-rotation') || '0');
+		const rotationRad = (rotationDeg * Math.PI) / 180;
+
+		// Calculate rotated corners relative to center
+		const corners = [
+			{ x: -elementWidth/2, y: -elementHeight/2 },
+			{ x: elementWidth/2, y: -elementHeight/2 },
+			{ x: -elementWidth/2, y: elementHeight/2 },
+			{ x: elementWidth/2, y: elementHeight/2 }
+		];
+
+		const rotatedCorners = corners.map(corner => ({
+			x: corner.x * Math.cos(rotationRad) - corner.y * Math.sin(rotationRad),
+			y: corner.x * Math.sin(rotationRad) + corner.y * Math.cos(rotationRad)
+		}));
+
+		// Find min/max values of rotated corners
+		const minX = Math.min(...rotatedCorners.map(c => c.x));
+		const maxX = Math.max(...rotatedCorners.map(c => c.x));
+		const minY = Math.min(...rotatedCorners.map(c => c.y));
+		const maxY = Math.max(...rotatedCorners.map(c => c.y));
+
+		// Calculate allowed position based on AABB
+		const allowedLeftMin = -(elementWidth/2 + minX);
+		const allowedLeftMax = containerRect.width - (elementWidth/2 + maxX);
+		const allowedTopMin = -(elementHeight/2 + minY);
+		const allowedTopMax = containerRect.height - (elementHeight/2 + maxY);
+
+		newLeft = Math.max(allowedLeftMin, Math.min(newLeft, allowedLeftMax));
+		newTop = Math.max(allowedTopMin, Math.min(newTop, allowedTopMax));
+
 		activeElement.style.left = newLeft + 'px';
 		activeElement.style.top = newTop + 'px';
 	}
@@ -416,116 +446,116 @@ function loadLayout() {
 
 // Add this function to scripts/controller.js
 function setDefaultLayout() {
-  // Only set default if no saved layout exists
-  if (!localStorage.getItem('controllerLayout')) {
-    const controller = document.getElementById('controller');
-    const containerWidth = controller.clientWidth;
-    const containerHeight = controller.clientHeight;
+	// Only set default if no saved layout exists
+	if (!localStorage.getItem('controllerLayout')) {
+		const controller = document.getElementById('controller');
+		const containerWidth = controller.clientWidth;
+		const containerHeight = controller.clientHeight;
 
-    // Calculate grid-based layout to prevent overlap
-    const gridColumns = 3;
-    const gridRows = 5;
-    const cellWidth = containerWidth / gridColumns;
-    const cellHeight = containerHeight / gridRows;
-    const padding = 10; // Padding inside each cell
+		// Calculate grid-based layout to prevent overlap
+		const gridColumns = 3;
+		const gridRows = 5;
+		const cellWidth = containerWidth / gridColumns;
+		const cellHeight = containerHeight / gridRows;
+		const padding = 10; // Padding inside each cell
 
-    // JOYSTICK - takes up 2x2 grid cells in the top-left
-    const joystick = document.getElementById('joystickControl');
-    joystick.style.left = padding + 'px';
-    joystick.style.top = padding + 'px';
-    joystick.style.width = (cellWidth * 2) - (padding * 2) + 'px';
-    joystick.style.height = (cellWidth * 2) - (padding * 2) + 'px'; // Keep it square
+		// JOYSTICK - takes up 2x2 grid cells in the top-left
+		const joystick = document.getElementById('joystickControl');
+		joystick.style.left = padding + 'px';
+		joystick.style.top = padding + 'px';
+		joystick.style.width = (cellWidth * 2) - (padding * 2) + 'px';
+		joystick.style.height = (cellWidth * 2) - (padding * 2) + 'px'; // Keep it square
 
-    // SLIDER LEFT - takes up 1 column, row 3
-    const sliderLeft = document.getElementById('sliderLeft');
-    sliderLeft.style.left = padding + 'px';
-    sliderLeft.style.top = (cellHeight * 2) + padding + 'px';
-    sliderLeft.style.width = (cellWidth * 2) - (padding * 2) + 'px';
-    sliderLeft.style.height = cellHeight - (padding * 2) + 'px';
+		// SLIDER LEFT - takes up 1 column, row 3
+		const sliderLeft = document.getElementById('sliderLeft');
+		sliderLeft.style.left = padding + 'px';
+		sliderLeft.style.top = (cellHeight * 2) + padding + 'px';
+		sliderLeft.style.width = (cellWidth * 2) - (padding * 2) + 'px';
+		sliderLeft.style.height = cellHeight - (padding * 2) + 'px';
 
-    // SLIDER RIGHT - takes up 1 column, row 4
-    const sliderRight = document.getElementById('sliderRight');
-    sliderRight.style.left = padding + 'px';
-    sliderRight.style.top = (cellHeight * 3) + padding + 'px';
-    sliderRight.style.width = (cellWidth * 2) - (padding * 2) + 'px';
-    sliderRight.style.height = cellHeight - (padding * 2) + 'px';
+		// SLIDER RIGHT - takes up 1 column, row 4
+		const sliderRight = document.getElementById('sliderRight');
+		sliderRight.style.left = padding + 'px';
+		sliderRight.style.top = (cellHeight * 3) + padding + 'px';
+		sliderRight.style.width = (cellWidth * 2) - (padding * 2) + 'px';
+		sliderRight.style.height = cellHeight - (padding * 2) + 'px';
 
-    // BUTTON 1 - top right corner
-    const button1 = document.getElementById('button1');
-    button1.style.left = (cellWidth * 2) + padding + 'px';
-    button1.style.top = padding + 'px';
-    button1.style.width = cellWidth - (padding * 2) + 'px';
-    button1.style.height = cellHeight - (padding * 2) + 'px';
+		// BUTTON 1 - top right corner
+		const button1 = document.getElementById('button1');
+		button1.style.left = (cellWidth * 2) + padding + 'px';
+		button1.style.top = padding + 'px';
+		button1.style.width = cellWidth - (padding * 2) + 'px';
+		button1.style.height = cellHeight - (padding * 2) + 'px';
 
-    // BUTTON 2 - below button 1
-    const button2 = document.getElementById('button2');
-    button2.style.left = (cellWidth * 2) + padding + 'px';
-    button2.style.top = cellHeight + padding + 'px';
-    button2.style.width = cellWidth - (padding * 2) + 'px';
-    button2.style.height = cellHeight - (padding * 2) + 'px';
+		// BUTTON 2 - below button 1
+		const button2 = document.getElementById('button2');
+		button2.style.left = (cellWidth * 2) + padding + 'px';
+		button2.style.top = cellHeight + padding + 'px';
+		button2.style.width = cellWidth - (padding * 2) + 'px';
+		button2.style.height = cellHeight - (padding * 2) + 'px';
 
-    // Set all rotations to 0
-    document.querySelectorAll('.control-element').forEach(element => {
-      element.setAttribute('data-rotation', '0');
-      element.style.transform = 'rotate(0deg)';
+		// Set all rotations to 0
+		document.querySelectorAll('.control-element').forEach(element => {
+			element.setAttribute('data-rotation', '0');
+			element.style.transform = 'rotate(0deg)';
 
-      // Calculate and set aspect ratio
-      const width = parseInt(element.style.width);
-      const height = parseInt(element.style.height);
-      if (height > 0) {
-        const aspectRatio = width / height;
-        element.setAttribute('data-aspect-ratio', aspectRatio.toFixed(4));
-      }
-    });
+			// Calculate and set aspect ratio
+			const width = parseInt(element.style.width);
+			const height = parseInt(element.style.height);
+			if (height > 0) {
+				const aspectRatio = width / height;
+				element.setAttribute('data-aspect-ratio', aspectRatio.toFixed(4));
+			}
+		});
 
-    // After setting default layout, save it
-    saveLayout();
-  }
+		// After setting default layout, save it
+		saveLayout();
+	}
 }
 
 // Function to check if elements overlap
 function checkForOverlaps() {
-  const elements = document.querySelectorAll('.control-element');
-  const elementRects = [];
+	const elements = document.querySelectorAll('.control-element');
+	const elementRects = [];
 
-  // Get all element boundaries
-  elements.forEach(element => {
-    const rect = element.getBoundingClientRect();
-    elementRects.push({
-      element: element,
-      left: rect.left,
-      right: rect.right,
-      top: rect.top,
-      bottom: rect.bottom
-    });
-  });
+	// Get all element boundaries
+	elements.forEach(element => {
+		const rect = element.getBoundingClientRect();
+		elementRects.push({
+			element: element,
+			left: rect.left,
+			right: rect.right,
+			top: rect.top,
+			bottom: rect.bottom
+		});
+	});
 
-  // Check each element against all others
-  for (let i = 0; i < elementRects.length; i++) {
-    for (let j = i + 1; j < elementRects.length; j++) {
-      const a = elementRects[i];
-      const b = elementRects[j];
+	// Check each element against all others
+	for (let i = 0; i < elementRects.length; i++) {
+		for (let j = i + 1; j < elementRects.length; j++) {
+			const a = elementRects[i];
+			const b = elementRects[j];
 
-      // Check if elements overlap
-      if (!(a.right < b.left ||
-            a.left > b.right ||
-            a.bottom < b.top ||
-            a.top > b.bottom)) {
-        console.warn('Overlap detected between',
-                    a.element.id, 'and', b.element.id);
+			// Check if elements overlap
+			if (!(a.right < b.left ||
+				a.left > b.right ||
+				a.bottom < b.top ||
+				a.top > b.bottom)) {
+				console.warn('Overlap detected between',
+					a.element.id, 'and', b.element.id);
 
-        // Add a visual indicator (for debugging)
-        a.element.style.borderColor = 'red';
-        b.element.style.borderColor = 'red';
-      }
-    }
-  }
+				// Add a visual indicator (for debugging)
+				a.element.style.borderColor = 'red';
+				b.element.style.borderColor = 'red';
+			}
+		}
+	}
 }
 
 // Add this to end of window.onload to verify no overlaps
 function verifyNoOverlaps() {
-  // Use setTimeout to ensure layout is completed
-  setTimeout(checkForOverlaps, 500);
+	// Use setTimeout to ensure layout is completed
+	setTimeout(checkForOverlaps, 500);
 }
 
 // Save the selected control type when it changes
@@ -550,47 +580,47 @@ let lastWidth = window.innerWidth;
 let lastHeight = window.innerHeight;
 
 window.addEventListener('resize', () => {
-  // Only trigger if size change is significant (>20%)
-  const widthChange = Math.abs(window.innerWidth - lastWidth) / lastWidth;
-  const heightChange = Math.abs(window.innerHeight - lastHeight) / lastHeight;
+	// Only trigger if size change is significant (>20%)
+	const widthChange = Math.abs(window.innerWidth - lastWidth) / lastWidth;
+	const heightChange = Math.abs(window.innerHeight - lastHeight) / lastHeight;
 
-  if (widthChange > 0.2 || heightChange > 0.2) {
-    // Update last dimensions
-    lastWidth = window.innerWidth;
-    lastHeight = window.innerHeight;
+	if (widthChange > 0.2 || heightChange > 0.2) {
+		// Update last dimensions
+		lastWidth = window.innerWidth;
+		lastHeight = window.innerHeight;
 
-    // If in edit mode, offer to reset layout
-    if (isEditMode && confirm('Screen size changed significantly. Reset layout?')) {
-      localStorage.removeItem('controllerLayout');
-      setDefaultLayout();
-      applyRotations();
-    }
-  }
+		// If in edit mode, offer to reset layout
+		if (isEditMode && confirm('Screen size changed significantly. Reset layout?')) {
+			localStorage.removeItem('controllerLayout');
+			setDefaultLayout();
+			applyRotations();
+		}
+	}
 });
 
 // Initialize
 window.onload = () => {
-  // Initialize aspect ratios first
-  initAspectRatios();
+	// Initialize aspect ratios first
+	initAspectRatios();
 
-  // Load saved preferences
-  loadControlType();
-  loadLayout();
+	// Load saved preferences
+	loadControlType();
+	loadLayout();
 
-  // If no saved layout, set default grid-based layout
-  setDefaultLayout();
+	// If no saved layout, set default grid-based layout
+	setDefaultLayout();
 
-  // Apply other settings
-  applyRotations();
-  changeInputType();
-  updateControlInteractivity();
+	// Apply other settings
+	applyRotations();
+	changeInputType();
+	updateControlInteractivity();
 
-  // Wait for layout to settle, then check for overlaps
-  setTimeout(() => {
-    // Only for development/debugging
-    // checkForOverlaps();
+	// Wait for layout to settle, then check for overlaps
+	setTimeout(() => {
+		// Only for development/debugging
+		// checkForOverlaps();
 
-    // Finally toggle to use mode
-    toggleMode();
+	  // Finally toggle to use mode
+	  toggleMode();
   }, 100);
 };
