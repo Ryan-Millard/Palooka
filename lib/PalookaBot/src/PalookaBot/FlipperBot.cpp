@@ -45,6 +45,24 @@ namespace PalookaBot
 		flipper.attach(FLIPPER_PIN, 500, 2500);
 	}
 
+	void FlipperBot::playTone(const int frequency, const int duration_ms) const
+	{
+		wheelRight.playTone(frequency, duration_ms);
+	}
+	void FlipperBot::playStartupTone() const
+	{
+		playTone(987, 300);  // 8b: B (987 Hz) for 300 ms
+							 // delay(50);           // Short delay between notes
+
+		playTone(1175, 150); // 16d6: D6 (1175 Hz) for 150 ms
+							 // delay(50);           // Short delay between notes
+
+		playTone(1047, 150); // 16c6: C6 (1047 Hz) for 150 ms
+							 // delay(50);           // Short delay between notes
+
+		playTone(1319, 300); // 8e6: E6 (1319 Hz) for 300 ms
+	}
+
 	void FlipperBot::moveFlipper(byte angle)
 	{
 		// Ensure the angle is within the angle limits

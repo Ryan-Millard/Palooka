@@ -11,10 +11,14 @@ namespace PalookaBot
 	class FlipperBot
 	{
 		private:
-			// ========== GPIO Pins ==========  
-			const byte EN8V_PIN;
-			const byte EN5V_PIN;
-			const byte DVR_SLEEP_PIN;
+			// ========== GPIO Pins ==========
+			const byte EN8V_PIN; // Motor enabler pin fo
+			const byte EN5V_PIN; // Servo
+			const byte DVR_SLEEP_PIN; // Motors use for charging - switch to low when charging
+									  // Read battery charge with analogRead(36)
+									  // 4.5V = charging, otherwise battery
+									  // 4.2 = fully charged battery
+									  // 3.7 = flat for battery - switch off device
 			const byte FLIPPER_PIN; // See flipper below
 									// ========== Flipper/Arm ==========
 			Servo flipper; // The arm on the robot that flips other robots
@@ -32,9 +36,15 @@ namespace PalookaBot
 					const byte RIGHT_PWM_PIN = 32, const byte RIGHT_DIRECTION_PIN = 33,
 					const byte EN8V_PIN = 16, const byte EN5V_PIN = 17, const byte DVR_SLEEP_PIN = 12);
 			void begin();
+
+			// Tone functions
+			void playTone(int frequency, int duration_ms) const;
+			void playStartupTone() const;
+
 			// ========== Flipper Movement functions ==========
 			void moveFlipper(byte angle);
 			void flip();
+
 			// ========== Wheel movement functions ==========
 			// move() allows for driving the robot using x (lateral/turning) and y (forward/backward) values.
 			// Inputs are expected to be within [-1, 1] and will be normalized if necessary.

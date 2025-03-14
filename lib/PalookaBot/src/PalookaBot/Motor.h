@@ -31,6 +31,9 @@ namespace PalookaBot
 			// Returns the current inversion state of the motor.
 			// If the motor is inverted, it returns true, otherwise, false.
 			inline bool getInversionState() const { return isInverted; }
+
+			// Play a tone (vibration) using the motor pins
+            void playTone(int frequency, int duration_ms) const;
 	};
 }
 

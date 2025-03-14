@@ -78,6 +78,7 @@ void setup() {
 	}
 
 	robot.begin();
+	robot.playStartupTone();
 	// Create a queue for robot commands (queue length of 10).
 	robotQueue = xQueueCreate(10, sizeof(StaticJsonDocument<200>));
 
