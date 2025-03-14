@@ -20,6 +20,16 @@ PalookaBot::FlipperBot robot;
 QueueHandle_t robotQueue;
 
 void robotControlTask(void* pvParameters) {
+	// Note frequencies in Hz (approximation for the melody)
+	int melody[] = {220, 220, 220, 196, 175, 165, 147, 220, 220, 220, 196, 175, 165, 147, 220};
+	int durations[] = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 1000};
+
+	for(int i = 0; i < 15; ++i) // Playing 15 notes
+	{
+		robot.playTone(melody[i], durations[i]);
+		delay(50); // Small delay between notes for a smooth transition
+	}
+
 	// Create a robot instance and a JSON document to hold incoming commands.
 	StaticJsonDocument<200> jsonCmd;
 
@@ -78,7 +88,6 @@ void setup() {
 	}
 
 	robot.begin();
-	robot.playStartupTone();
 	// Create a queue for robot commands (queue length of 10).
 	robotQueue = xQueueCreate(10, sizeof(StaticJsonDocument<200>));
 

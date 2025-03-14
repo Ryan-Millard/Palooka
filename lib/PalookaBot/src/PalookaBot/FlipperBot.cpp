@@ -8,12 +8,14 @@ namespace PalookaBot
 	FlipperBot::FlipperBot(const byte FLIPPER_PIN,
 			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
+			const byte LED_PIN,
 			const byte EN8V_PIN, const byte EN5V_PIN, const byte DVR_SLEEP_PIN)
 		: EN8V_PIN(EN8V_PIN), EN5V_PIN(EN5V_PIN), DVR_SLEEP_PIN(DVR_SLEEP_PIN),
 		FLIPPER_PIN(FLIPPER_PIN),
 		FLIPPER_MAX_ANGLE(180), FLIPPER_MIN_ANGLE(0),
 		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN), 
-		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */)
+		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */),
+		LED_PIN(LED_PIN)
 	{
 		// No initialization in constructor body - all done in begin()
 	}
@@ -32,6 +34,8 @@ namespace PalookaBot
 		pinMode(EN5V_PIN, OUTPUT);
 		pinMode(DVR_SLEEP_PIN, OUTPUT);
 
+		pinMode(LED_PIN, OUTPUT);
+
 		// Activate the power rails and wake the motor driver.
 		digitalWrite(EN8V_PIN, HIGH);
 		digitalWrite(EN5V_PIN, HIGH);
@@ -45,9 +49,24 @@ namespace PalookaBot
 		flipper.attach(FLIPPER_PIN, 500, 2500);
 	}
 
+	void FlipperBot::setLedOn(const bool isOn) const
+	{
+		digitalWrite(LED_PIN, isOn ? HIGH : LOW);
+		Serial.print("LED isOn: ");
+		Serial.println(isOn);
+	}
+
 	void FlipperBot::playTone(const int frequency, const int duration_ms) const
 	{
-		wheelRight.playTone(frequency, duration_ms);
+		static bool rightIsLastWheelUsed{true};
+
+		if(rightIsLastWheelUsed)
+		{
+			wheelRight.playTone(frequency, duration_ms);
+			return;
+		}
+
+		wheelLeft.playTone(frequency, duration_ms);
 	}
 	void FlipperBot::playStartupTone() const
 	{
