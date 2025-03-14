@@ -8,7 +8,8 @@
 #include <ArduinoJson.h>
 
 #include <FileSystem/FileSystem.h>
-#include <PalookaBot/FlipperBot.h>
+
+extern QueueHandle_t robotQueue;
 
 namespace PalookaNetwork
 {
@@ -37,7 +38,6 @@ namespace PalookaNetwork
 		private:
 			WebServer server;
 			WebSocketsServer webSocket;
-			PalookaBot::FlipperBot robot;
 
 			const String generateSSID(const String& SSID_BASE);
 			void registerServerRoutes();

@@ -55,4 +55,27 @@ namespace PalookaBot
 		digitalWrite(DIRECTION_PIN, LOW); // Direction does not matter since it is stopped
 		analogWrite(PWM_OUT_PIN, 0); // Set speed to 0
 	}
+
+	void Motor::playTone(int frequency, int duration_ms) const
+	{
+		// Calculate the delay for half a wave (in microseconds)
+		int halfPeriod_us = 1000000 / (2 * frequency);
+		unsigned long endTime = millis() + duration_ms;
+
+		while (millis() < endTime)
+		{
+			// Alternate outputs to generate the tone/vibration effect
+			digitalWrite(PWM_OUT_PIN, HIGH);
+			digitalWrite(DIRECTION_PIN, LOW);
+			delayMicroseconds(halfPeriod_us);
+
+			digitalWrite(PWM_OUT_PIN, LOW);
+			digitalWrite(DIRECTION_PIN, HIGH);
+			delayMicroseconds(halfPeriod_us);
+		}
+
+		// Ensure the motor is stopped after playing the tone
+		digitalWrite(PWM_OUT_PIN, LOW);
+		digitalWrite(DIRECTION_PIN, LOW);
+	}
 }

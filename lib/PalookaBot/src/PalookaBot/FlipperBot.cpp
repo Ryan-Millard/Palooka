@@ -1,31 +1,85 @@
 #include "FlipperBot.h"
+#include <algorithm> // For std::max and std::abs
 
 namespace PalookaBot
 {
-	// ========== Private ==========
-	// No additional private members or helper functions are declared here.
-
 	// ========== Public ==========
 	// The constructor sets up the wheels and powers up the robot by enabling the necessary voltage rails.
-	FlipperBot::FlipperBot(const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
+	FlipperBot::FlipperBot(const byte FLIPPER_PIN,
+			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
 			const byte EN8V_PIN, const byte EN5V_PIN, const byte DVR_SLEEP_PIN)
-		: wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN), // Initialize the right wheel with its designated pins.
-		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */) // Invert the left wheel so that both wheels drive in the same forward direction.
+		: EN8V_PIN(EN8V_PIN), EN5V_PIN(EN5V_PIN), DVR_SLEEP_PIN(DVR_SLEEP_PIN),
+		FLIPPER_PIN(FLIPPER_PIN),
+		FLIPPER_MAX_ANGLE(180), FLIPPER_MIN_ANGLE(0),
+		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN), 
+		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */)
 	{
-		// ========== Power up robot ==========
-		// Configure the power and sleep control pins as outputs.
-		pinMode(EN8V_PIN, OUTPUT); // Set the pin controlling the 8V rail as an output.
-		pinMode(EN5V_PIN, OUTPUT); // Set the pin controlling the 5V rail as an output.
-		pinMode(DVR_SLEEP_PIN, OUTPUT); // Set the DVR sleep pin as an output.
-		// Activate the power rails and wake the motor driver.
-		digitalWrite(EN8V_PIN, HIGH); // Enable power on the 8V rail.
-		digitalWrite(EN5V_PIN, HIGH); // Enable power on the 5V rail.
-		digitalWrite(DVR_SLEEP_PIN, HIGH); // Wake the motor driver from sleep.
+		// No initialization in constructor body - all done in begin()
 	}
 
-	// The move() function takes x (turn) and y (forward/backward) inputs, each expected to be in the range [-1, 1].
-	// It calculates individual wheel speeds using differential drive logic.
+	void FlipperBot::begin()
+	{
+		// ========== Allocate timers for servo ==========
+		ESP32PWM::allocateTimer(0);
+		ESP32PWM::allocateTimer(1);
+		ESP32PWM::allocateTimer(2);
+		ESP32PWM::allocateTimer(3);
+
+		// ========== Power up robot ==========
+		// Configure the power and sleep control pins as outputs.
+		pinMode(EN8V_PIN, OUTPUT);
+		pinMode(EN5V_PIN, OUTPUT);
+		pinMode(DVR_SLEEP_PIN, OUTPUT);
+
+		// Activate the power rails and wake the motor driver.
+		digitalWrite(EN8V_PIN, HIGH);
+		digitalWrite(EN5V_PIN, HIGH);
+		digitalWrite(DVR_SLEEP_PIN, HIGH);
+
+		// ========== Initialize flipper ==========
+		flipper.setPeriodHertz(50);
+
+		// Using a broader pulse width range for better compatibility
+		// with a variety of servos (500-2500 μs)
+		flipper.attach(FLIPPER_PIN, 500, 2500);
+	}
+
+	void FlipperBot::playTone(const int frequency, const int duration_ms) const
+	{
+		wheelRight.playTone(frequency, duration_ms);
+	}
+	void FlipperBot::playStartupTone() const
+	{
+		playTone(987, 300);  // 8b: B (987 Hz) for 300 ms
+							 // delay(50);           // Short delay between notes
+
+		playTone(1175, 150); // 16d6: D6 (1175 Hz) for 150 ms
+							 // delay(50);           // Short delay between notes
+
+		playTone(1047, 150); // 16c6: C6 (1047 Hz) for 150 ms
+							 // delay(50);           // Short delay between notes
+
+		playTone(1319, 300); // 8e6: E6 (1319 Hz) for 300 ms
+	}
+
+	void FlipperBot::moveFlipper(byte angle)
+	{
+		// Ensure the angle is within the angle limits
+		angle = constrain(angle, FLIPPER_MIN_ANGLE, FLIPPER_MAX_ANGLE);
+		flipper.write(angle); // Set the flipper to the angle
+	}
+
+	void FlipperBot::flip()
+	{
+		// Add delays to make the flipping action more effective
+		moveFlipper(FLIPPER_MIN_ANGLE); // Put flipper against the ground
+		delay(300);                     // Wait for servo to reach position
+		moveFlipper(FLIPPER_MAX_ANGLE); // Quickly lift flipper
+		delay(300);                     // Wait for servo to reach position
+		moveFlipper(FLIPPER_MIN_ANGLE); // Put flipper back against the ground
+	}
+
 	void FlipperBot::move(const float x, const float y) const
 	{
 		// Compute preliminary speed values for each wheel.
@@ -47,17 +101,17 @@ namespace PalookaBot
 		wheelLeft.rotate(leftVelocity);
 		wheelRight.rotate(rightVelocity);
 	}
-	// Directly commands the left wheel with a specified velocity (-255 to 255).
+
 	void FlipperBot::moveLeftWheel(const short velocity) const
 	{
 		wheelLeft.rotate(velocity);
 	}
-	// Directly commands the right wheel with a specified velocity (-255 to 255).
+
 	void FlipperBot::moveRightWheel(const short velocity) const
 	{
 		wheelRight.rotate(velocity);
 	}
-	// Stops both wheels, thereby halting all robot movement.
+
 	void FlipperBot::stopMoving() const
 	{
 		wheelLeft.stop();

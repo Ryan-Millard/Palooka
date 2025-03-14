@@ -13,8 +13,8 @@ let maxJoystickDistance = 0;
 // Mode Toggle
 document.getElementById('inputType').addEventListener('change', changeInputType);
 
-function updateMotor(motor, value) {
-	const data = JSON.stringify({ motor, value });
+function sendSliderData(sliderName, value) {
+	const data = JSON.stringify({ sliderName, value });
 	console.log(data);
 	ws.send(data);
 }
