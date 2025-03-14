@@ -70,16 +70,16 @@ namespace PalookaBot
 	}
 	void FlipperBot::playStartupTone() const
 	{
-		playTone(987, 300);  // 8b: B (987 Hz) for 300 ms
-							 // delay(50);           // Short delay between notes
+		// Note frequencies in Hz (approximation for the melody)
+		// melody: 			A4,  A4,  A4,  G4,  F4,  E4,  D4,  A4,  A4,  A4,  G4,  F4,  E4,  C#4, D4
+		int melody[] =    {440, 440, 440, 392, 350, 330, 294, 440, 440, 440, 392, 350, 330, 278, 294};
+		int durations[] = {300, 300, 400, 200, 400, 200, 300, 300, 300, 400, 200, 400, 200, 500, 1000};
 
-		playTone(1175, 150); // 16d6: D6 (1175 Hz) for 150 ms
-							 // delay(50);           // Short delay between notes
-
-		playTone(1047, 150); // 16c6: C6 (1047 Hz) for 150 ms
-							 // delay(50);           // Short delay between notes
-
-		playTone(1319, 300); // 8e6: E6 (1319 Hz) for 300 ms
+		for(int i = 0; i < 15; ++i) // Playing 15 notes
+		{
+			playTone(melody[i], durations[i]);
+			delay(50); // Small delay between notes for a smooth transition
+		}
 	}
 
 	void FlipperBot::moveFlipper(byte angle)
