@@ -102,52 +102,7 @@ namespace PalookaNetwork
 			return;
 		}
 
-		// Slider control data from the HTML slider
-		// For: a robot wheen or flipper
-		if(doc.containsKey("sliderName") && doc.containsKey("value"))
-		{
-			const char* robotLimb = doc["sliderName"]; // Robot robotLimb (i.e. wheel or flipper)
-			int value = doc["value"];
-			Serial.print("Limb: ");
-			Serial.print(robotLimb);
-			Serial.print(", Value: ");
-			Serial.println(value);
-
-			switch(robotLimb[0])
-			{
-				case 'R': case 'r': // Right motor
-					robot.moveRightWheel(value);
-					break;
-				case 'L': case 'l': // Left motor
-					robot.moveLeftWheel(value);
-					break;
-
-				case 'F': case 'f': // Flipper arm
-					robot.moveFlipper(value);
-					break;
-
-				default:
-					Serial.println("Unknown robot robotLimb JSON supplied.");
-					break;
-			}
-
-			return;
-		}
-
-		// Dual wheel control from the HTML Joystick
-		if(doc.containsKey("x") && doc.containsKey("y"))
-		{
-			float x = doc["x"];
-			float y = doc["y"];
-			Serial.print("Joystick X: ");
-			Serial.print(x);
-			Serial.print(", Y: ");
-			Serial.println(y);
-			robot.move(x, y);
-			return;
-		}
-
-		// Error - none of the pre-defined JSON structures were matched
-		Serial.println("Unknown JSON structure.");
+		// Enqueue the JSON command for processing by the robotControlTask.
+		xQueueSend(robotQueue, &doc, portMAX_DELAY);
 	}
 }
