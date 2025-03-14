@@ -127,3 +127,13 @@ main {
 	padding: 2rem 1rem;
 	margin-bottom: 120px;
 }
+
+#flag {
+	max-height: 50vh;
+	box-shadow: 0 0 15px var(--cyan-dark);
+	border: 2px solid var(--cyan-light);
+}
+
+.centered-children {
+	text-align: center;
+}
