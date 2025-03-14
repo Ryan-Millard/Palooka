@@ -137,3 +137,13 @@ main {
 .centered-children {
 	text-align: center;
 }
+
+.textInput {
+	background-color: var(--black);
+	color: var(--white);
+	border: none;
+	border-bottom: 2px solid var(--cyan-light);
+	width: 80%;
+	padding: 10px;
+	outline: none;
+}
