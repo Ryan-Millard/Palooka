@@ -57,14 +57,13 @@ p {
 }
 
 /* Current page has inverted styles */
-a, button, .clickable, .current:hover {
+a, button, .clickable, .current:active {
 	color: var(--cyan-light);
 	background: var(--black);
 	text-decoration: none;
 	font-weight: 700;
 	padding: 0.25rem 0.5rem;
 	border: 2px solid var(--cyan-light);
-	transition: all 0.2s ease;
 	box-shadow: 0 0 15px var(--cyan-dark);
 }
 a:active, button:active, .clickable:active, .current {
