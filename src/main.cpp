@@ -13,7 +13,7 @@ const PalookaNetwork::Route AP_ROUTES[]{
 	/* Fullscreen JS */ {"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
 	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
 	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"},
-	/* Flag image */ {"/img/flag.svg", "/img/flag.svg", "image/svg+xml"}
+	/* Star image */ {"/img/star.svg", "/img/star.svg", "image/svg+xml"}
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 
