@@ -111,6 +111,10 @@ body {
 	border: 3px solid var(--cyan-light);
 	border-radius: 50%;
 	background-color: var(--cyan-dark);
+	background-image: url("../img/star.svg");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 	box-shadow: 0 0 15px var(--cyan-light);
 	cursor: pointer; /* Cursor change on hover */
 	margin: 5px;
@@ -123,6 +127,10 @@ body {
 	border: 3px solid var(--cyan-light);
 	border-radius: 50%;
 	background-color: var(--cyan-dark);
+	background-image: url("../img/star.svg");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 	box-shadow: 0 0 15px var(--cyan-light);
 	cursor: pointer; /* Cursor change on hover */
 	margin: 5px;
@@ -135,6 +143,10 @@ body {
 	border: 3px solid var(--cyan-light);
 	border-radius: 50%;
 	background-color: var(--cyan-dark);
+	background-image: url("../img/star.svg");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
 	box-shadow: 0 0 15px var(--cyan-light);
 	cursor: pointer; /* Cursor change on hover */
 	margin: 5px;
