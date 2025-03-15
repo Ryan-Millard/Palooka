@@ -1,5 +1,5 @@
 const hostName = window.location.hostname ?? "192.168.4.1";
-const ws = new WebSocket("ws://" + hostName + ":81"); // IP of the ESP32 AP, port 81
+// const ws = new WebSocket("ws://" + hostName + ":81"); // IP of the ESP32 AP, port 81
 
 let isEditMode = true;
 let activeElement = null;
@@ -379,25 +379,6 @@ function resetJoystick() {
 	const handle = document.querySelector('.joystick-handle');
 	handle.style.transform = 'translate(-50%, -50%)';
 	console.log('Joystick reset');
-}
-
-// Button functionality for Use Mode
-document.querySelectorAll('.control-button').forEach(button => {
-	button.addEventListener('mousedown', buttonPress);
-	button.addEventListener('mouseup', buttonRelease);
-	button.addEventListener('touchstart', buttonPress, { passive: false });
-	button.addEventListener('touchend', buttonRelease);
-});
-
-function buttonPress(e) {
-	if (isEditMode) return;
-	if (e.type === 'touchstart') e.preventDefault();
-	console.log(`Button ${this.textContent} pressed`);
-}
-
-function buttonRelease() {
-	if (isEditMode) return;
-	console.log(`Button ${this.textContent} released`);
 }
 
 // Save/Load Layout
