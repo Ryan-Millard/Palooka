@@ -92,8 +92,6 @@ namespace PalookaBot
 	void FlipperBot::flip()
 	{
 		// Add delays to make the flipping action more effective
-		moveFlipper(FLIPPER_MIN_ANGLE); // Put flipper against the ground
-		delay(300);                     // Wait for servo to reach position
 		moveFlipper(FLIPPER_MAX_ANGLE); // Quickly lift flipper
 		delay(300);                     // Wait for servo to reach position
 		moveFlipper(FLIPPER_MIN_ANGLE); // Put flipper back against the ground

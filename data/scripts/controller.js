@@ -1,5 +1,5 @@
 const hostName = window.location.hostname ?? "192.168.4.1";
-// const ws = new WebSocket("ws://" + hostName + ":81"); // IP of the ESP32 AP, port 81
+const ws = new WebSocket("ws://" + hostName + ":81"); // IP of the ESP32 AP, port 81
 
 let isEditMode = true;
 let activeElement = null;
@@ -13,12 +13,17 @@ let maxJoystickDistance = 0;
 // Mode Toggle
 document.getElementById('inputType').addEventListener('change', changeInputType);
 
+function sendFlipData() {
+	const flip = true;
+	const data = JSON.stringify({ flip });
+	console.log(data);
+	ws.send(data);
+}
 function sendSliderData(sliderName, value) {
 	const data = JSON.stringify({ sliderName, value });
 	console.log(data);
 	ws.send(data);
 }
-
 // Send joystick data to the ESP32
 function sendJoystickData(x, y) {
 	// Get current rotation of joystick in radians

@@ -73,6 +73,10 @@ void handleWebSockets()
 
 			robot.move(x, y);
 		}
+		else if(jsonCmd.containsKey("flip") && jsonCmd["flip"])
+		{
+			robot.flip();
+		}
 		else
 		{
 			Serial.println("Unknown JSON structure.");
