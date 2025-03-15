@@ -13,64 +13,81 @@ const PalookaNetwork::Route AP_ROUTES[]{
 	/* Fullscreen JS */ {"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
 	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
 	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"},
-	/* Flag image */ {"/img/flag.svg", "/img/flag.svg", "image/svg+xml"}
+	/* Star image */ {"/img/star.svg", "/img/star.svg", "image/svg+xml"}
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 
 PalookaBot::FlipperBot robot;
 QueueHandle_t robotQueue;
 
-void robotControlTask(void* pvParameters)
+void handleRobotSliderCommand(const char robotLimb, const int value)
 {
-	robot.playStartupTone();
+	switch(robotLimb)
+	{
+		case 'R': case 'r': // Right motor
+			robot.moveRightWheel(value);
+			break;
+		case 'L': case 'l': // Left motor
+			robot.moveLeftWheel(value);
+			break;
+		case 'F': case 'f': // Flipper arm
+			robot.moveFlipper(value);
+			break;
+		default:
+			Serial.println("Unknown robot limb JSON supplied.");
+			break;
+	}
+}
 
-	// Create a robot instance and a JSON document to hold incoming commands.
+void handleWebSockets()
+{
+	// Create a JSON document to hold incoming commands.
 	StaticJsonDocument<200> jsonCmd;
 
 	while(true) {
 		// Block until a new JSON command is received from the queue.
-		if (xQueueReceive(robotQueue, &jsonCmd, portMAX_DELAY) == pdPASS) {
-			// Process slider control JSON.
-			if (jsonCmd.containsKey("sliderName") && jsonCmd.containsKey("value")) {
-				const char* robotLimb = jsonCmd["sliderName"];
-				int value = jsonCmd["value"];
-				Serial.print("Limb: ");
-				Serial.print(robotLimb);
-				Serial.print(", Value: ");
-				Serial.println(value);
+		if(xQueueReceive(robotQueue, &jsonCmd, portMAX_DELAY) != pdPASS) { continue; }
 
-				switch(robotLimb[0]) {
-					case 'R': case 'r': // Right motor
-						robot.moveRightWheel(value);
-						break;
-					case 'L': case 'l': // Left motor
-						robot.moveLeftWheel(value);
-						break;
-					case 'F': case 'f': // Flipper arm
-						robot.moveFlipper(value);
-						break;
-					default:
-						Serial.println("Unknown robot limb JSON supplied.");
-						break;
-				}
-			}
-			// Process joystick control JSON.
-			else if (jsonCmd.containsKey("x") && jsonCmd.containsKey("y")) {
-				float x = jsonCmd["x"];
-				float y = jsonCmd["y"];
-				Serial.print("Joystick X: ");
-				Serial.print(x);
-				Serial.print(", Y: ");
-				Serial.println(y);
-				robot.move(x, y);
-			}
-			else {
-				Serial.println("Unknown JSON structure.");
-			}
-			// Clear the document for the next command.
-			jsonCmd.clear();
+		// Process slider control JSON.
+		if(jsonCmd.containsKey("sliderName") && jsonCmd.containsKey("value"))
+		{
+			const char* sliderName = jsonCmd["sliderName"];
+			const char robotLimb = sliderName[0];
+			int value = jsonCmd["value"];
+			Serial.print("Limb: ");
+			Serial.print(robotLimb);
+			Serial.print(", Value: ");
+			Serial.println(value);
+
+			handleRobotSliderCommand(robotLimb, value);
 		}
+		// Process joystick control JSON.
+		else if(jsonCmd.containsKey("x") && jsonCmd.containsKey("y"))
+		{
+			float x = jsonCmd["x"];
+			float y = jsonCmd["y"];
+			Serial.print("Joystick X: ");
+			Serial.print(x);
+			Serial.print(", Y: ");
+			Serial.println(y);
+
+			robot.move(x, y);
+		}
+		else
+		{
+			Serial.println("Unknown JSON structure.");
+		}
+
+		// Clear the document for the next command.
+		jsonCmd.clear();
 	}
+}
+
+void robotControlTask(void* pvParameters)
+{
+	robot.playStartupTone();
+
+	handleWebSockets();
 }
 
 void setup() {

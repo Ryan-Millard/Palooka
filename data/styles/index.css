@@ -25,14 +25,16 @@ header, footer {
 }
 
 header {
-	padding: 1.5rem;
 	border-bottom: 5px solid var(--cyan-light);
+}
+header > img {
+	height: 5rem;
+	transform: translateY(20px);
 }
 
 h1, h2 {
 	text-transform: uppercase;
 	margin: 0;
-	padding-bottom: 0.75rem;
 	font-weight: 900;
 }
 
@@ -40,7 +42,6 @@ h1 {
 	font-size: 3.5rem;
 	letter-spacing: -0.1rem;
 	color: var(--cyan-light);
-	border-bottom: 5px solid var(--cyan-light);
 }
 
 h2 {
@@ -129,9 +130,7 @@ main {
 }
 
 #flag {
-	max-height: 50vh;
-	box-shadow: 0 0 15px var(--cyan-dark);
-	border: 2px solid var(--cyan-light);
+	max-height: 35vh;
 }
 
 .centered-children {
