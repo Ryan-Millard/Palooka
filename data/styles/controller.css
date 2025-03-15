@@ -41,6 +41,7 @@ body {
 	cursor: move;
 	border: 2px solid var(--cyan-dark);
 }
+
 .resize-handle {
 	font-size: 12px;
 	padding: 0 5%;
@@ -64,10 +65,29 @@ body {
 	cursor: grab;
 	display: none;
 }
+
+.pencil {
+	z-index: 1000;
+	border: 1px solid var(--cyan-light);
+	height: 1em;
+	width: 1em;
+	background-image: url('../img/pencil.svg');
+	background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+	box-shadow: none;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	display: none;
+}
+
 .edit-mode .resize-handle,
-.edit-mode .rotate-handle {
+.edit-mode .rotate-handle,
+.edit-mode .pencil {
 	display: block;
 }
+
 .joystick {
 	min-width: 100px;
 	width: 100%;
