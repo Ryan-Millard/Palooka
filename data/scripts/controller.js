@@ -1,3 +1,12 @@
+let isEditMode = true;
+let activeElement = null;
+let isResizing = false;
+let isRotating = false;
+let startX, startY, startWidth, startHeight, startLeft, startTop, startRotation;
+let joystickActive = false;
+let joystickCenter = { x: 0, y: 0 };
+let maxJoystickDistance = 0;
+
 function editText(elementId) {
 	const element = document.getElementById(elementId);
 	const currentText = element.textContent || element.innerText;
@@ -10,18 +19,6 @@ function editText(elementId) {
 		element.textContent = newText;
 	}
 }
-
-let isEditMode = true;
-let activeElement = null;
-let isResizing = false;
-let isRotating = false;
-let startX, startY, startWidth, startHeight, startLeft, startTop, startRotation;
-let joystickActive = false;
-let joystickCenter = { x: 0, y: 0 };
-let maxJoystickDistance = 0;
-
-// Mode Toggle
-document.getElementById('inputType').addEventListener('change', changeInputType);
 
 function toggleMode() {
 	isEditMode = !isEditMode;
@@ -43,18 +40,6 @@ function updateControlInteractivity() {
 	});
 }
 
-// Input Type Change: show/hide joystick and slider elements
-function changeInputType() {
-	const type = document.getElementById('inputType').value;
-	document.getElementById('joystickControl').style.display = type === 'joystick' ? 'block' : 'none';
-	document.querySelectorAll('.slider-element').forEach(el => {
-		el.style.display = type === 'sliders' ? 'block' : 'none';
-	});
-	if (type === 'joystick' && !isEditMode) {
-		initJoystick();
-	}
-}
-
 // Initialize aspect ratios for buttons (and other elements if needed)
 function initAspectRatios() {
 	document.querySelectorAll('.button-element, .joystick-element, .slider-element').forEach(element => {
@@ -71,24 +56,22 @@ function initAspectRatios() {
 	});
 }
 
-// --- New Drag Logic using Pointer and Touch Events ---
-const controlElements = document.querySelectorAll('.control-element');
-
-controlElements.forEach(element => {
+document.querySelectorAll('.control-element').forEach(element => {
 	element.addEventListener('pointerdown', startDrag);
 	element.addEventListener('touchstart', startDrag, { passive: false });
 });
 
 function startDrag(e) {
 	if (!isEditMode) return;
-	e.preventDefault();
 	// Prevent dragging when interacting with interactive controls in edit mode.
 	if (e.target.classList.contains('control-button') ||
 		e.target.classList.contains('slider') ||
 		e.target.classList.contains('joystick') ||
-		e.target.classList.contains('joystick-handle')) {
+		e.target.classList.contains('joystick-handle') ||
+		e.target.classList.contains('pencil')) {
 		return;
 	}
+	e.preventDefault();
 
 	isResizing = e.target.classList.contains('resize-handle');
 	isRotating = e.target.classList.contains('rotate-handle');
@@ -231,7 +214,6 @@ function stopDrag(e) {
 	document.removeEventListener('touchend', stopDrag);
 	saveLayout();
 }
-// --- End New Drag Logic ---
 
 // Apply rotations from stored data
 function applyRotations() {
@@ -526,23 +508,6 @@ function verifyNoOverlaps() {
 	setTimeout(checkForOverlaps, 500);
 }
 
-// Save the selected control type when it changes
-document.getElementById('inputType').addEventListener('change', function() {
-	const selectedType = this.value;
-	localStorage.setItem('controlType', selectedType);
-	// Optionally, update the UI based on the selection
-	changeInputType();
-});
-
-// On page load, set the select to the saved control type (if any)
-function loadControlType() {
-	const savedType = localStorage.getItem('controlType');
-	if (savedType) {
-		document.getElementById('inputType').value = savedType;
-		changeInputType(); // Update the UI accordingly
-	}
-}
-
 // Add this to ensure layout adapts to screen size changes
 let lastWidth = window.innerWidth;
 let lastHeight = window.innerHeight;
@@ -580,7 +545,6 @@ window.onload = () => {
 
 	// Apply other settings
 	applyRotations();
-	changeInputType();
 	updateControlInteractivity();
 
 	// Wait for layout to settle, then check for overlaps
