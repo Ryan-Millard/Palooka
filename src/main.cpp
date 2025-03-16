@@ -51,6 +51,17 @@ void handleWebSockets()
 		// Block until a new JSON command is received from the queue.
 		if(xQueueReceive(robotQueue, &jsonCmd, portMAX_DELAY) != pdPASS) { continue; }
 
+		// Example: create and send a battery level update
+		int batteryLevel = robot.getBatteryPercentage(); // Assume this returns an int
+		StaticJsonDocument<100> batteryDoc;
+		batteryDoc["battery"] = batteryLevel;
+		String batteryJson;
+		serializeJson(batteryDoc, batteryJson);
+
+		// Send the JSON string to all connected clients
+		// For example, if you add this method to your AccessPoint class:
+		ap.sendWebSocketMessage(batteryJson);
+
 		// Process slider control JSON.
 		if(jsonCmd.containsKey("sliderName") && jsonCmd.containsKey("value"))
 		{

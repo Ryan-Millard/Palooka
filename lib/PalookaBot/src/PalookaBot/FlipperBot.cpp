@@ -9,13 +9,15 @@ namespace PalookaBot
 			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
 			const byte LED_PIN,
-			const byte EN8V_PIN, const byte EN5V_PIN, const byte DVR_SLEEP_PIN)
+			const byte EN8V_PIN, const byte EN5V_PIN, const byte DVR_SLEEP_PIN,
+			const byte BATTERY_PIN)
 		: EN8V_PIN(EN8V_PIN), EN5V_PIN(EN5V_PIN), DVR_SLEEP_PIN(DVR_SLEEP_PIN),
 		FLIPPER_PIN(FLIPPER_PIN),
 		FLIPPER_MAX_ANGLE(180), FLIPPER_MIN_ANGLE(0),
-		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN), 
+		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN),
 		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */),
-		LED_PIN(LED_PIN)
+		LED_PIN(LED_PIN),
+		BATTERY_PIN(BATTERY_PIN)
 	{
 		// No initialization in constructor body - all done in begin()
 	}
@@ -133,5 +135,20 @@ namespace PalookaBot
 	{
 		wheelLeft.stop();
 		wheelRight.stop();
+	}
+
+	int FlipperBot::getBatteryPercentage() const
+	{
+		int adcValue = analogRead(36);
+		return adcValue;
+		// Serial.print("ADC: ");
+		// Serial.println(adcValue);
+		// float batteryVoltage = adcValue * (3.3 / 4095.0) * 2;  // Adjust divider factor as needed
+		// Serial.print("Battery V: ");
+		// Serial.println(batteryVoltage);
+		// float batteryPercentage = (batteryVoltage - 3.0) / (4.2 - 3.0) * 100;
+		// batteryPercentage = constrain(batteryPercentage, 0, 100);
+		// Serial.print("Battery %: ");
+		// Serial.println(batteryPercentage);
 	}
 }

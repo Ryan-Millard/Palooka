@@ -1,6 +1,10 @@
 const hostName = window.location.hostname ?? "192.168.4.1";
 const ws = new WebSocket("ws://" + hostName + ":81"); // IP of the ESP32 AP, port 81
 
+ws.onmessage = function(event) {
+	console.log("Message received:", event.data);
+}
+
 function sendFlipData() {
 	const flip = true;
 	const data = JSON.stringify({ flip });

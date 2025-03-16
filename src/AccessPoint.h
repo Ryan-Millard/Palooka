@@ -34,6 +34,7 @@ namespace PalookaNetwork
 			bool begin();
 			void handleWebSocketMessage(uint8_t *payload, size_t length);
 			void handleClients();
+			void sendWebSocketMessage(const String& message);
 
 		private:
 			WebServer server;
