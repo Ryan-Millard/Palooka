@@ -46,6 +46,12 @@ namespace PalookaNetwork
 		webSocket.loop();
 	}
 
+	void AccessPoint::sendWebSocketMessage(const String& message) {
+		String mutableMessage = message; // create a non-const copy
+		webSocket.broadcastTXT(mutableMessage);
+	}
+
+
 	// Private
 	const String AccessPoint::generateSSID(const String& SSID_BASE)
 	{

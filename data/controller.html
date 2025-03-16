@@ -4,6 +4,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" href="styles/index.css">
 		<link rel="stylesheet" href="styles/controller.css">
+		<script src="scripts/controller_web_socket.js"></script>
 	</head>
 	<body>
 		<header>
@@ -30,18 +31,20 @@
 					<!-- Buttons -->
 					<div class="control-element button-element" id="button1" data-aspect-ratio="2">
 						<div class="button-container">
-							<button class="control-button">Btn 1</button>
+							<button id="buttonOne" class="control-button">Btn 1</button>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
+						<button class="pencil" onClick="editText('buttonOne')">&nbsp;</button>
 					</div>
 
 					<div class="control-element button-element" id="button2" data-aspect-ratio="2">
 						<div class="button-container">
-							<button class="control-button">Btn 2</button>
+							<button id="flipButton" class="control-button" onclick="sendFlipData()">Flip</button>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
+						<button class="pencil" onClick="editText('flipButton')">&nbsp;</button>
 					</div>
 
 					<!-- Joystick Control Element -->
@@ -59,7 +62,7 @@
 					<div class="control-element slider-element" id="sliderLeft" data-aspect-ratio="2">
 						<div class="slider-container">
 							<!-- Right Motor -->
-							<label for="motorR">Right Motor</label>
+							<label id="rightMotorLabel" for="motorR">Right Motor</label>
 							<input type="range" class="slider" id="motorR" min="-255" max="255" value="0"
 																								oninput="sendSliderData('R', this.value)"
 																								onmouseup="this.value=0; sendSliderData('R', 0)"
@@ -67,6 +70,7 @@
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
+						<button class="pencil" onClick="editText('rightMotorLabel')">&nbsp;</button>
 					</div>
 
 					<div class="control-element always-visible-slider-element" id="sliderCenter" data-aspect-ratio="2">
@@ -76,10 +80,11 @@
 																							  oninput="sendSliderData('F', this.value)"
 																							  onmouseup="this.value=0; sendSliderData('F', 0)"
 																							  ontouchend="this.value=0; sendSliderData('F', 0)">
-							<label for="motorL">Flipper Arm</label>
+							<label id="flipperArmLabel" for="motorL">Flipper Arm</label>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
+						<button class="pencil" onClick="editText('flipperArmLabel')">&nbsp;</button>
 					</div>
 
 					<div class="control-element slider-element" id="sliderRight" data-aspect-ratio="2">
@@ -89,10 +94,11 @@
 																								oninput="sendSliderData('L', this.value)"
 																								onmouseup="this.value=0; sendSliderData('L', 0)"
 																								ontouchend="this.value=0; sendSliderData('L', 0)">
-							<label for="motorL">Left Motor</label>
+							<label id="leftMotorLabel" for="motorL">Left Motor</label>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
+						<button class="pencil" onClick="editText('leftMotorLabel')">&nbsp;</button>
 					</div>
 				</div>
 			</div>
@@ -108,5 +114,6 @@
 
 		<script src="scripts/controller.js"></script>
 		<script src="scripts/fullscreen.js"></script>
+		<script src="scripts/switch_control_type.js"></script>
 	</body>
 </html>

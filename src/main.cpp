@@ -11,9 +11,12 @@ const PalookaNetwork::Route AP_ROUTES[]{
 	/* Controller Styles */ {"/styles/controller.css", "/styles/controller.css", "text/css"},
 	/* Controller JS */ {"/scripts/controller.js", "/scripts/controller.js", "text/javascript"},
 	/* Fullscreen JS */ {"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
+	/* Web Sockets JS */ {"/scripts/controller_web_socket.js", "/scripts/controller_web_socket.js", "text/javascript"},
+	/* Choose Joystick/Slider JS */ {"/scripts/switch_control_type.js", "/scripts/switch_control_type.js", "text/javascript"},
 	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
 	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"},
-	/* Star image */ {"/img/star.svg", "/img/star.svg", "image/svg+xml"}
+	/* Star image */ {"/img/star.svg", "/img/star.svg", "image/svg+xml"},
+	/* Pencil image */ {"/img/pencil.svg", "/img/pencil.svg", "image/svg+xml"}
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 
@@ -48,6 +51,17 @@ void handleWebSockets()
 		// Block until a new JSON command is received from the queue.
 		if(xQueueReceive(robotQueue, &jsonCmd, portMAX_DELAY) != pdPASS) { continue; }
 
+		// Example: create and send a battery level update
+		int batteryLevel = robot.getBatteryPercentage(); // Assume this returns an int
+		StaticJsonDocument<100> batteryDoc;
+		batteryDoc["battery"] = batteryLevel;
+		String batteryJson;
+		serializeJson(batteryDoc, batteryJson);
+
+		// Send the JSON string to all connected clients
+		// For example, if you add this method to your AccessPoint class:
+		ap.sendWebSocketMessage(batteryJson);
+
 		// Process slider control JSON.
 		if(jsonCmd.containsKey("sliderName") && jsonCmd.containsKey("value"))
 		{
@@ -72,6 +86,10 @@ void handleWebSockets()
 			Serial.println(y);
 
 			robot.move(x, y);
+		}
+		else if(jsonCmd.containsKey("flip") && jsonCmd["flip"])
+		{
+			robot.flip();
 		}
 		else
 		{
