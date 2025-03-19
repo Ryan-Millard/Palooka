@@ -44,12 +44,21 @@ void handleRobotSliderCommand(const char robotLimb, const int value)
 
 void handleWebSockets()
 {
-	// Create a JSON document to hold incoming commands.
-	StaticJsonDocument<200> jsonCmd;
+	String jsonCmdString;
 
 	while(true) {
-		// Block until a new JSON command is received from the queue.
-		if(xQueueReceive(robotQueue, &jsonCmd, portMAX_DELAY) != pdPASS) { continue; }
+		// Wait for a JSON command (as String) from the queue.
+		if(xQueueReceive(robotQueue, &jsonCmdString, portMAX_DELAY) != pdPASS) { continue; }
+
+		// Convert String to JSON document
+		StaticJsonDocument<200> jsonCmd;
+		DeserializationError error = deserializeJson(jsonCmd, jsonCmdString);
+		if(error)
+		{
+			Serial.print("JSON parse error in task: ");
+			Serial.println(error.c_str());
+			continue;
+		}
 
 		// Example: create and send a battery level update
 		int batteryLevel = robot.getBatteryPercentage(); // Assume this returns an int
@@ -124,7 +133,7 @@ void setup() {
 	xTaskCreatePinnedToCore(
 		robotControlTask, // Task function
 		"RobotTask",      // Task name
-		2048,             // Stack size
+		4096,             // Stack size
 		NULL,             // Parameter
 		2,                // Priority
 		NULL,             // Task handle

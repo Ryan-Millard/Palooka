@@ -108,7 +108,11 @@ namespace PalookaNetwork
 			return;
 		}
 
+		// Serialize JSON into a String
+		String jsonString;
+		serializeJson(doc, jsonString);
+
 		// Enqueue the JSON command for processing by the robotControlTask.
-		xQueueSend(robotQueue, &doc, portMAX_DELAY);
+		xQueueSend(robotQueue, &jsonString, portMAX_DELAY);
 	}
 }
