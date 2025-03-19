@@ -3,8 +3,32 @@
 
 namespace PalookaBot
 {
-	// ========== Public ==========
-	// The constructor sets up the wheels and powers up the robot by enabling the necessary voltage rails.
+	// Initialize static members
+	FlipperBot* FlipperBot::instance = nullptr;
+	std::mutex FlipperBot::instanceMutex;
+
+	// Static method to get the singleton instance
+	FlipperBot& FlipperBot::getInstance()
+	{
+		std::lock_guard<std::mutex> lock(instanceMutex);
+		if (instance == nullptr) {
+			// Using default constructor parameters
+			instance = new FlipperBot();
+		}
+		return *instance;
+	}
+
+	// Static method to destroy the singleton instance
+	void FlipperBot::destroyInstance()
+	{
+		std::lock_guard<std::mutex> lock(instanceMutex);
+		if (instance != nullptr) {
+			delete instance;
+			instance = nullptr;
+		}
+	}
+
+	// Private constructor
 	FlipperBot::FlipperBot(const byte FLIPPER_PIN,
 			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
@@ -73,7 +97,7 @@ namespace PalookaBot
 	void FlipperBot::playStartupTone() const
 	{
 		// Note frequencies in Hz (approximation for the melody)
-		// melody: 			A4,  A4,  A4,  G4,  F4,  E4,  D4,  A4,  A4,  A4,  G4,  F4,  E4,  C#4, D4
+		// melody:          A4,  A4,  A4,  G4,  F4,  E4,  D4,  A4,  A4,  A4,  G4,  F4,  E4,  C#4, D4
 		int melody[] =    {440, 440, 440, 392, 350, 330, 294, 440, 440, 440, 392, 350, 330, 278, 294};
 		int durations[] = {300, 300, 400, 200, 400, 200, 300, 300, 300, 400, 200, 400, 200, 500, 1000};
 

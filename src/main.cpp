@@ -20,7 +20,7 @@ const PalookaNetwork::Route AP_ROUTES[]{
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 
-PalookaBot::FlipperBot robot;
+PalookaBot::FlipperBot& robot = PalookaBot::FlipperBot::getInstance();
 QueueHandle_t robotQueue;
 
 void handleRobotSliderCommand(const char robotLimb, const int value)
