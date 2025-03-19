@@ -1,24 +1,31 @@
 #ifndef PALOOKABOT_FLIPPERBOT_H
 #define PALOOKABOT_FLIPPERBOT_H
+
 #include <Arduino.h>
 #include <ESP32Servo.h>
 #include "Motor.h"
+#include <mutex>
 
 namespace PalookaBot
 {
 	// FlipperBot represents a two-wheeled battlebot based on the Mootbotv1_241122 hardware.
 	// It uses two Motor objects to control the left and right wheels.
+	// Implemented as a thread-safe singleton.
 	class FlipperBot
 	{
 		private:
+			// ========== Singleton instance and mutex ==========
+			static FlipperBot* instance;
+			static std::mutex instanceMutex;
+
 			// ========== GPIO Pins ==========
-			const byte EN8V_PIN; // Motor enabler pin fo
+			const byte EN8V_PIN; // Motor enabler pin
 			const byte EN5V_PIN; // Servo
-										// Read battery charge with analogRead(36)
-										// 4.5V = charging, otherwise battery
-										// 4.2 = fully charged battery
-										// 3.7 = flat for battery - switch off device
-			const byte DVR_SLEEP_PIN;	// Motors use for charging - switch to low when charging
+								 // Read battery charge with analogRead(36)
+								 // 4.5V = charging, otherwise battery
+								 // 4.2 = fully charged battery
+								 // 3.7 = flat for battery - switch off device
+			const byte DVR_SLEEP_PIN;   // Motors use for charging - switch to low when charging
 
 			// ========== Flipper/Arm ==========
 			const byte FLIPPER_PIN; // See flipper below
@@ -36,8 +43,8 @@ namespace PalookaBot
 
 			// ========== BATTERY ==========
 			const byte BATTERY_PIN;
-		public:
-			// ========== Constructor function ==========
+
+			// ========== Private constructor for singleton pattern ==========
 			// The default parameters correspond to the recommended hardware configuration.
 			FlipperBot(const byte FLIPPER_PIN = 14,
 					const byte LEFT_PWM_PIN = 25, const byte LEFT_DIRECTION_PIN = 26,
@@ -45,12 +52,22 @@ namespace PalookaBot
 					const byte LED_PIN = 2,
 					const byte EN8V_PIN = 16, const byte EN5V_PIN = 17, const byte DVR_SLEEP_PIN = 12,
 					const byte BATTERY_PIN = 36);
+
+			// Prevent copying and assignment
+			FlipperBot(const FlipperBot&) = delete;
+			FlipperBot& operator=(const FlipperBot&) = delete;
+
+		public:
+			// ========== Singleton access method ==========
+			static FlipperBot& getInstance();
+
+			// ========== Initialization ==========
 			void begin();
 
-			// LED functions
+			// ========== LED functions ==========
 			void setLedOn(const bool isOn) const;
 
-			// Tone functions
+			// ========== Tone functions ==========
 			void playTone(int frequency, int duration_ms) const;
 			void playStartupTone() const;
 
@@ -62,14 +79,20 @@ namespace PalookaBot
 			// move() allows for driving the robot using x (lateral/turning) and y (forward/backward) values.
 			// Inputs are expected to be within [-1, 1] and will be normalized if necessary.
 			void move(const float x, const float y) const;
+
 			// These functions allow for direct control of the individual wheels.
 			// Note: Due to the inversion, moveLeftWheel causes a turn to the right and vice versa.
 			void moveLeftWheel(const short velocity) const; // Controls the left wheel's rotation.
 			void moveRightWheel(const short velocity) const; // Controls the right wheel's rotation.
-															 // stopMoving() halts all movement by stopping both wheels.
+
+			// stopMoving() halts all movement by stopping both wheels.
 			void stopMoving() const;
 
 			int getBatteryPercentage() const;
+
+			// ========== Cleanup ==========
+			static void destroyInstance();
 	};
 }
+
 #endif
