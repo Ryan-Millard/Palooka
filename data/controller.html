@@ -4,7 +4,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" href="styles/index.css">
 		<link rel="stylesheet" href="styles/controller.css">
-		<script src="scripts/controller_web_socket.js"></script>
+		<!-- <script src="scripts/controller_web_socket.js"></script> -->
 	</head>
 	<body>
 		<header>
@@ -31,11 +31,11 @@
 					<!-- Buttons -->
 					<div class="control-element button-element" id="button1" data-aspect-ratio="2">
 						<div class="button-container">
-							<button id="buttonOne" class="control-button">Btn 1</button>
+							<div id="battery">0%</div>
+							<div id="battery-pos-terminal"></div>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
-						<button class="pencil" onClick="editText('buttonOne')">&nbsp;</button>
 					</div>
 
 					<div class="control-element button-element" id="button2" data-aspect-ratio="2">
@@ -112,6 +112,7 @@
 			<a class="current" href="controller">Controller</a>
 		</footer>
 
+		<script src="scripts/battery.js"></script>
 		<script src="scripts/controller.js"></script>
 		<script src="scripts/fullscreen.js"></script>
 		<script src="scripts/switch_control_type.js"></script>
