@@ -5,8 +5,7 @@ export class WebSocketClient {
 	 * @param {string | string[]} [protocols] - Optional protocols.
 	 */
 	constructor(url, protocols) {
-		this.url =
-			url ?? `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`;
+		this.url = url || `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}:81`;
 		this.protocols = protocols;
 		this.ws = null;
 
@@ -27,6 +26,7 @@ export class WebSocketClient {
 			return;
 		}
 
+		console.log('WebSocketClient connecting...');
 		this.ws = new WebSocket(this.url, this.protocols);
 
 		this.ws.onopen = (event) => {
@@ -104,6 +104,8 @@ export class WebSocketClient {
 
 	/**
 	 * Close the WebSocket connection.
+	 * @param {number} [code] - Status code explaining why the connection is being closed
+	 * @param {string} [reason] - A human-readable string explaining why the connection is closing
 	 */
 	close(code, reason) {
 		if (this.ws) {
@@ -112,5 +114,6 @@ export class WebSocketClient {
 	}
 }
 
+// Export a singleton instance with a specific URL
 const wsClient = new WebSocketClient();
 export default wsClient;

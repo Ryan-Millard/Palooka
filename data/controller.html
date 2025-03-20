@@ -4,7 +4,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" href="styles/index.css">
 		<link rel="stylesheet" href="styles/controller.css">
-		<script type="module" src="scripts/controller_web_socket.js" defer></script>
 	</head>
 	<body>
 		<header>
@@ -112,9 +111,10 @@
 			<a class="current" href="controller">Controller</a>
 		</footer>
 
-		<script src="scripts/battery.js"></script>
+		<script type="module" src="scripts/controller_web_socket.js"></script>
+		<script type="module" src="scripts/battery_web_socket.js"></script>
+		<script src="scripts/switch_control_type.js"></script>
 		<script src="scripts/controller.js"></script>
 		<script src="scripts/fullscreen.js"></script>
-		<script src="scripts/switch_control_type.js"></script>
 	</body>
 </html>

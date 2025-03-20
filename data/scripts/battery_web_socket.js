@@ -1,3 +1,6 @@
+import ws from './websocket.js';
+ws.connect();
+
 const battery = document.getElementById('battery');
 
 // Calculate the battery color based on percentage (0% = red, 50% = yellow, 100% = green)
@@ -10,3 +13,7 @@ function setUpdateBattery(percentage) {
 	battery.style.background = hslValue;
 	battery.style.textContent = percentage;
 }
+
+ws.addOnMessage((data) => {
+	console.log(data);
+});
