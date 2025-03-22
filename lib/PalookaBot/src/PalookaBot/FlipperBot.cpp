@@ -164,15 +164,8 @@ namespace PalookaBot
 	int FlipperBot::getBatteryPercentage() const
 	{
 		int adcValue = analogRead(36);
+		Serial.print("ADC: ");
+		Serial.println(adcValue);
 		return adcValue;
-		// Serial.print("ADC: ");
-		// Serial.println(adcValue);
-		// float batteryVoltage = adcValue * (3.3 / 4095.0) * 2;  // Adjust divider factor as needed
-		// Serial.print("Battery V: ");
-		// Serial.println(batteryVoltage);
-		// float batteryPercentage = (batteryVoltage - 3.0) / (4.2 - 3.0) * 100;
-		// batteryPercentage = constrain(batteryPercentage, 0, 100);
-		// Serial.print("Battery %: ");
-		// Serial.println(batteryPercentage);
 	}
 }

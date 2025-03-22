@@ -11,7 +11,9 @@ const PalookaNetwork::Route AP_ROUTES[]{
 	/* Controller Styles */ {"/styles/controller.css", "/styles/controller.css", "text/css"},
 	/* Controller JS */ {"/scripts/controller.js", "/scripts/controller.js", "text/javascript"},
 	/* Fullscreen JS */ {"/scripts/fullscreen.js", "/scripts/fullscreen.js", "text/javascript"},
-	/* Web Sockets JS */ {"/scripts/controller_web_socket.js", "/scripts/controller_web_socket.js", "text/javascript"},
+	/* Web Sockets manager JS */ {"/scripts/websocket.js", "/scripts/websocket.js", "text/javascript"},
+	/* Controller Web Sockets JS */ {"/scripts/controller_web_socket.js", "/scripts/controller_web_socket.js", "text/javascript"},
+	/* Battery Web Sockets JS */ {"/scripts/battery_web_socket.js", "/scripts/battery_web_socket.js", "text/javascript"},
 	/* Choose Joystick/Slider JS */ {"/scripts/switch_control_type.js", "/scripts/switch_control_type.js", "text/javascript"},
 	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
 	/* Setup Styles */ {"/styles/setup.css", "/styles/setup.css", "text/css"},
@@ -42,71 +44,82 @@ void handleRobotSliderCommand(const char robotLimb, const int value)
 	}
 }
 
+void handleWebsocketCommands()
+{
+	StaticJsonDocument<200> jsonCmd;
+	// Wait for a JSON command with a 10ms timeout
+	if(xQueueReceive(robotQueue, &jsonCmd, pdMS_TO_TICKS(10)) != pdPASS) { return; }
+
+	// Process slider control JSON.
+	if(jsonCmd.containsKey("sliderName") && jsonCmd.containsKey("value"))
+	{
+		const char* sliderName = jsonCmd["sliderName"];
+		const char robotLimb = sliderName[0];
+		int value = jsonCmd["value"];
+		Serial.print("Limb: ");
+		Serial.print(robotLimb);
+		Serial.print(", Value: ");
+		Serial.println(value);
+
+		handleRobotSliderCommand(robotLimb, value);
+	}
+	// Process joystick control JSON.
+	else if(jsonCmd.containsKey("x") && jsonCmd.containsKey("y"))
+	{
+		float x = jsonCmd["x"];
+		float y = jsonCmd["y"];
+		Serial.print("Joystick X: ");
+		Serial.print(x);
+		Serial.print(", Y: ");
+		Serial.println(y);
+
+		robot.move(x, y);
+	}
+	else if(jsonCmd.containsKey("flip") && jsonCmd["flip"])
+	{
+		robot.flip();
+	}
+	else
+	{
+		Serial.println("Unknown JSON structure.");
+	}
+
+	// Clear the document for the next command.
+	jsonCmd.clear();
+}
+
+void sendBatteryUpdate()
+{
+	int batteryLevel = robot.getBatteryPercentage();
+	StaticJsonDocument<100> batteryDoc;
+	batteryDoc["battery"] = batteryLevel;
+	String batteryJson;
+	serializeJson(batteryDoc, batteryJson);
+
+	// Send the JSON string to all connected clients
+	ap.sendWebSocketMessage(batteryJson);
+}
+
 void handleWebSockets()
 {
-	String jsonCmdString;
-
-	while(true) {
-		// Wait for a JSON command (as String) from the queue.
-		if(xQueueReceive(robotQueue, &jsonCmdString, portMAX_DELAY) != pdPASS) { continue; }
-
-		// Convert String to JSON document
-		StaticJsonDocument<200> jsonCmd;
-		DeserializationError error = deserializeJson(jsonCmd, jsonCmdString);
-		if(error)
+	static const unsigned long updateInterval = 5000; // 5 seconds
+	static unsigned long lastBatteryUpdate = 0; // Last battery update time
+	while(true)
+	{
+		unsigned long currentMillis = millis();
+		// Calculate the time elapsed since the last update, accounting for overflow
+		unsigned long elapsedTime = currentMillis - lastBatteryUpdate;
+		if (elapsedTime >= updateInterval)
 		{
-			Serial.print("JSON parse error in task: ");
-			Serial.println(error.c_str());
-			continue;
+			sendBatteryUpdate();
+			Serial.println("Sending battery update...");
+			lastBatteryUpdate = currentMillis;
 		}
 
-		// Example: create and send a battery level update
-		int batteryLevel = robot.getBatteryPercentage(); // Assume this returns an int
-		StaticJsonDocument<100> batteryDoc;
-		batteryDoc["battery"] = batteryLevel;
-		String batteryJson;
-		serializeJson(batteryDoc, batteryJson);
+		handleWebsocketCommands(); // Non-blocking
 
-		// Send the JSON string to all connected clients
-		// For example, if you add this method to your AccessPoint class:
-		ap.sendWebSocketMessage(batteryJson);
-
-		// Process slider control JSON.
-		if(jsonCmd.containsKey("sliderName") && jsonCmd.containsKey("value"))
-		{
-			const char* sliderName = jsonCmd["sliderName"];
-			const char robotLimb = sliderName[0];
-			int value = jsonCmd["value"];
-			Serial.print("Limb: ");
-			Serial.print(robotLimb);
-			Serial.print(", Value: ");
-			Serial.println(value);
-
-			handleRobotSliderCommand(robotLimb, value);
-		}
-		// Process joystick control JSON.
-		else if(jsonCmd.containsKey("x") && jsonCmd.containsKey("y"))
-		{
-			float x = jsonCmd["x"];
-			float y = jsonCmd["y"];
-			Serial.print("Joystick X: ");
-			Serial.print(x);
-			Serial.print(", Y: ");
-			Serial.println(y);
-
-			robot.move(x, y);
-		}
-		else if(jsonCmd.containsKey("flip") && jsonCmd["flip"])
-		{
-			robot.flip();
-		}
-		else
-		{
-			Serial.println("Unknown JSON structure.");
-		}
-
-		// Clear the document for the next command.
-		jsonCmd.clear();
+		// Minor yield for other tasks to execute
+		vTaskDelay(pdMS_TO_TICKS(1));
 	}
 }
 

@@ -223,3 +223,23 @@ body {
 #fullscreenToggler + label::before {
 	content: "Fullscreen";
 }
+
+#battery {
+	width: 100%;
+	aspect-ratio: 2/1;
+	border: 3px solid var(--cyan-light);
+	box-shadow: 0 0 15px var(--cyan-dark);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: var(--black);
+	font-weight: bold;
+	font-size: 2em;
+}
+#battery-pos-terminal {
+	width: 20px;
+	height: 30%;
+	width: 10%;
+	background: var(--cyan-light);
+	box-shadow: 0 0 15px var(--cyan-dark);
+}
