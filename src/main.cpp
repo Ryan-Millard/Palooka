@@ -47,8 +47,8 @@ void handleRobotSliderCommand(const char robotLimb, const int value)
 void handleWebsocketCommands()
 {
 	StaticJsonDocument<200> jsonCmd;
-	// Wait for a JSON command (as String) from the queue.
-	if(xQueueReceive(robotQueue, &jsonCmd, portMAX_DELAY) != pdPASS) { return; }
+	// Wait for a JSON command with a 10ms timeout
+	if(xQueueReceive(robotQueue, &jsonCmd, pdMS_TO_TICKS(10)) != pdPASS) { return; }
 
 	// Process slider control JSON.
 	if(jsonCmd.containsKey("sliderName") && jsonCmd.containsKey("value"))
@@ -116,7 +116,10 @@ void handleWebSockets()
 			lastBatteryUpdate = currentMillis;
 		}
 
-		handleWebsocketCommands();
+		handleWebsocketCommands(); // Non-blocking
+
+		// Minor yield for other tasks to execute
+		vTaskDelay(pdMS_TO_TICKS(1));
 	}
 }
 
@@ -141,14 +144,14 @@ void setup() {
 
 	// Create the hardware control task pinned to core 1.
 	xTaskCreatePinnedToCore(
-			robotControlTask, // Task function
-			"RobotTask",      // Task name
-			4096,             // Stack size
-			NULL,             // Parameter
-			2,                // Priority
-			NULL,             // Task handle
-			1                 // Pin to core 1
-			);
+		robotControlTask, // Task function
+		"RobotTask",      // Task name
+		4096,             // Stack size
+		NULL,             // Parameter
+		2,                // Priority
+		NULL,             // Task handle
+		1                 // Pin to core 1
+	);
 }
 
 void loop() {
