@@ -11,7 +11,7 @@ function setUpdateBattery(percentage) {
 	const hslValue = `hsl(${hue}, 100%, 50%)`;
 
 	battery.style.background = hslValue;
-	battery.style.textContent = percentage;
+	battery.textContent = percentage + '%';
 }
 
 ws.addOnMessage((data) => {
