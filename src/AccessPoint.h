@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <WebSocketsServer.h>
+#include <DNSServer.h>
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 
@@ -28,7 +29,8 @@ namespace PalookaNetwork
 			const size_t NUM_ROUTES;  // Number of routes
 
 			AccessPoint(const Route* routes, const size_t num_routes,
-					uint16_t webServerPort = 80, uint16_t webSocketPort = 81,
+					const uint16_t webServerPort = 80, const uint16_t webSocketPort = 81,
+					const uint16_t dnsServerPort = 53,
 					const String& SSID_BASE = "Palooka_");
 
 			bool begin();
@@ -39,6 +41,8 @@ namespace PalookaNetwork
 		private:
 			WebServer server;
 			WebSocketsServer webSocket;
+			DNSServer dnsServer;
+			uint16_t DNS_SERVER_PORT;
 
 			const String generateSSID(const String& SSID_BASE);
 			void registerServerRoutes();

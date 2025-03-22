@@ -5,9 +5,11 @@ namespace PalookaNetwork
 	// Public
 	AccessPoint::AccessPoint(const Route* routes, const size_t num_routes,
 			uint16_t webServerPort, uint16_t webSocketPort,
+			const uint16_t dnsServerPort,
 			const String& SSID_BASE)
 		: ROUTES(routes), NUM_ROUTES(num_routes),
 		server(webServerPort), webSocket(webSocketPort),
+		DNS_SERVER_PORT(dnsServerPort),
 		SSID(generateSSID(SSID_BASE))
 	{}
 
@@ -28,6 +30,9 @@ namespace PalookaNetwork
 		Serial.println("SSID: " + SSID);
 		Serial.println("IP Address: " + WiFi.softAPIP().toString());
 
+		// Start the DNS server to redirect all domain requests to the AP's IP.
+		dnsServer.start(DNS_SERVER_PORT, "*", WiFi.softAPIP());
+
 		registerServerRoutes();
 
 		server.begin(); // Start the web server
@@ -42,6 +47,7 @@ namespace PalookaNetwork
 
 	void AccessPoint::handleClients()
 	{
+		dnsServer.processNextRequest();
 		server.handleClient();
 		webSocket.loop();
 	}
