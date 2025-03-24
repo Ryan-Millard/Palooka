@@ -3,8 +3,10 @@
 
 #include <Arduino.h>
 #include <ESP32Servo.h>
-#include "Motor.h"
 #include <mutex>
+#include "esp_adc_cal.h"
+
+#include "Motor.h"
 
 namespace PalookaBot
 {
@@ -43,6 +45,9 @@ namespace PalookaBot
 
 			// ========== BATTERY ==========
 			const byte BATTERY_PIN;
+
+			// ========== ADC Calibration ==========
+			esp_adc_cal_characteristics_t* adc_chars;  // ADC calibration characteristics pointer
 
 			// ========== Private constructor for singleton pattern ==========
 			// The default parameters correspond to the recommended hardware configuration.
@@ -92,6 +97,7 @@ namespace PalookaBot
 
 			// ========== Cleanup ==========
 			static void destroyInstance();
+			~FlipperBot();
 	};
 }
 

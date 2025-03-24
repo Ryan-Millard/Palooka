@@ -1,5 +1,5 @@
 #include "FlipperBot.h"
-#include <algorithm> // For std::max and std::abs
+#include <algorithm>
 
 namespace PalookaBot
 {
@@ -28,6 +28,16 @@ namespace PalookaBot
 		}
 	}
 
+	FlipperBot::~FlipperBot()
+	{
+		// Free the ADC calibration structure when the instance is destroyed.
+		if(adc_chars != nullptr)
+		{
+			free(adc_chars);
+			adc_chars = nullptr;
+		}
+	}
+
 	// Private constructor
 	FlipperBot::FlipperBot(const byte FLIPPER_PIN,
 			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
@@ -41,7 +51,8 @@ namespace PalookaBot
 		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN),
 		wheelLeft(LEFT_PWM_PIN, LEFT_DIRECTION_PIN, true /* Inverted */),
 		LED_PIN(LED_PIN),
-		BATTERY_PIN(BATTERY_PIN)
+		BATTERY_PIN(BATTERY_PIN),
+		adc_chars(nullptr)
 	{
 		// No initialization in constructor body - all done in begin()
 	}
@@ -66,6 +77,9 @@ namespace PalookaBot
 		digitalWrite(EN8V_PIN, HIGH);
 		digitalWrite(EN5V_PIN, HIGH);
 		digitalWrite(DVR_SLEEP_PIN, HIGH);
+
+		adc_chars = (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
+		esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_0, ADC_WIDTH_BIT_12, 1100, adc_chars);
 
 		// ========== Initialize flipper ==========
 		flipper.setPeriodHertz(50);
