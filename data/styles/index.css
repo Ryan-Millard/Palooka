@@ -58,6 +58,7 @@ p {
 
 /* Current page has inverted styles */
 a, button, .clickable, .current:active {
+	cursor: pointer;
 	color: var(--cyan-light);
 	background: var(--black);
 	text-decoration: none;
@@ -67,6 +68,7 @@ a, button, .clickable, .current:active {
 	box-shadow: 0 0 15px var(--cyan-dark);
 }
 a:active, button:active, .clickable:active, .current {
+	cursor: pointer;
 	color: var(--black);
 	background: var(--cyan-light);
 	border: 2px solid var(--black);
@@ -137,7 +139,8 @@ main {
 }
 
 .textInput {
-	background-color: var(--black);
+	font-size: 0.9em;
+	background-color: transparent;
 	color: var(--white);
 	border: none;
 	border-bottom: 2px solid var(--cyan-light);

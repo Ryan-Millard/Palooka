@@ -3,8 +3,10 @@
 
 #include <Arduino.h>
 #include <ESP32Servo.h>
-#include "Motor.h"
 #include <mutex>
+#include "esp_adc_cal.h"
+
+#include "Motor.h"
 
 namespace PalookaBot
 {
@@ -44,6 +46,9 @@ namespace PalookaBot
 			// ========== BATTERY ==========
 			const byte BATTERY_PIN;
 
+			// ========== ADC Calibration ==========
+			esp_adc_cal_characteristics_t* adc_chars;  // ADC calibration characteristics pointer
+
 			// ========== Private constructor for singleton pattern ==========
 			// The default parameters correspond to the recommended hardware configuration.
 			FlipperBot(const byte FLIPPER_PIN = 14,
@@ -65,7 +70,8 @@ namespace PalookaBot
 			void begin();
 
 			// ========== LED functions ==========
-			void setLedOn(const bool isOn) const;
+			void setLedOn(const bool isOn = true) const;
+			void toggleLed() const;
 
 			// ========== Tone functions ==========
 			void playTone(int frequency, int duration_ms) const;
@@ -92,6 +98,7 @@ namespace PalookaBot
 
 			// ========== Cleanup ==========
 			static void destroyInstance();
+			~FlipperBot();
 	};
 }
 
