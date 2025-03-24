@@ -92,8 +92,14 @@ namespace PalookaBot
 	void FlipperBot::setLedOn(const bool isOn) const
 	{
 		digitalWrite(LED_PIN, isOn ? HIGH : LOW);
-		Serial.print("LED isOn: ");
-		Serial.println(isOn);
+	}
+
+	void FlipperBot::toggleLed() const
+	{
+		static bool isOn;
+		isOn = digitalRead(LED_PIN); // Get LED status
+		isOn = !isOn; // Toggle the status
+		setLedOn(isOn); // Set the status
 	}
 
 	void FlipperBot::playTone(const int frequency, const int duration_ms) const

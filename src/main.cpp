@@ -100,20 +100,24 @@ void sendBatteryUpdate()
 	ap.sendWebSocketMessage(batteryJson);
 }
 
-void handleWebSockets()
+void robotTaskLoop()
 {
-	static const unsigned long updateInterval = 5000; // 5 seconds
+	static const unsigned long batteryUpdateInterval = 5000; // 5 seconds
 	static unsigned long lastBatteryUpdate = 0; // Last battery update time
+	static const unsigned long ledToggleInterval = 1000; // 1 second
+	static unsigned long lastLedToggle = 0; // Last time LED was toggled
 	while(true)
 	{
 		unsigned long currentMillis = millis();
-		// Calculate the time elapsed since the last update, accounting for overflow
-		unsigned long elapsedTime = currentMillis - lastBatteryUpdate;
-		if (elapsedTime >= updateInterval)
+		if((currentMillis - lastBatteryUpdate) >= batteryUpdateInterval)
 		{
 			sendBatteryUpdate();
-			Serial.println("Sending battery update...");
 			lastBatteryUpdate = currentMillis;
+		}
+		if((currentMillis - lastLedToggle) >= ledToggleInterval)
+		{
+			robot.toggleLed();
+			lastLedToggle = currentMillis;
 		}
 
 		handleWebsocketCommands(); // Non-blocking
@@ -127,7 +131,7 @@ void robotControlTask(void* pvParameters)
 {
 	robot.playStartupTone();
 
-	handleWebSockets();
+	robotTaskLoop();
 }
 
 void setup() {

@@ -71,6 +71,7 @@ namespace PalookaBot
 
 			// ========== LED functions ==========
 			void setLedOn(const bool isOn = true) const;
+			void toggleLed() const;
 
 			// ========== Tone functions ==========
 			void playTone(int frequency, int duration_ms) const;
