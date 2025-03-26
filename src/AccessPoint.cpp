@@ -69,17 +69,19 @@ namespace PalookaNetwork
 	}
 
 	void AccessPoint::registerServerRoutes() {
-		server.serveStatic("/", LittleFS, "/");
-
-		for(size_t i{0}; i < NUM_ROUTES; i++) {
+		// Custom routes
+		for(size_t i{0}; i < NUM_ROUTES; i++)
+		{
 			const Route& route{ROUTES[i]};
-
 			server.on(route.endpoint, HTTP_GET, [this, route]() {
 				serveFile(route.filePath, route.contentType);
 			});
 		}
 
-		// Handle 404 errors
+		// Fallback static file serving
+		server.serveStatic("/", LittleFS, "/");
+
+		// 404 handler
 		server.onNotFound([this]() {
 			server.send(404, "text/plain", "Not found - Palooka Network");
 		});
@@ -87,20 +89,16 @@ namespace PalookaNetwork
 
 	void AccessPoint::serveFile(const char* filePath, const char* contentType)
 	{
-		Serial.print("Serving file: ");
-		Serial.print(filePath);
-		File file = LittleFS.open(filePath, "r");
-		if(!file || file.isDirectory())
+		File fileToServe = LittleFS.open(filePath, "r");
+		if(!fileToServe || fileToServe.isDirectory())
 		{
-			if(file) { file.close(); }
-
+			if(fileToServe) { fileToServe.close(); }
 			server.send(404, "text/plain", "File not found");
 			return;
 		}
-		Serial.print(", size: ");
-		Serial.println(file.size());
-		server.streamFile(file, contentType);
-		file.close(); // Explicit close after streaming
+
+		server.streamFile(fileToServe, contentType);
+		fileToServe.close();
 	}
 
 	void AccessPoint::handleWebSocketMessage(uint8_t *payload, size_t length)
