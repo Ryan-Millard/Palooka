@@ -8,8 +8,6 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 
-#include <FileSystem/FileSystem.h>
-
 extern QueueHandle_t robotQueue;
 
 namespace PalookaNetwork

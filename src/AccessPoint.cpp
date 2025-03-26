@@ -15,7 +15,7 @@ namespace PalookaNetwork
 
 	bool AccessPoint::begin()
 	{
-		if(!FileSystem::FSManager::begin()) // Initialize LittleFS
+		if(!LittleFS.begin()) // Initialize LittleFS
 		{
 			return false;
 		}
@@ -86,7 +86,9 @@ namespace PalookaNetwork
 
 	void AccessPoint::serveFile(const char* filePath, const char* contentType)
 	{
-		File file = FileSystem::FSManager::getFile(filePath);
+		Serial.print("Serving file: ");
+		Serial.print(filePath);
+		File file = LittleFS.open(filePath, "r");
 		if(!file || file.isDirectory())
 		{
 			if(file) { file.close(); }
@@ -94,9 +96,6 @@ namespace PalookaNetwork
 			server.send(404, "text/plain", "File not found");
 			return;
 		}
-
-		Serial.print("Serving file: ");
-		Serial.print(filePath);
 		Serial.print(", size: ");
 		Serial.println(file.size());
 		server.streamFile(file, contentType);

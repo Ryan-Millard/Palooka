@@ -1,6 +1,5 @@
 #include <ArduinoJson.h>
 #include <PalookaBot/FlipperBot.h>
-#include <FileSystem/FileSystem.h>
 #include "AccessPoint.h"
 
 // Access Point, web server & web socket server
