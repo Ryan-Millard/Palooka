@@ -19,14 +19,24 @@ namespace PalookaNetwork
 		const char* contentType; // Proper MIME type
 	};
 
+	struct CommandData {
+		char sliderName[16];
+		int value;
+		float x, y;
+		bool flip;
+		bool hasSlider;
+		bool hasJoystick;
+		bool hasFlip;
+	};
+
 	class AccessPoint
 	{
 		public:
 			const String SSID;
-			const Route* ROUTES;  // Pointer to routes array
-			const size_t NUM_ROUTES;  // Number of routes
+			const Route* ROUTES;
+			const size_t NUM_ROUTES;
 
-			AccessPoint(const Route* routes, const size_t num_routes,
+			AccessPoint(const Route* routes = nullptr, const size_t num_routes = 0,
 					const uint16_t webServerPort = 80, const uint16_t webSocketPort = 81,
 					const uint16_t dnsServerPort = 53,
 					const String& SSID_BASE = "Palooka_");

@@ -7,10 +7,10 @@ namespace PalookaNetwork
 			uint16_t webServerPort, uint16_t webSocketPort,
 			const uint16_t dnsServerPort,
 			const String& SSID_BASE)
-		: ROUTES(routes), NUM_ROUTES(num_routes),
+		: SSID(generateSSID(SSID_BASE)),
+		ROUTES(routes), NUM_ROUTES(num_routes),
 		server(webServerPort), webSocket(webSocketPort),
-		DNS_SERVER_PORT(dnsServerPort),
-		SSID(generateSSID(SSID_BASE))
+		DNS_SERVER_PORT(dnsServerPort)
 	{}
 
 	bool AccessPoint::begin()
@@ -69,7 +69,8 @@ namespace PalookaNetwork
 	}
 
 	void AccessPoint::registerServerRoutes() {
-		// Register routes dynamically
+		server.serveStatic("/", LittleFS, "/");
+
 		for(size_t i{0}; i < NUM_ROUTES; i++) {
 			const Route& route{ROUTES[i]};
 
@@ -113,7 +114,30 @@ namespace PalookaNetwork
 			return;
 		}
 
-		// Enqueue the JSON command for processing by the robotControlTask.
-		xQueueSend(robotQueue, &doc, portMAX_DELAY);
+		CommandData cmdData = {0}; // Initialize the struct
+
+		// Extract slider control data
+		if(doc.containsKey("sliderName") && doc.containsKey("value"))
+		{
+			strlcpy(cmdData.sliderName, doc["sliderName"], sizeof(cmdData.sliderName));
+			cmdData.value = doc["value"];
+			cmdData.hasSlider = true;
+		}
+		// Extract joystick control data
+		else if(doc.containsKey("x") && doc.containsKey("y"))
+		{
+			cmdData.x = doc["x"];
+			cmdData.y = doc["y"];
+			cmdData.hasJoystick = true;
+		}
+		// Extract flip command
+		else if(doc.containsKey("flip") && doc["flip"])
+		{
+			cmdData.flip = true;
+			cmdData.hasFlip = true;
+		}
+
+		// Enqueue the compact command data for processing by the robotControlTask.
+		xQueueSend(robotQueue, &cmdData, portMAX_DELAY);
 	}
 }
