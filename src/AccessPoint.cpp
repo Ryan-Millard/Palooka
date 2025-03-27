@@ -7,28 +7,33 @@ namespace PalookaNetwork
 			uint16_t webServerPort, uint16_t webSocketPort,
 			const uint16_t dnsServerPort,
 			const String& SSID_BASE)
-		: ROUTES(routes), NUM_ROUTES(num_routes),
+		: SSID(generateSSID(SSID_BASE)),
+		ROUTES(routes), NUM_ROUTES(num_routes),
 		server(webServerPort), webSocket(webSocketPort),
-		DNS_SERVER_PORT(dnsServerPort),
-		SSID(generateSSID(SSID_BASE))
+		DNS_SERVER_PORT(dnsServerPort)
 	{}
 
 	bool AccessPoint::begin()
 	{
-		if(!FileSystem::FSManager::begin()) // Initialize LittleFS
+		if(!LittleFS.begin()) // Initialize LittleFS
 		{
 			return false;
 		}
 
-		if(!WiFi.softAP(SSID.c_str())) // Start the ESP32 as an access point
+		Preferences preferences;
+		// Initialize preferences with the namespace "MyApp"
+		preferences.begin("Palooka", false);  // Read-write mode
+
+		String AP_Name = preferences.getString("AP_Name", SSID.c_str()); // SSID is default SSID for the AP
+		String AP_Password = preferences.getString("AP_Password", ""); // No password as the default
+
+		preferences.end(); // Close the preferences
+
+		if(!WiFi.softAP(AP_Name, AP_Password)) // Start the ESP32 as an access point
 		{
 			Serial.println("Failed to start Access Point");
 			return false;
 		}
-
-		Serial.println("Access Point Started");
-		Serial.println("SSID: " + SSID);
-		Serial.println("IP Address: " + WiFi.softAPIP().toString());
 
 		// Start the DNS server to redirect all domain requests to the AP's IP.
 		dnsServer.start(DNS_SERVER_PORT, "*", WiFi.softAPIP());
@@ -69,16 +74,25 @@ namespace PalookaNetwork
 	}
 
 	void AccessPoint::registerServerRoutes() {
-		// Register routes dynamically
-		for(size_t i{0}; i < NUM_ROUTES; i++) {
-			const Route& route{ROUTES[i]};
+		// Custom routes
+		for(size_t i{0}; i < NUM_ROUTES; i++)
+		{
+			const auto& [endpoint, filePath, contentType, method, handler] = ROUTES[i];
+			server.on(endpoint, static_cast<HTTPMethod>(method), [this, filePath, contentType, handler]() {
+				if(handler)
+				{
+					handler(&server);
+					return;
+				}
 
-			server.on(route.endpoint, HTTP_GET, [this, route]() {
-				serveFile(route.filePath, route.contentType);
+				serveFile(filePath, contentType);
 			});
 		}
 
-		// Handle 404 errors
+		// Fallback static file serving
+		server.serveStatic("/", LittleFS, "/");
+
+		// 404 handler
 		server.onNotFound([this]() {
 			server.send(404, "text/plain", "Not found - Palooka Network");
 		});
@@ -86,21 +100,16 @@ namespace PalookaNetwork
 
 	void AccessPoint::serveFile(const char* filePath, const char* contentType)
 	{
-		File file = FileSystem::FSManager::getFile(filePath);
-		if(!file || file.isDirectory())
+		File fileToServe = LittleFS.open(filePath, "r");
+		if(!fileToServe || fileToServe.isDirectory())
 		{
-			if(file) { file.close(); }
-
+			if(fileToServe) { fileToServe.close(); }
 			server.send(404, "text/plain", "File not found");
 			return;
 		}
 
-		Serial.print("Serving file: ");
-		Serial.print(filePath);
-		Serial.print(", size: ");
-		Serial.println(file.size());
-		server.streamFile(file, contentType);
-		file.close(); // Explicit close after streaming
+		server.streamFile(fileToServe, contentType);
+		fileToServe.close();
 	}
 
 	void AccessPoint::handleWebSocketMessage(uint8_t *payload, size_t length)
@@ -114,7 +123,30 @@ namespace PalookaNetwork
 			return;
 		}
 
-		// Enqueue the JSON command for processing by the robotControlTask.
-		xQueueSend(robotQueue, &doc, portMAX_DELAY);
+		CommandData cmdData = {0}; // Initialize the struct
+
+		// Extract slider control data
+		if(doc.containsKey("sliderName") && doc.containsKey("value"))
+		{
+			strlcpy(cmdData.sliderName, doc["sliderName"], sizeof(cmdData.sliderName));
+			cmdData.value = doc["value"];
+			cmdData.hasSlider = true;
+		}
+		// Extract joystick control data
+		else if(doc.containsKey("x") && doc.containsKey("y"))
+		{
+			cmdData.x = doc["x"];
+			cmdData.y = doc["y"];
+			cmdData.hasJoystick = true;
+		}
+		// Extract flip command
+		else if(doc.containsKey("flip") && doc["flip"])
+		{
+			cmdData.flip = true;
+			cmdData.hasFlip = true;
+		}
+
+		// Enqueue the compact command data for processing by the robotControlTask.
+		xQueueSend(robotQueue, &cmdData, portMAX_DELAY);
 	}
 }

@@ -65,10 +65,24 @@
 					<li>Access our configuration panel to rename our Palooka and set its password.</li>
 				</ol>
 
-				<details class="clickable">
-					<summary>Intialize Secure Synchronization</summary>
+				<details>
+					<summary class="clickable">Intialize Secure Synchronization</summary>
 
-					<form class="centered-children" action="#" method="POST">
+					<details class="passwordRequirements">
+						<summary class="clickable">Password Requirements</summary>
+						<ol>
+							<li>8 characters</li>
+							<li>1 uppercase letter</li>
+							<li>1 lowercase letter</li>
+							<li>1 number</li>
+							<li>1 special character</li>
+						</ol>
+					</details>
+
+					<form id="setup-form" class="centered-children">
+						<div id="form-message"></div>
+						<button id="restartButton" type="button" onclick="requestRestart()">Restart Palooka</button>
+
 						<p>
 							<label for="name">Device Name:</label>
 							<input type="text" class="textInput" id="name" name="name" placeholder="Marcs-Machine" required>
@@ -79,7 +93,7 @@
 							<input type="password" class="textInput" id="password" name="password" placeholder="Unity=Strength*100" required>
 						</p>
 
-						<button style="margin-bottom: 3%;" type="submit">Submit</button>
+						<button class="formSubmitButton" type="submit">Submit</button>
 				</details>
 			</div>
 
@@ -102,6 +116,81 @@
 			<a class="current" href="/setup">Setup</a>
 			<a href="/controller">Controller</a>
 		</footer>
+
+		<script>
+			document.getElementById('setup-form').addEventListener('submit', function(e) {
+				e.preventDefault();
+
+				const name = document.getElementById('name').value;
+				const password = document.getElementById('password').value;
+				const formMessage = document.getElementById('form-message');
+
+				// Clear previous messages
+				formMessage.style.display = 'none';
+				formMessage.textContent = '';
+
+				// Frontend Password Validation
+				const isValidPassword = validatePassword(password);
+				if (!isValidPassword) {
+					formMessage.style.display = 'block';
+					formMessage.textContent = "That's a bad password, comrade!";
+					return;
+				}
+
+				const data = { name, password };
+				fetch('/setup', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify(data)
+					})
+					.then(response => response.json())
+					.then(result => {
+						// Handle the JSON response from the server
+						if (result.status === 'ok') {
+							// Success message from the server
+							formMessage.style.display = 'block';
+							formMessage.textContent = "Setup successful, comrade! Press the button below to apply the changes.";
+							formMessage.style.color = 'var(--green-success)';
+							document.getElementById('restartButton').style.display = 'block';
+						} else {
+							// Error message from the server
+							formMessage.style.display = 'block';
+							formMessage.textContent = result.message || 'An error occurred. Please try again.';
+							formMessage.style.color = 'var(--red-warning)';
+							document.getElementById('restartButton').style.display = 'none';
+						}
+					})
+					.catch(error => {
+						// Handle network errors or other issues
+						console.error('Error:', error);
+						formMessage.style.display = 'block';
+						formMessage.textContent = 'An error occurred. Please try again.';
+						formMessage.style.color = 'var(--red-warning)';
+					});
+			});
+
+			function validatePassword(password) {
+				// Ensure password is at least 8 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.
+				const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+				return passwordRegex.test(password);
+			}
+
+			function requestRestart() {
+				fetch('/restart', { method: 'POST' })
+					.then(response => response.json())
+					.then(data => {
+						if (data.status === 'ok') {
+							alert("Palooka is restarting, comrade...");
+						} else {
+							alert("Error restarting Palooka.");
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert("An error occurred while attempting to restart the Palooka, comrade!");
+					});
+			}
+		</script>
 	</body>
 </html>
 

@@ -14,3 +14,24 @@ strong {
 	color: var(--cyan-light);
 	font-weight: 700;
 }
+
+.formSubmitButton {
+	margin-bottom: 3%;
+}
+
+#form-message {
+	display: none;
+	margin: 30px auto 0;
+	font-size: 1em;
+	color: var(--red-warning);
+}
+
+.passwordRequirements {
+	width: 80%;
+	margin: 10px auto;
+}
+
+#restartButton {
+	display: none;
+	margin: 0 auto;
+}
