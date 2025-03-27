@@ -81,6 +81,8 @@
 
 					<form id="setup-form" class="centered-children">
 						<div id="form-message"></div>
+						<button id="restartButton" type="button" onclick="requestRestart()">Restart Palooka</button>
+
 						<p>
 							<label for="name">Device Name:</label>
 							<input type="text" class="textInput" id="name" name="name" placeholder="Marcs-Machine" required>
@@ -147,14 +149,15 @@
 						if (result.status === 'ok') {
 							// Success message from the server
 							formMessage.style.display = 'block';
-							formMessage.textContent = "Setup successful, comrade!";
+							formMessage.textContent = "Setup successful, comrade! Press the button below to apply the changes.";
 							formMessage.style.color = 'var(--green-success)';
-							// Optionally, redirect or update the UI further here
+							document.getElementById('restartButton').style.display = 'block';
 						} else {
 							// Error message from the server
 							formMessage.style.display = 'block';
 							formMessage.textContent = result.message || 'An error occurred. Please try again.';
 							formMessage.style.color = 'var(--red-warning)';
+							document.getElementById('restartButton').style.display = 'none';
 						}
 					})
 					.catch(error => {
@@ -170,6 +173,22 @@
 				// Ensure password is at least 8 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.
 				const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 				return passwordRegex.test(password);
+			}
+
+			function requestRestart() {
+				fetch('/restart', { method: 'POST' })
+					.then(response => response.json())
+					.then(data => {
+						if (data.status === 'ok') {
+							alert("Palooka is restarting, comrade...");
+						} else {
+							alert("Error restarting Palooka.");
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert("An error occurred while attempting to restart the Palooka, comrade!");
+					});
 			}
 		</script>
 	</body>

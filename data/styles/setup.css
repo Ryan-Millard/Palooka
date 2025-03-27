@@ -30,3 +30,8 @@ strong {
 	width: 80%;
 	margin: 10px auto;
 }
+
+#restartButton {
+	display: none;
+	margin: 0 auto;
+}
