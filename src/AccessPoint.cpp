@@ -74,7 +74,12 @@ namespace PalookaNetwork
 		{
 			const auto& [endpoint, filePath, contentType, method, handler] = ROUTES[i];
 			server.on(endpoint, static_cast<HTTPMethod>(method), [this, filePath, contentType, handler]() {
-				if(handler) { handler(); }
+				if(handler)
+				{
+					handler(&server);
+					return;
+				}
+
 				serveFile(filePath, contentType);
 			});
 		}

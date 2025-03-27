@@ -27,13 +27,13 @@ namespace PalookaNetwork
 		const char* filePath; // File system path
 		const char* contentType; // Proper MIME type
 		HttpMethod method; // HTTP Request type
-		std::function<void()> handler; // Callback function to process request
+		std::function<void(WebServer* server)> handler; // Callback function to process request
 
 		Route(const char* ep,
 				const char* path,
 				const char* type = "text/html",
 				HttpMethod httpMethod = HttpMethod::GET,
-				std::function<void()> callback = nullptr) // nullptr default means no specific function, just serve the file
+				std::function<void(WebServer* server)> callback = nullptr) // nullptr default means no specific function, just serve the file
 			: endpoint(ep),
 			filePath(path),
 			contentType(type),

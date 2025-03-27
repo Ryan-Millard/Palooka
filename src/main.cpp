@@ -6,7 +6,49 @@
 const PalookaNetwork::Route AP_ROUTES[]{
 	/* Home Page */ {"/", "/index.html", "text/html"},
 	/* Controller Page */ {"/controller", "/controller.html", "text/html"},
-	/* Setup Page */ {"/setup", "/setup.html", "text/html"}
+	/* Setup Page */ {"/setup", "/setup.html", "text/html"},
+	/* Setup Page */ {"/setup", "/setup.html", "text/html", PalookaNetwork::HttpMethod::POST, [](WebServer* server){
+		// Check for a raw body
+		if (!server->hasArg("plain")) {
+			server->send(400, "text/plain", "Bad Request: no data received");
+			return;
+		}
+
+		// Get the raw JSON payload
+		String payload = server->arg("plain");
+
+		// Parse the JSON payload
+		StaticJsonDocument<200> doc;
+		DeserializationError error = deserializeJson(doc, payload);
+		if(error) {
+			server->send(400, "text/plain", "Invalid JSON");
+			return;
+		}
+
+		// Extract data from the JSON document
+		const char* name = doc["name"];
+		const char* password = doc["password"];
+
+		if(!name || !password) {
+			server->send(400, "text/plain", "Bad Request: Missing name or password");
+			return;
+		}
+
+		Serial.println("Received POST data:");
+		Serial.print("Name: ");
+		Serial.println(name);
+		Serial.print("Password: ");
+		Serial.println(password);
+
+		const char* jsonResponse{
+			R"delimiter(
+{
+    "status": "ok"
+}
+			)delimiter"
+		};
+		server->send(200, "application/json", jsonResponse);
+	}}
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 
