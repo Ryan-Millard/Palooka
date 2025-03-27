@@ -20,15 +20,20 @@ namespace PalookaNetwork
 			return false;
 		}
 
-		if(!WiFi.softAP(SSID.c_str())) // Start the ESP32 as an access point
+		Preferences preferences;
+		// Initialize preferences with the namespace "MyApp"
+		preferences.begin("Palooka", false);  // Read-write mode
+
+		String AP_Name = preferences.getString("AP_Name", SSID.c_str()); // SSID is default SSID for the AP
+		String AP_Password = preferences.getString("AP_Password", ""); // No password as the default
+
+		preferences.end(); // Close the preferences
+
+		if(!WiFi.softAP(AP_Name, AP_Password)) // Start the ESP32 as an access point
 		{
 			Serial.println("Failed to start Access Point");
 			return false;
 		}
-
-		Serial.println("Access Point Started");
-		Serial.println("SSID: " + SSID);
-		Serial.println("IP Address: " + WiFi.softAPIP().toString());
 
 		// Start the DNS server to redirect all domain requests to the AP's IP.
 		dnsServer.start(DNS_SERVER_PORT, "*", WiFi.softAPIP());

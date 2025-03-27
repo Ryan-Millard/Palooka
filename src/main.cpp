@@ -1,4 +1,6 @@
 #include <ArduinoJson.h>
+#include <Preferences.h>
+
 #include <PalookaBot/FlipperBot.h>
 #include "AccessPoint.h"
 
@@ -102,6 +104,16 @@ const PalookaNetwork::Route AP_ROUTES[]{
 		Serial.println(name);
 		Serial.print("Password: ");
 		Serial.println(password);
+
+		Preferences preferences;
+		// Initialize preferences with the namespace "MyApp"
+		preferences.begin("Palooka", false);  // Read-write mode
+
+		// Save the user's input
+		preferences.putString("AP_Name", name);
+		preferences.putString("AP_Password", password);
+
+		preferences.end(); // Close the preferences
 
 		const char* jsonResponse{
 			R"delimiter(
