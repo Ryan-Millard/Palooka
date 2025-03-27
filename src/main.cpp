@@ -2,6 +2,47 @@
 #include <PalookaBot/FlipperBot.h>
 #include "AccessPoint.h"
 
+bool isValidPassword(const char* password)
+{
+	// Password must be at least 8 characters long
+	if (strlen(password) < 8) return false;
+
+	bool hasLower = false;
+	bool hasUpper = false;
+	bool hasNumber = false;
+	bool hasSpecial = false;
+
+	// Iterate through each character in the password
+	for (size_t i = 0; i < strlen(password); ++i) {
+		char c = password[i];
+
+		// Check for lowercase letter
+		if (c >= 'a' && c <= 'z') {
+			hasLower = true;
+		}
+		// Check for uppercase letter
+		else if (c >= 'A' && c <= 'Z') {
+			hasUpper = true;
+		}
+		// Check for digit
+		else if (c >= '0' && c <= '9') {
+			hasNumber = true;
+		}
+		// Check for special character (non-alphanumeric)
+		else {
+			hasSpecial = true;
+		}
+
+		// If all conditions are met, no need to check further
+		if (hasLower && hasUpper && hasNumber && hasSpecial) {
+			return true;
+		}
+	}
+
+	// Ensure all conditions are met
+	return hasLower && hasUpper && hasNumber && hasSpecial;
+}
+
 // Access Point, web server & web socket server
 const PalookaNetwork::Route AP_ROUTES[]{
 	/* Home Page */ {"/", "/index.html", "text/html"},
@@ -30,7 +71,29 @@ const PalookaNetwork::Route AP_ROUTES[]{
 		const char* password = doc["password"];
 
 		if(!name || !password) {
-			server->send(400, "text/plain", "Bad Request: Missing name or password");
+			const char* jsonResponse{
+				R"delimiter(
+				{
+						"status": "Bad Request",
+						"message": "Name and Password required"
+				}
+				)delimiter"
+			};
+			server->send(400, "application/json", jsonResponse);
+			return;
+		}
+
+		// Backend Password Validation
+		if(!isValidPassword(password)) {
+			const char* jsonResponse{
+				R"delimiter(
+				{
+						"status": "Bad Request",
+						"message": "Invalid password"
+				}
+				)delimiter"
+			};
+			server->send(400, "application/json", jsonResponse);
 			return;
 		}
 
@@ -42,9 +105,9 @@ const PalookaNetwork::Route AP_ROUTES[]{
 
 		const char* jsonResponse{
 			R"delimiter(
-{
-    "status": "ok"
-}
+			{
+					"status": "ok"
+			}
 			)delimiter"
 		};
 		server->send(200, "application/json", jsonResponse);
