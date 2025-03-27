@@ -14,6 +14,15 @@ function setUpdateBattery(percentage) {
 	battery.textContent = percentage + '%';
 }
 
+// Handle incoming WebSocket messages
 ws.addOnMessage((data) => {
-	console.log(data);
+	try {
+		const jsonData = JSON.parse(data);
+		if (jsonData.battery !== undefined) {
+			const percentage = jsonData.battery;  // Access the 'battery' field
+			setUpdateBattery(percentage);        // Update the battery UI
+		}
+	} catch (error) {
+		console.error('Error parsing WebSocket message:', error);
+	}
 });
