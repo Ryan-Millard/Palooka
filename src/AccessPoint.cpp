@@ -72,9 +72,10 @@ namespace PalookaNetwork
 		// Custom routes
 		for(size_t i{0}; i < NUM_ROUTES; i++)
 		{
-			const Route& route{ROUTES[i]};
-			server.on(route.endpoint, HTTP_GET, [this, route]() {
-				serveFile(route.filePath, route.contentType);
+			const auto& [endpoint, filePath, contentType, method, handler] = ROUTES[i];
+			server.on(endpoint, static_cast<HTTPMethod>(method), [this, filePath, contentType, handler]() {
+				if(handler) { handler(); }
+				serveFile(filePath, contentType);
 			});
 		}
 

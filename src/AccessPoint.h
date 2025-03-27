@@ -7,16 +7,39 @@
 #include <DNSServer.h>
 #include <LittleFS.h>
 #include <ArduinoJson.h>
+#include <functional>
 
 extern QueueHandle_t robotQueue;
 
 namespace PalookaNetwork
 {
+	enum HttpMethod {
+		GET = HTTP_GET,
+		POST = HTTP_POST,
+		PUT = HTTP_PUT,
+		DELETE = HTTP_DELETE,
+		PATCH = HTTP_PATCH
+	};
+
 	struct Route
 	{
 		const char* endpoint; // Server endpoint (URL)
 		const char* filePath; // File system path
 		const char* contentType; // Proper MIME type
+		HttpMethod method; // HTTP Request type
+		std::function<void()> handler; // Callback function to process request
+
+		Route(const char* ep,
+				const char* path,
+				const char* type = "text/html",
+				HttpMethod httpMethod = HttpMethod::GET,
+				std::function<void()> callback = nullptr) // nullptr default means no specific function, just serve the file
+			: endpoint(ep),
+			filePath(path),
+			contentType(type),
+			method(httpMethod),
+			handler(callback)
+		{}
 	};
 
 	struct CommandData {
