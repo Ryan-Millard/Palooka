@@ -135,7 +135,7 @@
 		</footer>
 
 		<script>
-			document.getElementById('setup-form').addEventListener('submit', function(e) {
+			document.getElementById('setup-form').addEventListener('submit', async function(e) {
 				e.preventDefault();
 
 				const name = document.getElementById('name').value;
@@ -155,7 +155,7 @@
 				}
 
 				const data = { name, password };
-				fetch('/setup', {
+				await fetch('/setup', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify(data)
@@ -192,8 +192,8 @@
 				return passwordRegex.test(password);
 			}
 
-			function requestRestart() {
-				fetch('/restart', { method: 'POST' })
+			async function requestRestart() {
+				await fetch('/restart', { method: 'POST' })
 					.then(response => response.json())
 					.then(data => {
 						if (data.status === 'ok') {
