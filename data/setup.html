@@ -97,7 +97,21 @@
 						</p>
 
 						<button class="formSubmitButton" type="submit">Submit</button>
+					</form>
 				</details>
+			</div>
+
+
+			<div class="block">
+				<h2>Battery Calibration</h2>
+				<p>
+					Calibrate our Palooka's battery to ensure optimal battery parametrics.
+				</p>
+				<ol>
+					<li>Initialise calibration</li>
+					<li>Await further instruction, comrade.</li>
+				</ol>
+				<button onclick="calibrateBattery()">Calibrate Battery</button>
 			</div>
 
 			<div class="block">
@@ -192,6 +206,21 @@
 						console.error('Error:', error);
 						alert("An error occurred while attempting to restart the Palooka, comrade!");
 					});
+			}
+
+			async function calibrateBattery() {
+				try {
+					const response = await fetch('/calibrateBattery', { method: 'GET' });
+					
+					if (!response.ok) {
+						throw new Error(`Network response was not ok: ${response.statusText}`);
+					}
+					
+					const result = await response.text();
+					console.log('Battery calibration initiated:', result);
+				} catch (error) {
+					console.error('Error during battery calibration:', error);
+				}
 			}
 		</script>
 	</body>
