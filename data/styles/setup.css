@@ -35,3 +35,9 @@ strong {
 	display: none;
 	margin: 3% auto 0;
 }
+
+.small-flag {
+	max-height: 30vw;
+	display: block;
+	margin: 0 auto;
+}
