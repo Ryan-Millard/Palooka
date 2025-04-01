@@ -23,10 +23,6 @@ namespace PalookaBot
 			// ========== GPIO Pins ==========
 			const byte EN8V_PIN; // Motor enabler pin
 			const byte EN5V_PIN; // Servo
-								 // Read battery charge with analogRead(36)
-								 // 4.5V = charging, otherwise battery
-								 // 4.2 = fully charged battery
-								 // 3.7 = flat for battery - switch off device
 			const byte DVR_SLEEP_PIN;   // Motors use for charging - switch to low when charging
 
 			// ========== Flipper/Arm ==========
@@ -95,6 +91,9 @@ namespace PalookaBot
 			void stopMoving() const;
 
 			int getBatteryPercentage() const;
+								 // 4.5V = charging, otherwise battery
+								 // 4.2 = fully charged battery
+								 // 3.7 = flat for battery - switch off device
 
 			// ========== Cleanup ==========
 			static void destroyInstance();

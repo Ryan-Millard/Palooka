@@ -54,7 +54,10 @@
 			<div id="setup-protocols" class="block">
 				<h2>Setup Protocols</h2>
 
-				<p class="emphasis">"Precision in installation breeds excellence in operation!" - Sovietron mk7</p>
+				<div class="emphasis">
+					<img class="small-flag" src="img/star.svg" alt="">
+					"Precision in installation breeds excellence in operation!" - Sovietron mk7
+				</div>
 
 				<p>
 					Activate synchronization protocol by following these optimized parameters. 
@@ -94,7 +97,21 @@
 						</p>
 
 						<button class="formSubmitButton" type="submit">Submit</button>
+					</form>
 				</details>
+			</div>
+
+
+			<div class="block">
+				<h2>Battery Calibration</h2>
+				<p>
+					Calibrate our Palooka's battery to ensure optimal battery parametrics.
+				</p>
+				<ol>
+					<li>Initialise calibration</li>
+					<li>Await further instruction, comrade.</li>
+				</ol>
+				<button onclick="calibrateBattery()">Calibrate Battery</button>
 			</div>
 
 			<div class="block">
@@ -118,7 +135,7 @@
 		</footer>
 
 		<script>
-			document.getElementById('setup-form').addEventListener('submit', function(e) {
+			document.getElementById('setup-form').addEventListener('submit', async function(e) {
 				e.preventDefault();
 
 				const name = document.getElementById('name').value;
@@ -138,7 +155,7 @@
 				}
 
 				const data = { name, password };
-				fetch('/setup', {
+				await fetch('/setup', {
 						method: 'POST',
 						headers: { 'Content-Type': 'application/json' },
 						body: JSON.stringify(data)
@@ -175,8 +192,8 @@
 				return passwordRegex.test(password);
 			}
 
-			function requestRestart() {
-				fetch('/restart', { method: 'POST' })
+			async function requestRestart() {
+				await fetch('/restart', { method: 'POST' })
 					.then(response => response.json())
 					.then(data => {
 						if (data.status === 'ok') {
@@ -189,6 +206,21 @@
 						console.error('Error:', error);
 						alert("An error occurred while attempting to restart the Palooka, comrade!");
 					});
+			}
+
+			async function calibrateBattery() {
+				try {
+					const response = await fetch('/calibrateBattery', { method: 'GET' });
+					
+					if (!response.ok) {
+						throw new Error(`Network response was not ok: ${response.statusText}`);
+					}
+					
+					const result = await response.text();
+					console.log('Battery calibration initiated:', result);
+				} catch (error) {
+					console.error('Error during battery calibration:', error);
+				}
 			}
 		</script>
 	</body>
