@@ -128,6 +128,9 @@ const PalookaNetwork::Route AP_ROUTES[]{
 		server->send(200, "application/json", "{\"status\":\"ok\"}");
 		delay(1000); // Ensure there is enough time to send & read response in browser
 		ESP.restart();
+	}},
+	/* Calibrate Battery */ {"/calibrateBattery", "/setup.html", "text/html", PalookaNetwork::HttpMethod::GET, [](WebServer* server){
+		server->send(200, "text/plain", "Calibrating battery...");
 	}}
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
