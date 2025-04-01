@@ -1,43 +1,88 @@
+/* Setup Page Specific Styles */
+
 ol {
-	color: var(--cyan-light);
-	padding-left: 2rem;
-	margin: 1.5rem 0;
+  color: var(--cyan-light);
+  padding-left: 2rem;
+  margin: 1.5rem 0;
 }
 
 li {
-	margin: 0.75rem 0;
-	padding-left: 0.5rem;
-	border-left: 3px solid var(--cyan-dark);
+  margin: 0.75rem 0;
+  padding-left: 0.5rem;
+  border-left: 3px solid var(--cyan-dark);
 }
 
 strong {
-	color: var(--cyan-light);
-	font-weight: 700;
+  color: var(--cyan-light);
+  font-weight: 700;
 }
 
 .formSubmitButton {
-	margin-bottom: 3%;
+  margin-bottom: 3%;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--cyan-light);
+  background: var(--black);
+  color: var(--cyan-light);
+  transition: background var(--transition-speed), color var(--transition-speed);
+}
+
+.formSubmitButton:hover {
+  background: var(--cyan-light);
+  color: var(--black);
 }
 
 #form-message {
-	display: none;
-	margin: 30px auto 0;
-	font-size: 1em;
-	color: var(--red-warning);
+  display: none;
+  margin: 30px auto 0;
+  font-size: 1em;
+  color: var(--red-warning);
+  text-align: center;
 }
 
 .passwordRequirements {
-	width: 80%;
-	margin: 10px auto;
+  width: 90%;
+  margin: 10px auto;
+  padding: 0.5rem;
+  border: 2px solid var(--cyan-light);
+  background: var(--black);
 }
 
 #restartButton {
-	display: none;
-	margin: 3% auto 0;
+  display: none;
+  margin: 3% auto 0;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--cyan-light);
+  background: var(--black);
+  color: var(--cyan-light);
+  transition: background var(--transition-speed), color var(--transition-speed);
+}
+
+#restartButton:hover {
+  background: var(--cyan-light);
+  color: var(--black);
 }
 
 .small-flag {
-	max-height: 30vw;
-	display: block;
-	margin: 0 auto;
+  max-height: 30vw;
+  display: block;
+  margin: 0.5rem auto;
 }
+
+/* Center form elements for mobile */
+.centered-children {
+  text-align: center;
+}
+
+.textInput {
+  font-size: 0.9em;
+  background-color: transparent;
+  color: var(--white);
+  border: none;
+  border-bottom: 2px solid var(--cyan-light);
+  width: 90%;
+  padding: 10px;
+  margin: 0.5rem auto;
+  display: block;
+  outline: none;
+}
+
