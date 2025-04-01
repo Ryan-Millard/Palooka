@@ -1,13 +1,16 @@
+main {
+	all: unset;
+}
+
 body {
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
 
 #controls-container {
-	width: 100vw; /* Fallback */
-	width: 100lvw;
-	height: 100vh; /* Fallback */
-	height: 100lvh;
+	height: fit-content;
+	min-width: max(100vw, 100lvw);
+	min-height: max(100vh, 100lvh);
 	margin-top: 5vh;
 	display: flex;
 	flex-direction: column;
@@ -242,4 +245,11 @@ body {
 	width: 10%;
 	background: var(--cyan-light);
 	box-shadow: 0 0 15px var(--cyan-dark);
+}
+
+details.clickable > summary {
+	margin: 0;
+}
+#controls-container .btn {
+	margin: 0;
 }

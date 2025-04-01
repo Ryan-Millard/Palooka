@@ -7,19 +7,21 @@
 	</head>
 	<body>
 		<header>
-			<img src="img/star.svg" alt="">
-			<h1>Palooka</h1>
+			<div class="header-container">
+				<img src="img/star.svg" alt="Palooka Logo">
+				<h1>Palooka</h1>
+			</div>
 		</header>
 
-		<main style="padding: 2rem 0;">
+		<main>
 			<div id="controls-container">
-				<details open id="controlsDetails">
+				<details open class="clickable" id="controlsDetails">
 					<summary class="clickable"></summary>
 					<div class="control-panel">
 						<input type="checkbox" id="fullscreenToggler" onchange="toggleFullscreen(document.getElementById('controls-container'))">
-						<label for="fullscreenToggler" class="clickable"></label>
-						<button id="modeToggle" onclick="toggleMode()">Edit</button>
-						<select id="inputType" class="clickable">
+						<label for="fullscreenToggler" class="btn"></label>
+						<button id="modeToggle" class="btn" onclick="toggleMode()">Edit</button>
+						<select id="inputType" class="btn">
 							<option value="joystick">Joystick</option>
 							<option value="sliders">Sliders</option>
 						</select>
@@ -39,7 +41,7 @@
 
 					<div class="control-element button-element" id="button2" data-aspect-ratio="2">
 						<div class="button-container">
-							<button id="flipButton" class="control-button" onclick="sendFlipData()">Flip</button>
+							<button id="flipButton" class="control-button btn" onclick="sendFlipData()">Flip</button>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
@@ -106,9 +108,11 @@
 		<div class="footer-spacer"></div>
 
 		<footer>
-			<a href="/">Home</a>
-			<a href="setup">Setup</a>
-			<a class="current" href="controller">Controller</a>
+			<nav class="mobile-nav">
+				<a href="/" >Home</a>
+				<a href="/setup">Setup</a>
+				<a class="current" href="/controller">Controller</a>
+			</nav>
 		</footer>
 
 		<script type="module" src="scripts/controller_web_socket.js"></script>
