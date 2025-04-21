@@ -1,13 +1,16 @@
+main {
+	all: unset;
+}
+
 body {
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
 
 #controls-container {
-	width: 100vw; /* Fallback */
-	width: 100lvw;
-	height: 100vh; /* Fallback */
-	height: 100lvh;
+	height: fit-content;
+	min-width: max(100vw, 100lvw);
+	min-height: max(100vh, 100lvh);
 	margin-top: 5vh;
 	display: flex;
 	flex-direction: column;
@@ -66,25 +69,25 @@ body {
 	display: none;
 }
 
-.pencil {
-	z-index: 1000;
+.edit-text {
+	color: var(--white);
+	font-size: 12px;
+	padding: 0 5%;
 	border: 1px solid var(--cyan-light);
-	height: 1em;
-	width: 1em;
-	background-image: url('../img/pencil.svg');
-	background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-	box-shadow: none;
+	background: var(--black);
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	display: none;
+	height: 20px;
+}
+.pencil {
+	height: 12px;
 }
 
 .edit-mode .resize-handle,
 .edit-mode .rotate-handle,
-.edit-mode .pencil {
+.edit-mode .edit-text {
 	display: block;
 }
 
@@ -118,15 +121,16 @@ body {
 .slider {
 	-webkit-appearance: none;
 	width: 100%;
-	border-radius: 25px;
+	border-radius: 40px;
 	background-color: var(--black);
 	box-shadow: 0 0 15px var(--cyan-dark);
 	border: 3px solid var(--cyan-light);
+	padding-right: 10px;
 }
 .slider::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	appearance: none;
-	width: 2em; /* Thumb width */
+	height: max(60px, 1em);
 	aspect-ratio: 1/1;
 	border: 3px solid var(--cyan-light);
 	border-radius: 50%;
@@ -142,7 +146,7 @@ body {
 .slider::-moz-range-thumb {
 	-webkit-appearance: none;
 	appearance: none;
-	width: 2em; /* Thumb width */
+	height: max(60px, 1em);
 	aspect-ratio: 1/1;
 	border: 3px solid var(--cyan-light);
 	border-radius: 50%;
@@ -158,7 +162,7 @@ body {
 .slider::-ms-thumb {
 	-webkit-appearance: none;
 	appearance: none;
-	width: 2em; /* Thumb width */
+	height: max(60px, 1em);
 	aspect-ratio: 1/1;
 	border: 3px solid var(--cyan-light);
 	border-radius: 50%;
@@ -225,7 +229,9 @@ body {
 }
 
 #battery {
-	width: 100%;
+	content: "100%";
+	width: 95%;
+	height: 100%;
 	aspect-ratio: 2/1;
 	border: 3px solid var(--cyan-light);
 	box-shadow: 0 0 15px var(--cyan-dark);
@@ -237,9 +243,16 @@ body {
 	font-size: 2em;
 }
 #battery-pos-terminal {
-	width: 20px;
+	width: 5%;
 	height: 30%;
 	width: 10%;
 	background: var(--cyan-light);
 	box-shadow: 0 0 15px var(--cyan-dark);
+}
+
+details.clickable > summary {
+	margin: 0;
+}
+#controls-container .btn {
+	margin: 0;
 }

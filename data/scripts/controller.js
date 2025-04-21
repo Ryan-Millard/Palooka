@@ -68,7 +68,7 @@ function startDrag(e) {
 		e.target.classList.contains('slider') ||
 		e.target.classList.contains('joystick') ||
 		e.target.classList.contains('joystick-handle') ||
-		e.target.classList.contains('pencil')) {
+		e.target.classList.contains('edit-text')) {
 		return;
 	}
 	e.preventDefault();
@@ -132,9 +132,7 @@ function handleDrag(e) {
 		const rotatedDeltaY = -deltaX * sinRot + deltaY * cosRot;
 
 		// Resize with aspect ratio for button, joystick, and slider elements if applicable
-		if (activeElement.classList.contains('button-element') ||
-			activeElement.classList.contains('joystick-element') ||
-			activeElement.classList.contains('slider-element')) {
+		if (activeElement.classList.contains('joystick-element')) {
 			const aspectRatio = parseFloat(activeElement.getAttribute('data-aspect-ratio'));
 			let newWidth = Math.max(40, startWidth + rotatedDeltaX);
 			let newHeight = newWidth / aspectRatio;
@@ -423,10 +421,17 @@ function setDefaultLayout() {
 		sliderLeft.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderLeft.style.height = cellHeight - (padding * 2) + 'px';
 
-		// SLIDER RIGHT - takes up 1 column, row 4
+		// FLIPPER SLIDER - takes up 1 column, row 4
+		const sliderCenter = document.getElementById('sliderCenter');
+		sliderCenter.style.left = padding + 'px';
+		sliderCenter.style.top = (cellHeight * 3) + padding + 'px';
+		sliderCenter.style.width = (cellWidth * 2) - (padding * 2) + 'px';
+		sliderCenter.style.height = cellHeight - (padding * 2) + 'px';
+
+		// SLIDER RIGHT - takes up 1 column, row 5
 		const sliderRight = document.getElementById('sliderRight');
 		sliderRight.style.left = padding + 'px';
-		sliderRight.style.top = (cellHeight * 3) + padding + 'px';
+		sliderRight.style.top = (cellHeight * 4) + padding + 'px';
 		sliderRight.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderRight.style.height = cellHeight - (padding * 2) + 'px';
 

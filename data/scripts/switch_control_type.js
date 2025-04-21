@@ -17,7 +17,6 @@ function changeInputType() {
 document.getElementById('inputType').addEventListener('change', function() {
 	const selectedType = this.value;
 	localStorage.setItem('controlType', selectedType);
-	// Optionally, update the UI based on the selection
 	changeInputType();
 });
 

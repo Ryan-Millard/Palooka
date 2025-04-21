@@ -9,17 +9,19 @@
 	</head>
 	<body>
 		<header>
-			<img src="img/star.svg" alt="">
-			<h1>Palooka</h1>
+			<div class="header-container">
+				<img src="img/star.svg" alt="Palooka Logo">
+				<h1>Palooka</h1>
+			</div>
 		</header>
 
-		<main>
-			<div class="block">
+		<main role="main">
+			<!-- Welcome Block -->
+			<section class="block">
 				<h2>Welcome New Recruit!</h2>
 				<p>
-					Congratulations on the activation of our Palooka, comrade!
-					To get started, let's walk through the initial setup and customization process.
-					Follow the steps below to ensure a smooth and successful configuration.
+				Congratulations on the activation of our Palooka, comrade! To get started, let's walk through the initial setup and customization process.
+				Follow the steps below to ensure a smooth and successful configuration.
 				</p>
 
 				<details class="clickable">
@@ -27,13 +29,13 @@
 					<ol>
 						<li>
 							Start by verifying that our Palooka is properly powered.
-							If it isn't already on, <u>turn on our switch underneath the Palooka</u>.</li>
-						<li>
-							Next, ensure we are connected to the Palooka.
-							This can be verified by <u>accessing the Wi-Fi connection panel</u> on our device (likely a cellphone).
+							If it isn't already on, <u>turn on our switch underneath the Palooka</u>.
 						</li>
 						<li>
-							Proceed by accessing the configuration panel to rename our Palooka and set a secure password for it.
+							Ensure we are connected to the Palooka by accessing the Wi-Fi connection panel on our device.
+						</li>
+						<li>
+							Access the configuration panel to rename our Palooka and set a secure password.
 							<a href="#setup-protocols">Click here to get started, comrade!</a>
 						</li>
 						<li>
@@ -47,30 +49,26 @@
 				</details>
 
 				<p class="emphasis">
-					"Comrades, build with pride! Let every robot we create honor those before us—our power is in unity, our future in progress." - Marcs Machine
+				"Comrades, build with pride! Let every robot we create honor those before us—our power is in unity, our future in progress." - Marcs Machine
 				</p>
-			</div>
+			</section>
 
-			<div id="setup-protocols" class="block">
+			<!-- Setup Protocols Block -->
+			<section id="setup-protocols" class="block">
 				<h2>Setup Protocols</h2>
-
 				<div class="emphasis">
-					<img class="small-flag" src="img/star.svg" alt="">
+					<img class="small-flag" src="img/star.svg" alt="Setup Protocol Icon">
 					"Precision in installation breeds excellence in operation!" - Sovietron mk7
 				</div>
-
 				<p>
-					Activate synchronization protocol by following these optimized parameters. 
-					Ensure all configurations are aligned with the necessary specifications for flawless integration.
+				Activate synchronization protocol by following these optimized parameters. Ensure all configurations are aligned with the necessary specifications for flawless integration.
 				</p>
-
 				<ol>
 					<li>Access our configuration panel to rename our Palooka and set its password.</li>
 				</ol>
 
-				<details>
-					<summary class="clickable">Intialize Secure Synchronization</summary>
-
+				<details class="clickable">
+					<summary>Intialize Secure Synchronization</summary>
 					<details class="passwordRequirements">
 						<summary class="clickable">Password Requirements</summary>
 						<ol>
@@ -85,143 +83,136 @@
 					<form id="setup-form" class="centered-children">
 						<div id="form-message"></div>
 						<button id="restartButton" type="button" onclick="requestRestart()">Restart Palooka</button>
-
 						<p>
-							<label for="name">Device Name:</label>
-							<input type="text" class="textInput" id="name" name="name" placeholder="Marcs-Machine" required>
+						<label for="name">Device Name:</label>
+						<input type="text" class="textInput" id="name" name="name" placeholder="Marcs-Machine" required>
 						</p>
-
 						<p>
-							<label for="password">Password:</label>
-							<input type="password" class="textInput" id="password" name="password" placeholder="Unity=Strength*100" required>
+						<label for="password">Password:</label>
+						<input type="password" class="textInput" id="password" name="password" placeholder="Unity=Strength*100" required>
 						</p>
-
 						<button class="formSubmitButton" type="submit">Submit</button>
 					</form>
 				</details>
-			</div>
+			</section>
 
-
-			<div class="block">
+			<!-- Battery Calibration Block -->
+			<section class="block">
 				<h2>Battery Calibration</h2>
 				<p>
-					Calibrate our Palooka's battery to ensure optimal battery parametrics.
+				Calibrate our Palooka's battery to ensure optimal battery parametrics.
 				</p>
 				<ol>
 					<li>Initialise calibration</li>
 					<li>Await further instruction, comrade.</li>
 				</ol>
-				<button onclick="calibrateBattery()">Calibrate Battery</button>
-			</div>
+				<button class="btn" onclick="calibrateBattery()">Calibrate Battery</button>
+			</section>
 
-			<div class="block">
+			<!-- Robot Control Block -->
+			<section class="block">
 				<h2>Robot Control</h2>
 				<p>
-					Customize the robot's operational parameters to fit our specific needs and preferences.
+				Customize the robot's operational parameters to fit our specific needs and preferences.
 				</p>
 				<ol>
-					<li>Customise robot's controller for optimized user interaction</li>
+					<li>Customize robot's controller for optimized user interaction</li>
 					<li>Adjust mobility settings for environment-specific tasks</li>
 				</ol>
 				<p>
-					<a href="/controller">View Advanced Settings</a>
+				<a class="btn" href="/controller">View Advanced Settings</a>
 				</p>
-			</div>
+			</section>
 		</main>
+
 		<footer>
-			<a href="/">Home</a>
-			<a class="current" href="/setup">Setup</a>
-			<a href="/controller">Controller</a>
+			<nav class="mobile-nav">
+				<a href="/" >Home</a>
+				<a class="current" href="/setup">Setup</a>
+				<a href="/controller">Controller</a>
+			</nav>
 		</footer>
 
 		<script>
 			document.getElementById('setup-form').addEventListener('submit', async function(e) {
-				e.preventDefault();
+							e.preventDefault();
+							const name = document.getElementById('name').value;
+							const password = document.getElementById('password').value;
+							const formMessage = document.getElementById('form-message');
 
-				const name = document.getElementById('name').value;
-				const password = document.getElementById('password').value;
-				const formMessage = document.getElementById('form-message');
+							// Clear previous messages
+							formMessage.style.display = 'none';
+							formMessage.textContent = '';
 
-				// Clear previous messages
-				formMessage.style.display = 'none';
-				formMessage.textContent = '';
+							// Frontend Password Validation
+							const isValidPassword = validatePassword(password);
+							if (!isValidPassword) {
+											formMessage.style.display = 'block';
+											formMessage.textContent = "That's a bad password, comrade!";
+											return;
+										}
 
-				// Frontend Password Validation
-				const isValidPassword = validatePassword(password);
-				if (!isValidPassword) {
-					formMessage.style.display = 'block';
-					formMessage.textContent = "That's a bad password, comrade!";
-					return;
-				}
-
-				const data = { name, password };
-				await fetch('/setup', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify(data)
-					})
-					.then(response => response.json())
-					.then(result => {
-						// Handle the JSON response from the server
-						if (result.status === 'ok') {
-							// Success message from the server
-							formMessage.style.display = 'block';
-							formMessage.textContent = "Setup successful, comrade! Press the button below to apply the changes.";
-							formMessage.style.color = 'var(--green-success)';
-							document.getElementById('restartButton').style.display = 'block';
-						} else {
-							// Error message from the server
-							formMessage.style.display = 'block';
-							formMessage.textContent = result.message || 'An error occurred. Please try again.';
-							formMessage.style.color = 'var(--red-warning)';
-							document.getElementById('restartButton').style.display = 'none';
-						}
-					})
-					.catch(error => {
-						// Handle network errors or other issues
-						console.error('Error:', error);
-						formMessage.style.display = 'block';
-						formMessage.textContent = 'An error occurred. Please try again.';
-						formMessage.style.color = 'var(--red-warning)';
-					});
-			});
+							const data = { name, password };
+							await fetch('/setup', {
+											method: 'POST',
+											headers: { 'Content-Type': 'application/json' },
+											body: JSON.stringify(data)
+										})
+								.then(response => response.json())
+								.then(result => {
+												if (result.status === 'ok') {
+																formMessage.style.display = 'block';
+																formMessage.textContent = "Setup successful, comrade! Press the button below to apply the changes.";
+																formMessage.style.color = 'var(--green-success)';
+																document.getElementById('restartButton').style.display = 'block';
+															} else {
+																			formMessage.style.display = 'block';
+																			formMessage.textContent = result.message || 'An error occurred. Please try again.';
+																			formMessage.style.color = 'var(--red-warning)';
+																			document.getElementById('restartButton').style.display = 'none';
+																		}
+											})
+								.catch(error => {
+												console.error('Error:', error);
+												formMessage.style.display = 'block';
+												formMessage.textContent = 'An error occurred. Please try again.';
+												formMessage.style.color = 'var(--red-warning)';
+											});
+						});
 
 			function validatePassword(password) {
-				// Ensure password is at least 8 characters long, with at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.
-				const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-				return passwordRegex.test(password);
-			}
+							const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+							return passwordRegex.test(password);
+						}
 
 			async function requestRestart() {
-				await fetch('/restart', { method: 'POST' })
-					.then(response => response.json())
-					.then(data => {
-						if (data.status === 'ok') {
-							alert("Palooka is restarting, comrade...");
-						} else {
-							alert("Error restarting Palooka.");
+							await fetch('/restart', { method: 'POST' })
+								.then(response => response.json())
+								.then(data => {
+												if (data.status === 'ok') {
+																alert("Palooka is restarting, comrade...");
+															} else {
+																			alert("Error restarting Palooka.");
+																		}
+											})
+								.catch(error => {
+												console.error('Error:', error);
+												alert("An error occurred while attempting to restart the Palooka, comrade!");
+											});
 						}
-					})
-					.catch(error => {
-						console.error('Error:', error);
-						alert("An error occurred while attempting to restart the Palooka, comrade!");
-					});
-			}
 
 			async function calibrateBattery() {
-				try {
-					const response = await fetch('/calibrateBattery', { method: 'GET' });
-					
-					if (!response.ok) {
-						throw new Error(`Network response was not ok: ${response.statusText}`);
-					}
-					
-					const result = await response.text();
-					console.log('Battery calibration initiated:', result);
-				} catch (error) {
-					console.error('Error during battery calibration:', error);
-				}
-			}
+							try {
+											const response = await fetch('/calibrateBattery', { method: 'GET' });
+											if (!response.ok) {
+															throw new Error(`Network response was not ok: ${response.statusText}`);
+														}
+											const result = await response.text();
+											console.log('Battery calibration initiated:', result);
+										} catch (error) {
+														console.error('Error during battery calibration:', error);
+													}
+						}
 		</script>
 	</body>
 </html>
