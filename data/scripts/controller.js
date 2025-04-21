@@ -260,69 +260,81 @@ function moveJoystickMouse(e) {
 	if (!joystickActive || isEditMode) return;
 	const joystick = document.querySelector('.joystick');
 	const joystickRect = joystick.getBoundingClientRect();
-	const relX = e.clientX - joystickRect.left;
-	const relY = e.clientY - joystickRect.top;
-	updateJoystickPosition(relX, relY);
+	updateJoystickPosition(e.clientX, e.clientY);
 }
 
 function moveJoystickTouch(e) {
 	if (!joystickActive || isEditMode) return;
 	e.preventDefault();
-	const joystick = document.querySelector('.joystick');
-	const joystickRect = joystick.getBoundingClientRect();
-	const relX = e.touches[0].clientX - joystickRect.left;
-	const relY = e.touches[0].clientY - joystickRect.top;
-	updateJoystickPosition(relX, relY);
+	updateJoystickPosition(e.touches[0].clientX, e.touches[0].clientY);
 }
 
-function updateJoystickPosition(relX, relY) {
-	const handle = document.querySelector('.joystick-handle');
-	const joystick = document.querySelector('.joystick');
-	const joystickRect = joystick.getBoundingClientRect();
+function prepareJoystickCoordinates(x, y) {
+	const joystickRect = document.querySelector('.joystick').getBoundingClientRect();
+	// NOTE - this is not a normal cartesian plane. Q1 is bottom-left of cartesian plane.
+	// Keep values within the bounds of the joystick
+	let relX = Math.min(x, joystickRect.right);
+	relX = Math.max(relX, joystickRect.left);
+	let relY = Math.min(y, joystickRect.bottom);
+	relY = Math.max(relY, joystickRect.top);
+
+	// Account for distance from origin (top-left corner of screen)
+	// This operation basically moves the touch area (joystick bounds) to the top-left
+	relX -= joystickRect.left;
+	relY -= joystickRect.top;
+
+	// VOLATILE
+	// Turn joystick into a cartesian plane by splitting x and y in 2
+	// This creates 4 quarters, with positive and negative values
+	// In relation to the screen, the center of the joystick would be in the top-left (0, 0)
+	relX -= joystickRect.width/2;
+	relY -= joystickRect.height/2;
+	// VOLATILE
+
+	/*
+	 * Convert to cartesian plane coordinate system
+	 * x & y values based on cartesian planes
+	 *     Normal (Cartesian):
+	 *     x<0; y>0 | x>0; y>0
+	 *     -------------------
+	 *     x<0; y<0 | x>0; y<0
+	 *                 (+)
+	 *                  |
+	 *             (-) --- (+)
+	 *                  |
+	 *                 (-)
+	 * --------------------------------------------
+	 *     Current (Computer):
+	 *     x<0; y<0 | x>0; y<0
+	 *     -------------------
+	 *     x<0; y>0 | x>0; y>0
+	 *                 (-)
+	 *                  |
+	 *             (-) --- (+)
+	 *                  | 	Content
+	 *                 (+)	Here
+	 * Notice that the y-values are different
+	 */
+	relY = -relY;
+
+	// Cartesian plane rotation formula
+	// Rotate a point (x, y) by angle θ (in radians) counterclockwise around the origin:
+	// x′ = x * Math.cos(θ) - y * Math.sin(θ);
+	// y′ = x * Math.sin(θ) + y * Math.cos(θ);
+	// Get current rotation of joystickControl in radians
 	const joystickElement = document.getElementById('joystickControl');
+	const deg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
+	const theta = (deg * Math.PI) / 180;
+	// Apply the rotation
+	const finalX = relX * Math.cos(theta) - relY * Math.sin(theta);
+	const finalY = relX * Math.sin(theta) + relY * Math.cos(theta);
 
-	// Calculate joystick center
-	joystickCenter = {
-		x: joystickRect.width / 2,
-		y: joystickRect.height / 2
-	};
-
-	// Get current rotation in radians
-	const rotationDeg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
-	const rotationRad = (rotationDeg * Math.PI) / 180;
-
-	// Calculate delta from center in the rotated coordinate system
-	let deltaX = relX - joystickCenter.x;
-	let deltaY = relY - joystickCenter.y;
-
-	// Apply reverse rotation to get the deltas in the joystick's local coordinate system
-	// This ensures the handle appears under the user's finger
-	const cosRot = Math.cos(rotationRad);
-	const sinRot = Math.sin(rotationRad);
-	const rotatedDeltaX = deltaX * cosRot + deltaY * sinRot;
-	const rotatedDeltaY = -deltaX * sinRot + deltaY * cosRot;
-
-	// Calculate distance (constrained by max distance)
-	const distance = Math.min(maxJoystickDistance,
-		Math.sqrt(rotatedDeltaX * rotatedDeltaX + rotatedDeltaY * rotatedDeltaY));
-
-	// Calculate angle in local coordinate system
-	const angle = Math.atan2(rotatedDeltaY, rotatedDeltaX);
-
-	// Calculate new position
-	const newX = distance * Math.cos(angle);
-	const newY = distance * Math.sin(angle);
-
-	// Set handle position
-	handle.style.transform = `translate(calc(-50% + ${newX}px), calc(-50% + ${newY}px))`;
-
-	// For sending data to the device, use the original (screen coordinate) deltas
-	// normalized to the range [-1, 1]
-	const joystickX = Math.max(-1, Math.min(1, deltaX / maxJoystickDistance));
-	const joystickY = Math.max(-1, Math.min(1, deltaY / maxJoystickDistance));
-
+	return [finalX, finalY];
+}
+function updateJoystickPosition(x, y) {
 	// Send normalized values
-	sendJoystickData(joystickX, joystickY);
+	const preparedData = prepareJoystickCoordinates(x, y);
+	sendJoystickData(...preparedData);
 }
 
 function stopJoystickMouse() {
