@@ -271,7 +271,6 @@ function moveJoystickTouch(e) {
 
 function prepareJoystickCoordinates(x, y) {
 	const joystickRect = document.querySelector('.joystick').getBoundingClientRect();
-	// NOTE - this is not a normal cartesian plane. Q1 is bottom-left of cartesian plane.
 	// Keep values within the bounds of the joystick
 	let relX = Math.min(x, joystickRect.right);
 	relX = Math.max(relX, joystickRect.left);
@@ -331,10 +330,58 @@ function prepareJoystickCoordinates(x, y) {
 
 	return [finalX, finalY];
 }
+function updateHandlePosition(x, y) {
+  const handle = document.querySelector('.joystick-handle');
+  const joystick = document.querySelector('.joystick');
+  const joystickRect = joystick.getBoundingClientRect();
+  const joystickElement = document.getElementById('joystickControl');
+
+  // Calculate joystick center
+  joystickCenter = {
+    x: joystickRect.width / 2,
+    y: joystickRect.height / 2
+  };
+
+  // Get current rotation in radians
+  const rotationDeg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
+  const rotationRad = (rotationDeg * Math.PI) / 180;
+
+  // Calculate relative position from touch point to joystick top-left
+  const relX = x - joystickRect.left;
+  const relY = y - joystickRect.top;
+
+  // Calculate delta from center
+  let deltaX = relX - joystickCenter.x;
+  let deltaY = relY - joystickCenter.y;
+
+  // Apply inverse rotation to align with joystick's coordinate system
+  const cosRot = Math.cos(-rotationRad);
+  const sinRot = Math.sin(-rotationRad);
+  const localDeltaX = deltaX * cosRot - deltaY * sinRot;
+  const localDeltaY = deltaX * sinRot + deltaY * cosRot;
+
+  // Calculate distance from center in local coordinates
+  const distance = Math.sqrt(localDeltaX * localDeltaX + localDeltaY * localDeltaY);
+
+  // If distance exceeds max, scale down while preserving direction
+  const constrainedDistance = Math.min(distance, maxJoystickDistance);
+
+  // Calculate scaling factor (if needed)
+  const scaleFactor = distance > 0 ? constrainedDistance / distance : 0;
+
+  // Apply scaling to constrain within bounds
+  const constrainedLocalX = localDeltaX * scaleFactor;
+  const constrainedLocalY = localDeltaY * scaleFactor;
+
+  // Translate to handle position (centered at 50%)
+  handle.style.transform = `translate(calc(-50% + ${constrainedLocalX}px), calc(-50% + ${constrainedLocalY}px))`;
+}
 function updateJoystickPosition(x, y) {
 	// Send normalized values
 	const preparedData = prepareJoystickCoordinates(x, y);
 	sendJoystickData(...preparedData);
+
+	updateHandlePosition(x, y);
 }
 
 function stopJoystickMouse() {
