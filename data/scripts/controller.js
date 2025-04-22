@@ -531,6 +531,7 @@ function setDefaultLayout() {
 		// SLIDER LEFT - takes up 1 column, row 3
 		const sliderLeft = document.getElementById('sliderLeft');
 		sliderLeft.style.left = padding + 'px';
+		sliderLeft.style.top = (cellHeight * 3.5) + padding + 'px';
 		sliderLeft.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderLeft.style.height = cellHeight - (padding * 2) + 'px';
 
@@ -544,7 +545,6 @@ function setDefaultLayout() {
 		// SLIDER RIGHT - takes up 1 column, row 5
 		const sliderRight = document.getElementById('sliderRight');
 		sliderRight.style.left = padding + 'px';
-		sliderRight.style.top = (cellHeight * 3.5) + padding + 'px';
 		sliderRight.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderRight.style.height = cellHeight - (padding * 2) + 'px';
 

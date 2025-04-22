@@ -68,7 +68,7 @@
 					<div class="control-element slider-element" id="sliderLeft" data-aspect-ratio="2">
 						<div class="slider-container">
 							<!-- Right Motor -->
-							<label id="rightMotorLabel" for="motorR">Right Motor</label>
+							<label id="rightMotorLabel" for="motorR">Right Wheel</label>
 							<input type="range" class="slider" id="motorR" min="-255" max="255" value="0"
 																								oninput="sendSliderData('R', this.value)"
 																								onmouseup="this.value=0; sendSliderData('R', 0)"
@@ -82,11 +82,11 @@
 					<div class="control-element always-visible-slider-element" id="sliderCenter" data-aspect-ratio="2">
 						<div class="slider-container">
 							<!-- Flipper Arm -->
+							<label id="flipperArmLabel" for="motorL">Flipper Arm</label>
 							<input type="range" class="slider" id="flipper" min="0" max="180" value="0"
 																							  oninput="sendSliderData('F', this.value)"
 																							  onmouseup="this.value=0; sendSliderData('F', 0)"
 																							  ontouchend="this.value=0; sendSliderData('F', 0)">
-							<label id="flipperArmLabel" for="motorL">Flipper Arm</label>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
@@ -100,7 +100,7 @@
 																								oninput="sendSliderData('L', this.value)"
 																								onmouseup="this.value=0; sendSliderData('L', 0)"
 																								ontouchend="this.value=0; sendSliderData('L', 0)">
-							<label id="leftMotorLabel" for="motorL">Left Motor</label>
+							<label id="leftMotorLabel" for="motorL">Left Wheel</label>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
