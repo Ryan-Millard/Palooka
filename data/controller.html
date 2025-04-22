@@ -29,8 +29,8 @@
 				</details>
 
 				<div id="controller" class="edit-mode">
-					<!-- Buttons -->
-					<div class="control-element button-element" id="button1" data-aspect-ratio="2">
+					<!-- Battery -->
+					<div class="control-element button-element" id="batteryContainer" data-aspect-ratio="2">
 						<div class="button-container">
 							<div id="battery">0%</div>
 							<div id="battery-pos-terminal"></div>
@@ -39,7 +39,8 @@
 						<div class="resize-handle">Resize</div>
 					</div>
 
-					<div class="control-element button-element" id="button2" data-aspect-ratio="2">
+					<!-- Button -->
+					<div class="control-element button-element" id="flipButtonContainer" data-aspect-ratio="2">
 						<div class="button-container">
 							<button id="flipButton" class="control-button btn" onclick="sendFlipData()">Flip</button>
 						</div>
@@ -63,7 +64,7 @@
 					<div class="control-element slider-element" id="sliderLeft" data-aspect-ratio="2">
 						<div class="slider-container">
 							<!-- Right Motor -->
-							<label id="rightMotorLabel" for="motorR">Right Motor</label>
+							<label id="rightMotorLabel" for="motorR">Right Wheel</label>
 							<input type="range" class="slider" id="motorR" min="-255" max="255" value="0"
 																								oninput="sendSliderData('R', this.value)"
 																								onmouseup="this.value=0; sendSliderData('R', 0)"
@@ -77,11 +78,11 @@
 					<div class="control-element always-visible-slider-element" id="sliderCenter" data-aspect-ratio="2">
 						<div class="slider-container">
 							<!-- Flipper Arm -->
+							<label id="flipperArmLabel" for="motorL">Flipper Arm</label>
 							<input type="range" class="slider" id="flipper" min="0" max="180" value="0"
 																							  oninput="sendSliderData('F', this.value)"
 																							  onmouseup="this.value=0; sendSliderData('F', 0)"
 																							  ontouchend="this.value=0; sendSliderData('F', 0)">
-							<label id="flipperArmLabel" for="motorL">Flipper Arm</label>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
@@ -95,7 +96,7 @@
 																								oninput="sendSliderData('L', this.value)"
 																								onmouseup="this.value=0; sendSliderData('L', 0)"
 																								ontouchend="this.value=0; sendSliderData('L', 0)">
-							<label id="leftMotorLabel" for="motorL">Left Motor</label>
+							<label id="leftMotorLabel" for="motorL">Left Wheel</label>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
@@ -104,6 +105,25 @@
 				</div>
 			</div>
 		</main>
+
+		<!-- Factory Reset Block-->
+		<section class="block"  data-color="red">
+			<h2>DANGER ZONE</h2>
+			<div class="emphasis">
+				<!-- Palooka logo in red -->
+				<div id="star-container"></div>
+				"The gears of revolution turn not by chance, but by precise calibration of the workers' hands!" - Sovietron mk7
+			</div>
+			<strong>WARNING!</strong>
+			<p>
+				This will reset our Palooka's controller to the factory settings.
+			</p>
+			<ol>
+				<li>This is not reversible. Once you reset the controller, it will be permanent.</li>
+				<li>We will lose all of our custom settings.</li>
+			</ol>
+			<a class="btn" onclick="handleResetBtnClick()">Reset to factory settings</a>
+		</section>
 
 		<div class="footer-spacer"></div>
 
@@ -117,8 +137,31 @@
 
 		<script type="module" src="scripts/controller_web_socket.js"></script>
 		<script type="module" src="scripts/battery_web_socket.js"></script>
+		<script type="module" src="scripts/reset_controller_layout.js"></script>
+		<script type="module" src="scripts/edit_text.js"></script>
 		<script src="scripts/switch_control_type.js"></script>
 		<script src="scripts/controller.js"></script>
 		<script src="scripts/fullscreen.js"></script>
+		<script>
+			// Change logo to red color
+			fetch('img/star.svg')
+				.then(r => r.text())
+				.then(svgText => {
+					const parser = new DOMParser();
+					const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+					// Change all fills from #0fc to red
+					svgDoc.querySelectorAll('[fill="#0fc"]').forEach(el => {
+									el.setAttribute('fill', 'var(--red)');
+								});
+
+					const svgEl = svgDoc.documentElement;
+					svgEl.classList.add('small-flag');
+
+					// Inject into page
+					document.getElementById('star-container')
+						.appendChild(svgDoc.documentElement);
+				})
+				.catch(console.error);
+		</script>
 	</body>
 </html>

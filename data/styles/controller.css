@@ -116,9 +116,9 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-width: 255px;
 }
 .slider {
+	min-width: 255px;
 	-webkit-appearance: none;
 	width: 100%;
 	border-radius: 40px;
@@ -255,4 +255,12 @@ details.clickable > summary {
 }
 #controls-container .btn {
 	margin: 0;
+}
+
+#batteryContainer, #flipButtonContainer {
+	transform: rotate(90deg);
+}
+
+#sliderLeft, #sliderRight {
+	display: none;
 }

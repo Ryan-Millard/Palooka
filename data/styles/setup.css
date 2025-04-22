@@ -1,22 +1,5 @@
 /* Setup Page Specific Styles */
 
-ol {
-  color: var(--cyan-light);
-  padding-left: 2rem;
-  margin: 1.5rem 0;
-}
-
-li {
-  margin: 0.75rem 0;
-  padding-left: 0.5rem;
-  border-left: 3px solid var(--cyan-dark);
-}
-
-strong {
-  color: var(--cyan-light);
-  font-weight: 700;
-}
-
 .formSubmitButton {
   margin-bottom: 3%;
   padding: 0.5rem 1rem;
@@ -62,27 +45,7 @@ strong {
   color: var(--black);
 }
 
-.small-flag {
-  max-height: 30vw;
-  display: block;
-  margin: 0.5rem auto;
-}
-
 /* Center form elements for mobile */
 .centered-children {
   text-align: center;
 }
-
-.textInput {
-  font-size: 0.9em;
-  background-color: transparent;
-  color: var(--white);
-  border: none;
-  border-bottom: 2px solid var(--cyan-light);
-  width: 90%;
-  padding: 10px;
-  margin: 0.5rem auto;
-  display: block;
-  outline: none;
-}
-
