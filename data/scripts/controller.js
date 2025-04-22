@@ -282,13 +282,11 @@ function prepareJoystickCoordinates(x, y) {
 	relX -= joystickRect.left;
 	relY -= joystickRect.top;
 
-	// VOLATILE
 	// Turn joystick into a cartesian plane by splitting x and y in 2
 	// This creates 4 quarters, with positive and negative values
 	// In relation to the screen, the center of the joystick would be in the top-left (0, 0)
 	relX -= joystickRect.width/2;
 	relY -= joystickRect.height/2;
-	// VOLATILE
 
 	/*
 	 * Convert to cartesian plane coordinate system
@@ -325,10 +323,67 @@ function prepareJoystickCoordinates(x, y) {
 	const deg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
 	const theta = (deg * Math.PI) / 180;
 	// Apply the rotation
-	const finalX = relX * Math.cos(theta) - relY * Math.sin(theta);
-	const finalY = relX * Math.sin(theta) + relY * Math.cos(theta);
+	const rotatedX = relX * Math.cos(theta) - relY * Math.sin(theta);
+	const rotatedY = relX * Math.sin(theta) + relY * Math.cos(theta);
 
-	return [finalX, finalY];
+	// Convert to decimal between 0 and 1 for use on server
+	// Using the decimal allows different speeds to be sent for server-side processing
+	const decimalX = rotatedX / (joystickRect.width / 2)
+	const decimalY = rotatedY / (joystickRect.height / 2)
+
+	// Round to 5 decimal places to avoid server overloads
+	const roundedX = Math.round(decimalX * 1e5) / 1e5;
+	const roundedY = Math.round(decimalY * 1e5) / 1e5;
+
+	console.log("Final X: " + roundedX, "Final Y: " + roundedY);
+
+	return [roundedX, roundedY];
+}
+function updateHandlePosition(x, y) {
+  const handle = document.querySelector('.joystick-handle');
+  const joystick = document.querySelector('.joystick');
+  const joystickRect = joystick.getBoundingClientRect();
+  const joystickElement = document.getElementById('joystickControl');
+
+  // Calculate joystick center
+  joystickCenter = {
+    x: joystickRect.width / 2,
+    y: joystickRect.height / 2
+  };
+
+  // Get current rotation in radians
+  const rotationDeg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
+  const rotationRad = (rotationDeg * Math.PI) / 180;
+
+  // Calculate relative position from touch point to joystick top-left
+  const relX = x - joystickRect.left;
+  const relY = y - joystickRect.top;
+
+  // Calculate delta from center
+  let deltaX = relX - joystickCenter.x;
+  let deltaY = relY - joystickCenter.y;
+
+  // Apply inverse rotation to align with joystick's coordinate system
+  const cosRot = Math.cos(-rotationRad);
+  const sinRot = Math.sin(-rotationRad);
+  const localDeltaX = deltaX * cosRot - deltaY * sinRot;
+  const localDeltaY = deltaX * sinRot + deltaY * cosRot;
+
+  // Calculate distance from center in local coordinates
+  const distance = Math.sqrt(localDeltaX * localDeltaX + localDeltaY * localDeltaY);
+
+  // If distance exceeds max, scale down while preserving direction
+  const constrainedDistance = Math.min(distance, maxJoystickDistance);
+
+  // Calculate scaling factor (if needed)
+  const scaleFactor = distance > 0 ? constrainedDistance / distance : 0;
+
+  // Apply scaling to constrain within bounds
+  const constrainedLocalX = localDeltaX * scaleFactor;
+  const constrainedLocalY = localDeltaY * scaleFactor;
+
+  // Translate to handle position (centered at 50%)
+  handle.style.transform = `translate(calc(-50% + ${constrainedLocalX}px), calc(-50% + ${constrainedLocalY}px))`;
 }
 function updateHandlePosition(x, y) {
   const handle = document.querySelector('.joystick-handle');
