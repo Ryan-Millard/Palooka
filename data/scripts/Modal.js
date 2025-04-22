@@ -13,7 +13,10 @@ export default class Modal {
 		onConfirm = () => {},
 		onCancel = () => {},
 		customHTML = '',
-		buttons = Modal.Buttons.YES_NO_CANCEL
+		buttons = Modal.Buttons.YES_NO_CANCEL,
+		yesBtnText = "Yes",
+		noBtnText = "No",
+		cancelBtnText = "Cancel"
 	}) {
 		this.title = title;
 		this.message = message;
@@ -22,13 +25,16 @@ export default class Modal {
 		this.customHTML = customHTML;
 		this.buttons = buttons;
 		this.modalElement = null;
+		this.yesBtnText = yesBtnText;
+		this.noBtnText = noBtnText;
+		this.cancelBtnText = cancelBtnText;
 	}
 
 	_createButtons() {
 		const buttons = {
-			YES: `<button class="btn" id="modal-yes">Yes</button>`,
-			NO: `<button class="btn" id="modal-no">No</button>`,
-			CANCEL: `<button class="btn" id="modal-cancel">Cancel</button>`,
+			YES: `<button class="btn" id="modal-yes">${this.yesBtnText}</button>`,
+			NO: `<button class="btn" id="modal-no">${this.noBtnText}</button>`,
+			CANCEL: `<button class="btn" id="modal-cancel">${this.cancelBtnText}</button>`,
 		};
 
 		// For some reason, there is no gap when the \n isn't included
