@@ -7,6 +7,21 @@ let joystickActive = false;
 let joystickCenter = { x: 0, y: 0 };
 let maxJoystickDistance = 0;
 
+function resetLayout() {
+    // Remove any custom layout from localStorage
+    localStorage.removeItem('controllerLayout');
+
+    // Re-apply the built-in default positions and sizes
+    setDefaultLayout();
+
+    // Re-apply stored rotations (setDefaultLayout sets rotations to defaults)
+    applyRotations();
+
+    // Ensure controls are enabled/disabled correctly for the current mode
+    updateControlInteractivity();
+}
+
+
 function editText(elementId) {
 	const element = document.getElementById(elementId);
 	const currentText = element.textContent || element.innerText;
@@ -530,7 +545,6 @@ function setDefaultLayout() {
 		// SLIDER LEFT - takes up 1 column, row 3
 		const sliderLeft = document.getElementById('sliderLeft');
 		sliderLeft.style.left = padding + 'px';
-		joystick.style.top = padding + 'px';
 		sliderLeft.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderLeft.style.height = cellHeight - (padding * 2) + 'px';
 
@@ -564,19 +578,22 @@ function setDefaultLayout() {
 		flipButtonContainer.style.width = cellWidth - (padding * 2) + 'px';
 		flipButtonContainer.style.height = cellHeight - (padding * 2) + 'px';
 
-		// Set all rotations to 0
-		[joystick, batteryContainer, flipButtonContainer].forEach(element => {
-			element.setAttribute('data-rotation', '90');
-			element.style.transform = 'rotate(90deg)';
+		function rotateAndSetAspectRatio(elements, rotationDegrees = 90) {
+			elements.forEach(element => {
+				element.setAttribute('data-rotation', rotationDegrees);
+				element.style.transform = `rotate(${rotationDegrees}deg)`;
 
-			// Calculate and set aspect ratio
-			const width = parseInt(element.style.width);
-			const height = parseInt(element.style.height);
-			if (height > 0) {
-				const aspectRatio = width / height;
-				element.setAttribute('data-aspect-ratio', aspectRatio.toFixed(4));
-			}
-		});
+				const width = parseInt(element.style.width);
+				const height = parseInt(element.style.height);
+
+				if (!isNaN(width) && !isNaN(height) && height > 0) {
+					const aspectRatio = width / height;
+					element.setAttribute('data-aspect-ratio', aspectRatio.toFixed(4));
+				}
+			});
+		}
+		rotateAndSetAspectRatio([joystick, batteryContainer, flipButtonContainer], 90);
+		rotateAndSetAspectRatio([sliderLeft, sliderCenter, sliderRight], 0);
 
 		// After setting default layout, save it
 		saveLayout();

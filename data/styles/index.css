@@ -147,3 +147,22 @@ details.clickable > summary:hover {
 	background: var(--cyan-light);
 	color: var(--black);
 }
+
+
+/* ============ Modal.js Styles ========== */
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: none;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal-content {
+	padding: 20px;
+	text-align: center;
+}
+/* ============ End Modal.js Styles ========== */
