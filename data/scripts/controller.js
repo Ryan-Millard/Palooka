@@ -282,13 +282,11 @@ function prepareJoystickCoordinates(x, y) {
 	relX -= joystickRect.left;
 	relY -= joystickRect.top;
 
-	// VOLATILE
 	// Turn joystick into a cartesian plane by splitting x and y in 2
 	// This creates 4 quarters, with positive and negative values
 	// In relation to the screen, the center of the joystick would be in the top-left (0, 0)
 	relX -= joystickRect.width/2;
 	relY -= joystickRect.height/2;
-	// VOLATILE
 
 	/*
 	 * Convert to cartesian plane coordinate system
@@ -325,10 +323,21 @@ function prepareJoystickCoordinates(x, y) {
 	const deg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
 	const theta = (deg * Math.PI) / 180;
 	// Apply the rotation
-	const finalX = relX * Math.cos(theta) - relY * Math.sin(theta);
-	const finalY = relX * Math.sin(theta) + relY * Math.cos(theta);
+	const rotatedX = relX * Math.cos(theta) - relY * Math.sin(theta);
+	const rotatedY = relX * Math.sin(theta) + relY * Math.cos(theta);
 
-	return [finalX, finalY];
+	// Convert to decimal between 0 and 1 for use on server
+	// Using the decimal allows different speeds to be sent for server-side processing
+	const decimalX = rotatedX / (joystickRect.width / 2)
+	const decimalY = rotatedY / (joystickRect.height / 2)
+
+	// Round to 5 decimal places to avoid server overloads
+	const roundedX = Math.round(decimalX * 1e5) / 1e5;
+	const roundedY = Math.round(decimalY * 1e5) / 1e5;
+
+	console.log("Final X: " + roundedX, "Final Y: " + roundedY);
+
+	return [roundedX, roundedY];
 }
 function updateHandlePosition(x, y) {
   const handle = document.querySelector('.joystick-handle');
