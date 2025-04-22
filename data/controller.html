@@ -13,10 +13,6 @@
 			</div>
 		</header>
 
-		<div style="width: 90%; margin: 1rem auto;" class="block centered-children">
-			<button class="btn" onclick="handleResetBtnClick()">Reset layout</button>
-		</div>
-
 		<main>
 			<div id="controls-container">
 				<details open class="clickable" id="controlsDetails">
@@ -110,6 +106,25 @@
 			</div>
 		</main>
 
+		<!-- Factory Reset Block-->
+		<section class="block"  data-color="red">
+			<h2>DANGER ZONE</h2>
+			<div class="emphasis">
+				<!-- Palooka logo in red -->
+				<div id="star-container"></div>
+				"The gears of revolution turn not by chance, but by precise calibration of the workers' hands!" - Sovietron mk7
+			</div>
+			<strong>WARNING!</strong>
+			<p>
+				This will reset our Palooka's controller to the factory settings.
+			</p>
+			<ol>
+				<li>This is not reversible. Once you reset the controller, it will be permanent.</li>
+				<li>We will lose all of our custom settings.</li>
+			</ol>
+			<a class="btn" onclick="handleResetBtnClick()">Reset to factory settings</a>
+		</section>
+
 		<div class="footer-spacer"></div>
 
 		<footer>
@@ -127,5 +142,26 @@
 		<script src="scripts/switch_control_type.js"></script>
 		<script src="scripts/controller.js"></script>
 		<script src="scripts/fullscreen.js"></script>
+		<script>
+			// Change logo to red color
+			fetch('img/star.svg')
+				.then(r => r.text())
+				.then(svgText => {
+					const parser = new DOMParser();
+					const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+					// Change all fills from #0fc to red
+					svgDoc.querySelectorAll('[fill="#0fc"]').forEach(el => {
+									el.setAttribute('fill', 'var(--red)');
+								});
+
+					const svgEl = svgDoc.documentElement;
+					svgEl.classList.add('small-flag');
+
+					// Inject into page
+					document.getElementById('star-container')
+						.appendChild(svgDoc.documentElement);
+				})
+				.catch(console.error);
+		</script>
 	</body>
 </html>

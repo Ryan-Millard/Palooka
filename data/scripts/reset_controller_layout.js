@@ -5,7 +5,8 @@ window.handleResetBtnClick = function handleResetBtnClick() {
 		title: "Reset layout",
 		message: "Are you sure you want to reset the layout?",
 		buttons: Modal.Buttons.YES_CANCEL,
-		onConfirm: resetLayout
+		onConfirm: resetLayout,
+		dataColor: 'red'
 	});
 	modal.showModal();
 }

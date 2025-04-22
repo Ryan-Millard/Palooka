@@ -212,3 +212,20 @@ details.clickable > summary:hover {
   display: block;
   margin: 0.5rem auto;
 }
+
+ol {
+  color: var(--cyan-light);
+  padding-left: 2rem;
+  margin: 1.5rem 0;
+}
+
+li {
+  margin: 0.75rem 0;
+  padding-left: 0.5rem;
+  border-left: 3px solid var(--cyan-dark);
+}
+
+strong {
+  color: var(--cyan-light);
+  font-weight: 700;
+}
