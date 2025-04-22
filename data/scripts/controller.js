@@ -525,48 +525,49 @@ function setDefaultLayout() {
 		const joystick = document.getElementById('joystickControl');
 		joystick.style.left = padding + 'px';
 		joystick.style.top = padding + 'px';
-		joystick.style.width = (cellWidth * 2) - (padding * 2) + 'px';
-		joystick.style.height = (cellWidth * 2) - (padding * 2) + 'px'; // Keep it square
+		joystick.style.width = '50%'; // Height will be the same since it is square
 
 		// SLIDER LEFT - takes up 1 column, row 3
 		const sliderLeft = document.getElementById('sliderLeft');
 		sliderLeft.style.left = padding + 'px';
-		sliderLeft.style.top = (cellHeight * 2) + padding + 'px';
+		joystick.style.top = padding + 'px';
 		sliderLeft.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderLeft.style.height = cellHeight - (padding * 2) + 'px';
 
 		// FLIPPER SLIDER - takes up 1 column, row 4
 		const sliderCenter = document.getElementById('sliderCenter');
 		sliderCenter.style.left = padding + 'px';
-		sliderCenter.style.top = (cellHeight * 3) + padding + 'px';
+		sliderCenter.style.top = (cellHeight * 2.5) + padding + 'px';
 		sliderCenter.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderCenter.style.height = cellHeight - (padding * 2) + 'px';
 
 		// SLIDER RIGHT - takes up 1 column, row 5
 		const sliderRight = document.getElementById('sliderRight');
 		sliderRight.style.left = padding + 'px';
-		sliderRight.style.top = (cellHeight * 4) + padding + 'px';
+		sliderRight.style.top = (cellHeight * 3.5) + padding + 'px';
 		sliderRight.style.width = (cellWidth * 2) - (padding * 2) + 'px';
 		sliderRight.style.height = cellHeight - (padding * 2) + 'px';
 
-		// BUTTON 1 - top right corner
-		const button1 = document.getElementById('button1');
-		button1.style.left = (cellWidth * 2) + padding + 'px';
-		button1.style.top = padding + 'px';
-		button1.style.width = cellWidth - (padding * 2) + 'px';
-		button1.style.height = cellHeight - (padding * 2) + 'px';
+		// BATTERY - top right corner
+		// This gets rotated 90deg, so it looks strange
+		const batteryContainer = document.getElementById('batteryContainer');
+		batteryContainer.style.left = (cellWidth * 2) + padding + 'px';
+		batteryContainer.style.top = cellHeight/2 + 'px';
+		batteryContainer.style.width = cellWidth - (padding * 2) + 'px';
+		batteryContainer.style.height = cellHeight - (padding * 2) + 'px';
 
 		// BUTTON 2 - below button 1
-		const button2 = document.getElementById('button2');
-		button2.style.left = (cellWidth * 2) + padding + 'px';
-		button2.style.top = cellHeight + padding + 'px';
-		button2.style.width = cellWidth - (padding * 2) + 'px';
-		button2.style.height = cellHeight - (padding * 2) + 'px';
+		// This gets rotated 90deg, so it looks strange
+		const flipButtonContainer = document.getElementById('flipButtonContainer');
+		flipButtonContainer.style.left = (cellWidth * 2) + padding + 'px';
+		flipButtonContainer.style.top = 2*cellHeight + 'px';
+		flipButtonContainer.style.width = cellWidth - (padding * 2) + 'px';
+		flipButtonContainer.style.height = cellHeight - (padding * 2) + 'px';
 
 		// Set all rotations to 0
-		document.querySelectorAll('.control-element').forEach(element => {
-			element.setAttribute('data-rotation', '0');
-			element.style.transform = 'rotate(0deg)';
+		[joystick, batteryContainer, flipButtonContainer].forEach(element => {
+			element.setAttribute('data-rotation', '90');
+			element.style.transform = 'rotate(90deg)';
 
 			// Calculate and set aspect ratio
 			const width = parseInt(element.style.width);
