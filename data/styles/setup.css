@@ -72,17 +72,3 @@ strong {
 .centered-children {
   text-align: center;
 }
-
-.textInput {
-  font-size: 0.9em;
-  background-color: transparent;
-  color: var(--white);
-  border: none;
-  border-bottom: 2px solid var(--cyan-light);
-  width: 90%;
-  padding: 10px;
-  margin: 0.5rem auto;
-  display: block;
-  outline: none;
-}
-

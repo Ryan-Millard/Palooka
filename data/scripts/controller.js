@@ -21,20 +21,6 @@ function resetLayout() {
     updateControlInteractivity();
 }
 
-
-function editText(elementId) {
-	const element = document.getElementById(elementId);
-	const currentText = element.textContent || element.innerText;
-
-	// Prompt the user to edit the text
-	const newText = prompt("Edit text:", currentText);
-
-	// If the user provided new text, update the element
-	if (newText !== null) {
-		element.textContent = newText;
-	}
-}
-
 function toggleMode() {
 	isEditMode = !isEditMode;
 	document.getElementById('controller').classList.toggle('edit-mode');
