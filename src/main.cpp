@@ -131,7 +131,27 @@ const PalookaNetwork::Route AP_ROUTES[]{
 	}},
 	/* Calibrate Battery */ {"/calibrateBattery", "/setup.html", "text/html", PalookaNetwork::HttpMethod::GET, [](WebServer* server){
 		server->send(200, "text/plain", "Calibrating battery...");
-	}}
+	}},
+	/* Factory Reset */ {"/factoryReset", "/setup.html", "application/json", PalookaNetwork::HttpMethod::POST, [](WebServer* server){
+		// Clear all saved preferences
+		Preferences preferences;
+		preferences.begin("Palooka", false);  // Open in read-write mode
+		preferences.clear();                  // Erase all keys in this namespace
+		preferences.end();                    // Close preferences
+
+		const char* jsonResponse{
+			R"delimiter(
+			{
+					"status": "ok",
+					"message": "Factory reset complete. You will need to reconnect to our device."
+			}
+			)delimiter"
+		};
+		server->send(200, "application/json", jsonResponse);
+
+		delay(1000); // Give the response time to send
+		ESP.restart(); // Restart the device
+	}},
 };
 PalookaNetwork::AccessPoint ap(AP_ROUTES, sizeof(AP_ROUTES)/sizeof(AP_ROUTES[0]));
 

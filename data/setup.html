@@ -142,7 +142,7 @@
 					<li>Others will be able to connect to our Palooka since it's password will be reset.</li>
 				</ol>
 				<p>
-				<a class="btn">Reset to factory settings</a>
+				<a class="btn" onclick="handleFactoryReset()">Reset to factory settings</a>
 				</p>
 			</section>
 		</main>
@@ -157,6 +157,7 @@
 
 		<script src="scripts/setup.js"></script>
 		<script type="module" src="scripts/request_restart.js"></script>
+		<script type="module" src="scripts/factory_reset.js"></script>
 		<script>
 			// Change logo to red color
 			fetch('img/star.svg')
@@ -178,6 +179,5 @@
 				})
 				.catch(console.error);
 		</script>
-
 	</body>
 </html>
