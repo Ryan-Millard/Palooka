@@ -62,12 +62,6 @@ strong {
   color: var(--black);
 }
 
-.small-flag {
-  max-height: 30vw;
-  display: block;
-  margin: 0.5rem auto;
-}
-
 /* Center form elements for mobile */
 .centered-children {
   text-align: center;

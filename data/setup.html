@@ -123,6 +123,28 @@
 				<a class="btn" href="/controller">View Advanced Settings</a>
 				</p>
 			</section>
+
+			<!-- Factory Reset Block-->
+			<section class="block"  data-color="red">
+				<h2>DANGER ZONE</h2>
+				<div class="emphasis">
+					<!-- Palooka logo in red -->
+					<div id="star-container"></div>
+					"To forget is to be free. Let us liberate ourselves from the tyranny of memory." - MaoModule mk4
+				</div>
+				<strong>WARNING!</strong>
+				<p>
+					This will reset our Palooka to the factory settings.
+				</p>
+				<ol>
+					<li>This is not reversible. Once you reset the device, it will be permanent.</li>
+					<li>We will lose all of our custom settings.</li>
+					<li>Others will be able to connect to our Palooka since it's password will be reset.</li>
+				</ol>
+				<p>
+				<a class="btn">Reset to factory settings</a>
+				</p>
+			</section>
 		</main>
 
 		<footer>
@@ -135,6 +157,27 @@
 
 		<script src="scripts/setup.js"></script>
 		<script type="module" src="scripts/request_restart.js"></script>
+		<script>
+			// Change logo to red color
+			fetch('img/star.svg')
+				.then(r => r.text())
+				.then(svgText => {
+					const parser = new DOMParser();
+					const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+					// Change all fills from #0fc to red
+					svgDoc.querySelectorAll('[fill="#0fc"]').forEach(el => {
+									el.setAttribute('fill', 'var(--red)');
+								});
+
+					const svgEl = svgDoc.documentElement;
+					svgEl.classList.add('small-flag');
+
+					// Inject into page
+					document.getElementById('star-container')
+						.appendChild(svgDoc.documentElement);
+				})
+				.catch(console.error);
+		</script>
+
 	</body>
 </html>
-

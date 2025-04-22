@@ -5,6 +5,7 @@
 	--cyan-dark: #00cc99;
 	--white: #f0f0f0;
 	--black: #000000;
+	--red: #ff4444;
 	--transition-speed: 0.2s;
 }
 
@@ -59,13 +60,39 @@ main {
 	margin-bottom: 70px; /* leave space for fixed footer */
 }
 .block {
-	background: var(--black);
+	--bg: var(--black);
+	--border: var(--cyan-light);
+	--shadow: var(--cyan-dark);
+
+	background: var(--bg);
 	padding: 1rem;
 	margin: 1rem auto;
-	border: 3px solid var(--cyan-light);
-	box-shadow: 0 0 10px var(--cyan-dark);
+	border: 3px solid var(--border);
+	box-shadow: 0 0 10px var(--shadow);
 	border-radius: 4px;
 }
+.block[data-color="red"] {
+	--border: var(--red);
+	--shadow: var(--red);
+
+	h2, ol, strong, .emphasis, .btn {
+		color: var(--red);
+	}
+	h2 {
+		border-bottom-color: var(--red);
+	}
+	li {
+		border-left-color: var(--red);
+	}
+	.btn {
+		border: 2px solid var(--red);
+	}
+	.btn:active {
+		background: var(--red);
+		color: var(--black);
+	}
+}
+
 .emphasis {
 	font-size: 1.25rem;
 	font-weight: 900;
@@ -168,14 +195,20 @@ details.clickable > summary:hover {
 /* ============ End Modal.js Styles ========== */
 
 .textInput {
-  font-size: 0.9em;
-  background-color: transparent;
-  color: var(--white);
-  border: none;
-  border-bottom: 2px solid var(--cyan-light);
-  width: 90%;
-  padding: 10px;
-  margin: 0.5rem auto;
+	font-size: 0.9em;
+	background-color: transparent;
+	color: var(--white);
+	border: none;
+	border-bottom: 2px solid var(--cyan-light);
+	width: 90%;
+	padding: 10px;
+	margin: 0.5rem auto;
+	display: block;
+	outline: none;
+}
+
+.small-flag {
+  max-height: 30vw;
   display: block;
-  outline: none;
+  margin: 0.5rem auto;
 }
