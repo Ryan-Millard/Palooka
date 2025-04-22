@@ -86,7 +86,7 @@ main {
 	transition: background var(--transition-speed), color var(--transition-speed);
 	margin-top: 0.5rem;
 }
-.btn:hover {
+.btn:active {
 	background: var(--cyan-light);
 	color: var(--black);
 }
