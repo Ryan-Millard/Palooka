@@ -49,22 +49,6 @@ function validatePassword(password) {
 	return passwordRegex.test(password);
 }
 
-async function requestRestart() {
-	await fetch('/restart', { method: 'POST' })
-		.then(response => response.json())
-		.then(data => {
-			if (data.status === 'ok') {
-				alert("Palooka is restarting, comrade...");
-			} else {
-				alert("Error restarting Palooka.");
-			}
-		})
-		.catch(error => {
-			console.error('Error:', error);
-			alert("An error occurred while attempting to restart the Palooka, comrade!");
-		});
-}
-
 async function calibrateBattery() {
 	try {
 		const response = await fetch('/calibrateBattery', { method: 'GET' });
