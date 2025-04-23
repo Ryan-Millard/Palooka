@@ -9,6 +9,13 @@
 	--transition-speed: 0.2s;
 }
 
+a {
+	--color: var(--cyan-light);
+	color: var(--color);
+}
+a[data-color="gray-light"] { --color: var(--gray-light); }
+a[data-color="white"] { --color: var(--white); }
+
 * {
 	box-sizing: border-box;
 	font-family: 'Roboto Mono', monospace;
