@@ -9,6 +9,13 @@
 	--transition-speed: 0.2s;
 }
 
+a {
+	--color: var(--cyan-light);
+	color: var(--color);
+}
+a[data-color="gray-light"] { --color: var(--gray-light); }
+a[data-color="white"] { --color: var(--white); }
+
 * {
 	box-sizing: border-box;
 	font-family: 'Roboto Mono', monospace;
@@ -112,6 +119,7 @@ main {
 	background: var(--black);
 	transition: background var(--transition-speed), color var(--transition-speed);
 	margin-top: 0.5rem;
+	font-size: 1em;
 }
 .btn:active {
 	background: var(--cyan-light);
@@ -170,7 +178,7 @@ details.clickable > summary {
 	transition: background var(--transition-speed), color var(--transition-speed);
 }
 
-details.clickable > summary:hover {
+details.clickable > summary:active {
 	background: var(--cyan-light);
 	color: var(--black);
 }
