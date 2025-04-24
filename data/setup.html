@@ -82,7 +82,6 @@
 
 					<form id="setup-form" class="centered-children">
 						<div id="form-message"></div>
-						<button id="restartButton" type="button" onclick="requestRestart()">Restart Palooka</button>
 						<p>
 						<label for="name">Device Name:</label>
 						<input type="text" class="textInput" id="name" name="name" placeholder="Marcs-Machine" required>
@@ -133,6 +132,7 @@
 					<div id="star-container"></div>
 					"To forget is to be free. Let us liberate ourselves from the tyranny of memory." - MaoModule mk4
 				</div>
+				<hr style="border-color: var(--red);">
 				<strong>WARNING!</strong>
 				<p>
 					This will reset our Palooka to the factory settings.
@@ -156,8 +156,7 @@
 			</nav>
 		</footer>
 
-		<script src="scripts/setup.js"></script>
-		<script type="module" src="scripts/request_restart.js"></script>
+		<script type="module" src="scripts/setup.js"></script>
 		<script type="module" src="scripts/factory_reset.js"></script>
 		<script>
 			// Change logo to red color

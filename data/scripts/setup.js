@@ -1,3 +1,5 @@
+import requestRestart from './request_restart.js';
+
 document.getElementById('setup-form').addEventListener('submit', async function(e) {
 	e.preventDefault();
 	const name = document.getElementById('name').value;
@@ -25,14 +27,11 @@ document.getElementById('setup-form').addEventListener('submit', async function(
 		.then(response => response.json())
 		.then(result => {
 			if (result.status === 'ok') {
-				formMessage.style.display = 'block';
-				formMessage.textContent = "Setup successful, comrade! Press the button below to apply the changes.";
-				formMessage.style.color = 'var(--green-success)';
-				document.getElementById('restartButton').style.display = 'block';
+				requestRestart();
 			} else {
 				formMessage.style.display = 'block';
 				formMessage.textContent = result.message || 'An error occurred. Please try again.';
-				formMessage.style.color = 'var(--red-warning)';
+				formMessage.style.color = 'var(--red)';
 				document.getElementById('restartButton').style.display = 'none';
 			}
 		})
@@ -40,16 +39,16 @@ document.getElementById('setup-form').addEventListener('submit', async function(
 			console.error('Error:', error);
 			formMessage.style.display = 'block';
 			formMessage.textContent = 'An error occurred. Please try again.';
-			formMessage.style.color = 'var(--red-warning)';
+			formMessage.style.color = 'var(--red)';
 		});
 });
 
-function validatePassword(password) {
+window.validatePassword = function validatePassword(password) {
 	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 	return passwordRegex.test(password);
 }
 
-async function calibrateBattery() {
+window.calibrateBattery = async function calibrateBattery() {
 	try {
 		const response = await fetch('/calibrateBattery', { method: 'GET' });
 		if (!response.ok) {
