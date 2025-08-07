@@ -43,9 +43,9 @@ namespace PalookaBot
 			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
 			const byte LED_PIN,
-			const byte EN8V_PIN, const byte EN5V_PIN, const byte DVR_SLEEP_PIN,
+			const byte EN5V_PIN, const byte DVR_SLEEP_PIN,
 			const byte BATTERY_PIN)
-		: EN8V_PIN(EN8V_PIN), EN5V_PIN(EN5V_PIN), DVR_SLEEP_PIN(DVR_SLEEP_PIN),
+		: EN5V_PIN(EN5V_PIN), DVR_SLEEP_PIN(DVR_SLEEP_PIN),
 		FLIPPER_PIN(FLIPPER_PIN),
 		FLIPPER_MAX_ANGLE(180), FLIPPER_MIN_ANGLE(0),
 		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN),
@@ -67,14 +67,12 @@ namespace PalookaBot
 
 		// ========== Power up robot ==========
 		// Configure the power and sleep control pins as outputs.
-		pinMode(EN8V_PIN, OUTPUT);
 		pinMode(EN5V_PIN, OUTPUT);
 		pinMode(DVR_SLEEP_PIN, OUTPUT);
 
 		pinMode(LED_PIN, OUTPUT);
 
 		// Activate the power rails and wake the motor driver.
-		digitalWrite(EN8V_PIN, HIGH);
 		digitalWrite(EN5V_PIN, HIGH);
 		digitalWrite(DVR_SLEEP_PIN, HIGH);
 

@@ -21,7 +21,6 @@ namespace PalookaBot
 			static std::mutex instanceMutex;
 
 			// ========== GPIO Pins ==========
-			const byte EN8V_PIN; // Motor enabler pin
 			const byte EN5V_PIN; // Servo
 			const byte DVR_SLEEP_PIN;   // Motors use for charging - switch to low when charging
 
@@ -51,7 +50,7 @@ namespace PalookaBot
 					const byte LEFT_PWM_PIN = 25, const byte LEFT_DIRECTION_PIN = 26,
 					const byte RIGHT_PWM_PIN = 32, const byte RIGHT_DIRECTION_PIN = 33,
 					const byte LED_PIN = 2,
-					const byte EN8V_PIN = 16, const byte EN5V_PIN = 17, const byte DVR_SLEEP_PIN = 12,
+					const byte EN5V_PIN = 17, const byte DVR_SLEEP_PIN = 12,
 					const byte BATTERY_PIN = 36);
 
 			// Prevent copying and assignment
