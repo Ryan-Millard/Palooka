@@ -21,7 +21,6 @@ namespace PalookaBot
 			static std::mutex instanceMutex;
 
 			// ========== GPIO Pins ==========
-			const byte EN8V_PIN; // Motor enabler pin
 			const byte EN5V_PIN; // Servo
 			const byte DVR_SLEEP_PIN;   // Motors use for charging - switch to low when charging
 
@@ -33,6 +32,7 @@ namespace PalookaBot
 
 			// ========== Wheels ==========
 			// Each Motor instance controls one wheel.
+			const byte BOOST_PIN;
 			const Motor wheelRight; // Motor A
 			const Motor wheelLeft; // Motor B (configured as inverted to match the physical layout of the robot)
 
@@ -47,11 +47,12 @@ namespace PalookaBot
 
 			// ========== Private constructor for singleton pattern ==========
 			// The default parameters correspond to the recommended hardware configuration.
-			FlipperBot(const byte FLIPPER_PIN = 14,
+			FlipperBot(const byte FLIPPER_PIN = 27,
 					const byte LEFT_PWM_PIN = 25, const byte LEFT_DIRECTION_PIN = 26,
 					const byte RIGHT_PWM_PIN = 32, const byte RIGHT_DIRECTION_PIN = 33,
+					const byte BOOST_PIN = 15,
 					const byte LED_PIN = 2,
-					const byte EN8V_PIN = 16, const byte EN5V_PIN = 17, const byte DVR_SLEEP_PIN = 12,
+					const byte EN5V_PIN = 17, const byte DVR_SLEEP_PIN = 12,
 					const byte BATTERY_PIN = 36);
 
 			// Prevent copying and assignment
@@ -74,6 +75,8 @@ namespace PalookaBot
 			void playStartupTone() const;
 
 			// ========== Flipper Movement functions ==========
+			void setBoostMode(const bool isInBoostMode);	// Careful - causes servo (flipper damage)
+			void toggleBoostMode();							// Careful - causes servo (flipper damage)
 			void moveFlipper(byte angle);
 			void flip();
 
