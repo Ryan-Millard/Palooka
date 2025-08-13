@@ -55,3 +55,6 @@
 
 # Binary Files
 *.bin
+
+# Assets - not tied to development of individual boards
+assets
