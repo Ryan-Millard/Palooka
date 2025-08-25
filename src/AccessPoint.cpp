@@ -1,4 +1,5 @@
 #include "AccessPoint.h"
+#include "RobotTaskManager.h"
 
 namespace PalookaNetwork
 {
@@ -147,6 +148,6 @@ namespace PalookaNetwork
 		}
 
 		// Enqueue the compact command data for processing by the robotControlTask.
-		xQueueSend(robotQueue, &cmdData, portMAX_DELAY);
+		xQueueSend(Robot::RobotTaskManager::getInstance().getQueue(), &cmdData, portMAX_DELAY);
 	}
 }
