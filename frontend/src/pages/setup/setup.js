@@ -1,4 +1,4 @@
-import requestRestart from './request_restart.js';
+import requestRestart from '@/utils/request_restart.js';
 
 document.getElementById('setup-form').addEventListener('submit', async function(e) {
 	e.preventDefault();
