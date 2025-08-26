@@ -10,11 +10,12 @@ def deploy_firmware_and_filesystem(source, target, env):
     if result != 0:
         print("Firmware upload failed. Exiting.")
         sys.exit(result)
-    # Upload filesystem
-    result = env.Execute("pio run -t uploadfs")
+
+    # Build & Upload filesystem
+    result = env.Execute("pio run -t deploy_fs")
     if result != 0:
-        print("Filesystem upload failed. Exiting.")
         sys.exit(result)
+
     # Monitor device
     result = env.Execute("pio device monitor")
     if result != 0:
