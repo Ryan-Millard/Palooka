@@ -1,6 +1,9 @@
 # Local Environment
 .env
 
+# Built Frontend assets
+data
+
 # PlatformIO
 .pio
 .clang_complete
