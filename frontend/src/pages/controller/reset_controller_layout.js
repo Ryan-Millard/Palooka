@@ -1,4 +1,4 @@
-import Modal from './Modal.js';
+import Modal from '@/utils/Modal.js';
 
 window.handleResetBtnClick = function handleResetBtnClick() {
 	const modal = new Modal({

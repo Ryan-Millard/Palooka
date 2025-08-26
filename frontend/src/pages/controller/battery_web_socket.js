@@ -1,4 +1,4 @@
-import ws from './websocket.js';
+import ws from '@/utils/websocket.js';
 ws.connect();
 
 const battery = document.getElementById('battery');

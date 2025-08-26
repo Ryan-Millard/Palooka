@@ -1,4 +1,4 @@
-import Modal from './Modal.js';
+import Modal from '@/utils/Modal.js';
 
 window.editText = function editText(elementId) {
 	const element = document.getElementById(elementId);
