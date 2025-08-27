@@ -1,4 +1,4 @@
-import { resetLayout } from './controller.js';
+import { resetLayout } from './layout.js';
 import Modal from '@/utils/Modal.js';
 
  export function handleResetBtnClick() {
