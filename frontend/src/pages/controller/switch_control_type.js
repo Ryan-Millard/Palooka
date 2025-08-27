@@ -1,4 +1,5 @@
-import { initJoystick } from './controller.js';
+import { isEditMode } from './edit_mode.js';
+import { initJoystick } from './joystick.js';
 
 // Input Type Change: show/hide joystick and slider elements
 export function changeInputType() {

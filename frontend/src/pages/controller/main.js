@@ -1,18 +1,15 @@
-import { toggleMode } from './toggle_edit_mode.js';
+import { isEditMode, startDrag, toggleMode, updateControlInteractivity } from './edit_mode.js';
 import { toggleFullscreen } from './fullscreen.js';
 import { changeInputType } from './switch_control_type.js';
-import {
-	initAspectRatios,
-	loadControlType,
-	loadLayout,
-	setDefaultLayout,
-	applyRotations,
-	updateControlInteractivity,
-} from './controller.js';
-import { sendFlipData, sendSliderData } from './controller_web_socket.js';
-import { setupBatteryWebsocket } from './battery_web_socket.js';
+import { loadControlType, loadLayout, } from './controller.js';
+import { sendFlipData, sendSliderData, setupBatteryWebsocket } from './web_socket_manager.js';
 import { handleResetBtnClick } from './reset_controller_layout.js';
 import { editText } from './edit_text.js';
+import {
+	initAspectRatios,
+	setDefaultLayout,
+	applyRotations,
+} from './layout.js';
 
 // Allow HTML to manage it
 window.editText = editText;
@@ -49,7 +46,6 @@ radios.forEach(radio => radio.addEventListener('change', (e) => {
 	changeInputType();
 }));
 
-window.isEditMode = false;
 // Resize listener on window
 let lastWidth = window.innerWidth;
 let lastHeight = window.innerHeight;
@@ -123,3 +119,9 @@ fetch('img/star.svg')
 			.appendChild(svgDoc.documentElement);
 	})
 	.catch(console.error);
+
+// Allow editing in edit mode
+document.querySelectorAll('.control-element').forEach(element => {
+	element.addEventListener('pointerdown', startDrag);
+	element.addEventListener('touchstart', startDrag, { passive: false });
+});
