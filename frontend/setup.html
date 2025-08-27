@@ -6,6 +6,7 @@
 		<title>Setup | Palooka</title>
 		<link rel="stylesheet" href="./styles/index.css">
 		<link rel="stylesheet" href="./styles/setup.css">
+		<script type="module" src="/src/pages/setup/main.js"></script>
 	</head>
 	<body>
 		<header>
@@ -106,7 +107,7 @@
 					<li>Initialise calibration</li>
 					<li>Await further instruction, comrade.</li>
 				</ol>
-				<button class="btn" onclick="calibrateBattery()">Calibrate Battery</button>
+				<button class="btn" id="battery-calibrator">Calibrate Battery</button>
 			</section>
 
 			<!-- Robot Control Block -->
@@ -143,7 +144,7 @@
 					<li>Others will be able to connect to our Palooka since it's password will be reset.</li>
 				</ol>
 				<p>
-				<a class="btn" onclick="handleFactoryReset()">Reset to factory settings</a>
+				<a class="btn" id="factory-reset-button">Reset to factory settings</a>
 				</p>
 			</section>
 		</main>
@@ -155,29 +156,5 @@
 				<a href="/controller.html">Controller</a>
 			</nav>
 		</footer>
-
-		<script type="module" src="/src/pages/setup/setup.js"></script>
-		<script type="module" src="/src/pages/setup/factory_reset.js"></script>
-		<script>
-			// Change logo to red color
-			fetch('img/star.svg')
-				.then(r => r.text())
-				.then(svgText => {
-					const parser = new DOMParser();
-					const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-					// Change all fills from #0fc to red
-					svgDoc.querySelectorAll('[fill="#0fc"]').forEach(el => {
-									el.setAttribute('fill', 'var(--red)');
-								});
-
-					const svgEl = svgDoc.documentElement;
-					svgEl.classList.add('small-flag');
-
-					// Inject into page
-					document.getElementById('star-container')
-						.appendChild(svgDoc.documentElement);
-				})
-				.catch(console.error);
-		</script>
 	</body>
 </html>

@@ -1,6 +1,6 @@
 import Modal from '@/utils/Modal.js';
 
-window.handleFactoryReset = function handleFactoryReset() {
+export function handleFactoryReset() {
 	const modal = new Modal({
 		title: "Factory Reset",
 		message: "Are you sure you want to reset to factory settings?",

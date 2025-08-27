@@ -1,6 +1,6 @@
-import requestRestart from '@/utils/request_restart.js';
+import { validatePassword } from './password.js';
 
-document.getElementById('setup-form').addEventListener('submit', async function(e) {
+export async function setupFormSubmissionHandler(e) {
 	e.preventDefault();
 	const name = document.getElementById('name').value;
 	const password = document.getElementById('password').value;
@@ -41,22 +41,4 @@ document.getElementById('setup-form').addEventListener('submit', async function(
 			formMessage.textContent = 'An error occurred. Please try again.';
 			formMessage.style.color = 'var(--red)';
 		});
-});
-
-window.validatePassword = function validatePassword(password) {
-	const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-	return passwordRegex.test(password);
-}
-
-window.calibrateBattery = async function calibrateBattery() {
-	try {
-		const response = await fetch('/calibrateBattery', { method: 'GET' });
-		if (!response.ok) {
-			throw new Error(`Network response was not ok: ${response.statusText}`);
-		}
-		const result = await response.text();
-		console.log('Battery calibration initiated:', result);
-	} catch (error) {
-		console.error('Error during battery calibration:', error);
-	}
 }
