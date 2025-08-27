@@ -8,6 +8,7 @@ body {
 }
 
 #controls-container {
+	position: relative;
 	height: fit-content;
 	min-width: max(100vw, 100lvw);
 	min-height: max(100vh, 100lvh);
@@ -193,16 +194,6 @@ body {
 	height: 100%;
 	touch-action: manipulation;
 }
-.control-panel {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-	margin-bottom: 0;
-	border-bottom: none;
-}
-.control-panel > * {
-	flex: 1;
-}
 .footer-spacer {
 	height: 30vh;
 }
@@ -210,22 +201,22 @@ body {
 	text-align: center;
 }
 
-#controlsDetails[open] summary::before {
-	content: "Hide Controls";
-}
-#controlsDetails:not([open]) summary::before {
-	content: "Show Controls";
-}
-
-
-#fullscreenToggler {
-	display: none;
-}
-#fullscreenToggler:checked + label::before {
-	content: "Exit";
-}
-#fullscreenToggler + label::before {
-	content: "Fullscreen";
+.control-panel {
+    padding: 0 1rem 0.5rem;
+    display: flex;
+    align-items: center; /* center vertically */
+    justify-content: space-around; /* space buttons evenly */
+    border: var(--cyan-light) 3px solid;
+    border-radius: 50% 0% 50% 50% / 0% 0% 30% 30%;
+    border-top: none;
+    gap: 0.5rem;
+    width: 200px; /* explicit width */
+    height: 50px; /* explicit height */
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: rotate(90deg) translateY(-120%);
+    transform-origin: center;
 }
 
 #battery {
@@ -263,4 +254,34 @@ details.clickable > summary {
 
 #sliderLeft, #sliderRight {
 	display: none;
+}
+
+#settings-modal {
+	transform: rotate(90deg);
+	display: none;
+}
+
+.settings-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centers the heading */
+  position: relative;
+  padding: 0 40px; /* gives space for the close button */
+}
+
+.settings-modal-header h2 {
+  margin: 0;
+  width: 100%;
+}
+
+#settings-modal-close {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--cyan-light);
 }

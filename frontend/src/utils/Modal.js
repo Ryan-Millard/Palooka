@@ -17,7 +17,8 @@ export default class Modal {
 		yesBtnText = "Yes",
 		noBtnText = "No",
 		cancelBtnText = "Cancel",
-		dataColor = ''
+		dataColor = '',
+		customId = ''
 	}) {
 		this.title = title;
 		this.message = message;
@@ -30,6 +31,7 @@ export default class Modal {
 		this.noBtnText = noBtnText;
 		this.cancelBtnText = cancelBtnText;
 		this.dataColor = dataColor;
+		this.customId = customId;
 	}
 
 	_createButtons() {
@@ -58,6 +60,7 @@ export default class Modal {
 	createModal() {
 		this.modalElement = document.createElement('div');
 		this.modalElement.classList.add('modal');
+		if (this.customId) { this.modalElement.id = this.customId; }
 		this.modalElement.innerHTML = `
 			<div class="modal-content block" data-color="${this.dataColor}">
 				<h2>${this.title}</h2>

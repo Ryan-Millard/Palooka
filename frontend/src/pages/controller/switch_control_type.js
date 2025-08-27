@@ -1,9 +1,9 @@
-// Change between joystick and sliders
-document.getElementById('inputType').addEventListener('change', changeInputType);
+import { initJoystick } from './controller.js';
 
 // Input Type Change: show/hide joystick and slider elements
-function changeInputType() {
-	const type = document.getElementById('inputType').value;
+export function changeInputType() {
+	const checkedRadio = document.querySelector('input[name="inputType"]:checked');
+	const type = checkedRadio ? checkedRadio.value : 'joystick';
 	document.getElementById('joystickControl').style.display = type === 'joystick' ? 'block' : 'none';
 	document.querySelectorAll('.slider-element').forEach(el => {
 		el.style.display = type === 'sliders' ? 'block' : 'none';
@@ -12,20 +12,3 @@ function changeInputType() {
 		initJoystick();
 	}
 }
-
-// Save the selected control type when it changes
-document.getElementById('inputType').addEventListener('change', function() {
-	const selectedType = this.value;
-	localStorage.setItem('controlType', selectedType);
-	changeInputType();
-});
-
-// On page load, set the select to the saved control type (if any)
-function loadControlType() {
-	const savedType = localStorage.getItem('controlType');
-	if (savedType) {
-		document.getElementById('inputType').value = savedType;
-		changeInputType(); // Update the UI accordingly
-	}
-}
-

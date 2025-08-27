@@ -1,6 +1,7 @@
+import { resetLayout } from './controller.js';
 import Modal from '@/utils/Modal.js';
 
-window.handleResetBtnClick = function handleResetBtnClick() {
+ export function handleResetBtnClick() {
 	const modal = new Modal({
 		title: "Reset layout",
 		message: "Are you sure you want to reset the layout?",
