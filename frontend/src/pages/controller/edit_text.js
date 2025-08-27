@@ -1,6 +1,6 @@
 import Modal from '@/utils/Modal.js';
 
-window.editText = function editText(elementId) {
+export function editText(elementId) {
 	const element = document.getElementById(elementId);
 	const currentText = element.textContent || element.innerText;
 	console.log(currentText);
@@ -24,4 +24,3 @@ window.editText = function editText(elementId) {
 	});
 	modal.showModal();
 }
-

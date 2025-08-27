@@ -237,3 +237,33 @@ strong {
   color: var(--cyan-light);
   font-weight: 700;
 }
+
+.checkbox {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+
+	width: 20px;
+	height: 20px;
+	border: 2px solid var(--cyan-light);
+	background-color: transparent;
+	cursor: pointer;
+
+	display: inline-grid;
+	place-items: center;
+	transition: all 0.2s ease;
+}
+
+.checkbox::after {
+	content: '';
+	width: 10px;
+	height: 10px;
+	background-color: var(--cyan-light);
+	display: block;
+	transform: scale(0);
+	transition: transform 0.1s ease-in-out;
+}
+
+.checkbox:checked::after {
+	transform: scale(1);
+}

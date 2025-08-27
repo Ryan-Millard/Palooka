@@ -4,6 +4,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" href="./styles/index.css">
 		<link rel="stylesheet" href="./styles/controller.css">
+		<script type="module" src="/src/pages/controller/main.js"></script>
 	</head>
 	<body>
 		<header>
@@ -15,19 +16,6 @@
 
 		<main>
 			<div id="controls-container">
-				<details open class="clickable" id="controlsDetails">
-					<summary class="clickable"></summary>
-					<div class="control-panel">
-						<input type="checkbox" id="fullscreenToggler" onchange="toggleFullscreen(document.getElementById('controls-container'))">
-						<label for="fullscreenToggler" class="btn"></label>
-						<button id="modeToggle" class="btn" onclick="toggleMode()">Edit</button>
-						<select id="inputType" class="btn">
-							<option value="joystick">Joystick</option>
-							<option value="sliders">Sliders</option>
-						</select>
-					</div>
-				</details>
-
 				<div id="controller" class="edit-mode">
 					<!-- Battery -->
 					<div class="control-element button-element" id="batteryContainer" data-aspect-ratio="2">
@@ -42,7 +30,7 @@
 					<!-- Button -->
 					<div class="control-element button-element" id="flipButtonContainer" data-aspect-ratio="2">
 						<div class="button-container">
-							<button id="flipButton" class="control-button btn" onclick="sendFlipData()">Flip</button>
+							<button id="flipButton" class="control-button btn">Flip</button>
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
@@ -65,10 +53,7 @@
 						<div class="slider-container">
 							<!-- Right Motor -->
 							<label id="rightMotorLabel" for="motorR">Right Wheel</label>
-							<input type="range" class="slider" id="motorR" min="-255" max="255" value="0"
-																								oninput="sendSliderData('R', this.value)"
-																								onmouseup="this.value=0; sendSliderData('R', 0)"
-																								ontouchend="this.value=0; sendSliderData('R', 0)">
+							<input type="range" class="slider" id="motorR" data-id="R" min="-255" max="255" value="0">
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
@@ -79,10 +64,7 @@
 						<div class="slider-container">
 							<!-- Flipper Arm -->
 							<label id="flipperArmLabel" for="motorL">Flipper Arm</label>
-							<input type="range" class="slider" id="flipper" min="0" max="180" value="0"
-																							  oninput="sendSliderData('F', this.value)"
-																							  onmouseup="this.value=0; sendSliderData('F', 0)"
-																							  ontouchend="this.value=0; sendSliderData('F', 0)">
+							<input type="range" class="slider" id="flipper" data-id="F" min="0" max="180" value="0">
 						</div>
 						<div class="rotate-handle">Rotate</div>
 						<div class="resize-handle">Resize</div>
@@ -92,10 +74,7 @@
 					<div class="control-element slider-element" id="sliderRight" data-aspect-ratio="2">
 						<div class="slider-container">
 							<!-- Left Motor -->
-							<input type="range" class="slider" id="motorL" min="-255" max="255" value="0"
-																								oninput="sendSliderData('L', this.value)"
-																								onmouseup="this.value=0; sendSliderData('L', 0)"
-																								ontouchend="this.value=0; sendSliderData('L', 0)">
+							<input type="range" class="slider" id="motorL" data-id="L" min="-255" max="255" value="0">
 							<label id="leftMotorLabel" for="motorL">Left Wheel</label>
 						</div>
 						<div class="rotate-handle">Rotate</div>
@@ -103,6 +82,28 @@
 						<button class="edit-text" onClick="editText('leftMotorLabel')"><img class="pencil" src="img/pencil.svg"></img> Edit Text</button>
 					</div>
 				</div>
+
+					<div class="control-panel">
+						<button class="btn" style="padding: 0 5px" id="controller-edit-toggler">Edit</button>
+						<img id="control-panel-open-fullscreen" src="img/open-fullscreen.svg" alt="Fullscreen">
+						<img id="control-panel-settings" src="img/settings.svg" alt="Settings">
+					</div>
+					<div class="modal" id="settings-modal">
+						<div class="modal-content block" data-color="">
+							<div class="settings-modal-header">
+								<h2>Settings</h2>
+								<button id="settings-modal-close" onclick="document.getElementById('settings-modal').style.display='none'">&times;</button>
+							</div>
+
+							<div class="block">
+								<u><p>Control type:</p></u>
+								<input type="radio" id="joystick" name="inputType" value="joystick" class="checkbox">
+								<label for="joystick">Joystick</label>
+								<input type="radio" id="sliders" name="inputType" value="sliders" class="checkbox">
+								<label for="sliders">Sliders</label>
+							</div>
+						</div>
+					</div>
 			</div>
 		</main>
 
@@ -123,7 +124,7 @@
 				<li>This is not reversible. Once you reset the controller, it will be permanent.</li>
 				<li>We will lose all of our custom settings.</li>
 			</ol>
-			<a class="btn" onclick="handleResetBtnClick()">Reset to factory settings</a>
+			<a class="btn" id="reset-controller-to-factory-settings">Reset controller to factory settings</a>
 		</section>
 
 		<div class="footer-spacer"></div>
@@ -135,34 +136,5 @@
 				<a class="current" href="">Controller</a>
 			</nav>
 		</footer>
-
-		<script src="/src/pages/controller/controller.js"></script>
-		<script type="module" src="/src/pages/controller/controller_web_socket.js"></script>
-		<script type="module" src="/src/pages/controller/battery_web_socket.js"></script>
-		<script type="module" src="/src/pages/controller/reset_controller_layout.js"></script>
-		<script type="module" src="/src/pages/controller/edit_text.js"></script>
-		<script src="/src/pages/controller/switch_control_type.js"></script>
-		<script src="/src/pages/controller/fullscreen.js"></script>
-		<script>
-			// Change logo to red color
-			fetch('img/star.svg')
-				.then(r => r.text())
-				.then(svgText => {
-					const parser = new DOMParser();
-					const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
-					// Change all fills from #0fc to red
-					svgDoc.querySelectorAll('[fill="#0fc"]').forEach(el => {
-									el.setAttribute('fill', 'var(--red)');
-								});
-
-					const svgEl = svgDoc.documentElement;
-					svgEl.classList.add('small-flag');
-
-					// Inject into page
-					document.getElementById('star-container')
-						.appendChild(svgDoc.documentElement);
-				})
-				.catch(console.error);
-		</script>
 	</body>
 </html>

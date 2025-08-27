@@ -1,4 +1,4 @@
-function toggleFullscreen(element = document.body) {
+export function toggleFullscreen(element = document.body) {
 	// Check if fullscreen is currently active
 	const isFullscreen = document.fullscreenElement ||
 		document.webkitFullscreenElement ||

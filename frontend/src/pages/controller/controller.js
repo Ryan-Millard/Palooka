@@ -1,4 +1,6 @@
-let isEditMode = true;
+import { changeInputType } from './switch_control_type.js';
+import { sendJoystickData } from './controller_web_socket.js';
+
 let activeElement = null;
 let isResizing = false;
 let isRotating = false;
@@ -7,25 +9,23 @@ let joystickActive = false;
 let joystickCenter = { x: 0, y: 0 };
 let maxJoystickDistance = 0;
 
-function resetLayout() {
-    // Remove any custom layout from localStorage
-    localStorage.removeItem('controllerLayout');
+export function resetLayout() {
+	// Remove any custom layout from localStorage
+	localStorage.removeItem('controllerLayout');
 
-    // Re-apply the built-in default positions and sizes
-    setDefaultLayout();
+	// Re-apply the built-in default positions and sizes
+	setDefaultLayout();
 
-    // Re-apply stored rotations (setDefaultLayout sets rotations to defaults)
-    applyRotations();
+	// Re-apply stored rotations (setDefaultLayout sets rotations to defaults)
+	applyRotations();
 
-    // Ensure controls are enabled/disabled correctly for the current mode
-    updateControlInteractivity();
+	// Ensure controls are enabled/disabled correctly for the current mode
+	updateControlInteractivity();
 }
 
 function toggleMode() {
 	isEditMode = !isEditMode;
 	document.getElementById('controller').classList.toggle('edit-mode');
-	document.getElementById('modeToggle').textContent = 
-		isEditMode ? 'Save' : 'Edit';
 	saveLayout();
 	updateControlInteractivity();
 	if (!isEditMode) {
@@ -34,7 +34,7 @@ function toggleMode() {
 }
 
 // Update interactive controls based on mode.
-function updateControlInteractivity() {
+export function updateControlInteractivity() {
 	// Disable interactive child elements in edit mode
 	document.querySelectorAll('.control-button, .slider, .joystick, .joystick-handle').forEach(el => {
 		el.style.pointerEvents = isEditMode ? 'none' : 'auto';
@@ -42,7 +42,7 @@ function updateControlInteractivity() {
 }
 
 // Initialize aspect ratios for buttons (and other elements if needed)
-function initAspectRatios() {
+export function initAspectRatios() {
 	document.querySelectorAll('.button-element, .joystick-element, .slider-element').forEach(element => {
 		const width = parseInt(window.getComputedStyle(element).width);
 		const height = parseInt(window.getComputedStyle(element).height);
@@ -215,7 +215,7 @@ function stopDrag(e) {
 }
 
 // Apply rotations from stored data
-function applyRotations() {
+export function applyRotations() {
 	document.querySelectorAll('.control-element').forEach(element => {
 		const rotation = element.getAttribute('data-rotation') || '0';
 		element.style.transform = `rotate(${rotation}deg)`;
@@ -223,8 +223,9 @@ function applyRotations() {
 }
 
 // Joystick functionality for Use Mode
-function initJoystick() {
-	if (document.getElementById('inputType').value !== 'joystick') return;
+export function initJoystick() {
+	const checkedRadio = document.querySelector('input[name="inputType"]:checked');
+	if (!checkedRadio || checkedRadio.value !== 'joystick') return;
 	const joystick = document.querySelector('.joystick');
 	const handle = document.querySelector('.joystick-handle');
 	const joystickRect = joystick.getBoundingClientRect();
@@ -342,50 +343,50 @@ function prepareJoystickCoordinates(x, y) {
 }
 
 function updateHandlePosition(x, y) {
-  const handle = document.querySelector('.joystick-handle');
-  const joystick = document.querySelector('.joystick');
-  const joystickRect = joystick.getBoundingClientRect();
-  const joystickElement = document.getElementById('joystickControl');
+	const handle = document.querySelector('.joystick-handle');
+	const joystick = document.querySelector('.joystick');
+	const joystickRect = joystick.getBoundingClientRect();
+	const joystickElement = document.getElementById('joystickControl');
 
-  // Calculate joystick center
-  joystickCenter = {
-    x: joystickRect.width / 2,
-    y: joystickRect.height / 2
-  };
+	// Calculate joystick center
+	joystickCenter = {
+		x: joystickRect.width / 2,
+		y: joystickRect.height / 2
+	};
 
-  // Get current rotation in radians
-  const rotationDeg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
-  const rotationRad = (rotationDeg * Math.PI) / 180;
+	// Get current rotation in radians
+	const rotationDeg = parseFloat(joystickElement.getAttribute('data-rotation') || '0');
+	const rotationRad = (rotationDeg * Math.PI) / 180;
 
-  // Calculate relative position from touch point to joystick top-left
-  const relX = x - joystickRect.left;
-  const relY = y - joystickRect.top;
+	// Calculate relative position from touch point to joystick top-left
+	const relX = x - joystickRect.left;
+	const relY = y - joystickRect.top;
 
-  // Calculate delta from center
-  let deltaX = relX - joystickCenter.x;
-  let deltaY = relY - joystickCenter.y;
+	// Calculate delta from center
+	let deltaX = relX - joystickCenter.x;
+	let deltaY = relY - joystickCenter.y;
 
-  // Apply inverse rotation to align with joystick's coordinate system
-  const cosRot = Math.cos(-rotationRad);
-  const sinRot = Math.sin(-rotationRad);
-  const localDeltaX = deltaX * cosRot - deltaY * sinRot;
-  const localDeltaY = deltaX * sinRot + deltaY * cosRot;
+	// Apply inverse rotation to align with joystick's coordinate system
+	const cosRot = Math.cos(-rotationRad);
+	const sinRot = Math.sin(-rotationRad);
+	const localDeltaX = deltaX * cosRot - deltaY * sinRot;
+	const localDeltaY = deltaX * sinRot + deltaY * cosRot;
 
-  // Calculate distance from center in local coordinates
-  const distance = Math.sqrt(localDeltaX * localDeltaX + localDeltaY * localDeltaY);
+	// Calculate distance from center in local coordinates
+	const distance = Math.sqrt(localDeltaX * localDeltaX + localDeltaY * localDeltaY);
 
-  // If distance exceeds max, scale down while preserving direction
-  const constrainedDistance = Math.min(distance, maxJoystickDistance);
+	// If distance exceeds max, scale down while preserving direction
+	const constrainedDistance = Math.min(distance, maxJoystickDistance);
 
-  // Calculate scaling factor (if needed)
-  const scaleFactor = distance > 0 ? constrainedDistance / distance : 0;
+	// Calculate scaling factor (if needed)
+	const scaleFactor = distance > 0 ? constrainedDistance / distance : 0;
 
-  // Apply scaling to constrain within bounds
-  const constrainedLocalX = localDeltaX * scaleFactor;
-  const constrainedLocalY = localDeltaY * scaleFactor;
+	// Apply scaling to constrain within bounds
+	const constrainedLocalX = localDeltaX * scaleFactor;
+	const constrainedLocalY = localDeltaY * scaleFactor;
 
-  // Translate to handle position (centered at 50%)
-  handle.style.transform = `translate(calc(-50% + ${constrainedLocalX}px), calc(-50% + ${constrainedLocalY}px))`;
+	// Translate to handle position (centered at 50%)
+	handle.style.transform = `translate(calc(-50% + ${constrainedLocalX}px), calc(-50% + ${constrainedLocalY}px))`;
 }
 function updateJoystickPosition(x, y) {
 	// Send normalized values
@@ -419,7 +420,7 @@ function resetJoystick() {
 }
 
 // Save/Load Layout
-function saveLayout() {
+export function saveLayout() {
 	const layout = [];
 	document.querySelectorAll('.control-element').forEach(element => {
 		layout.push({
@@ -435,7 +436,7 @@ function saveLayout() {
 	localStorage.setItem('controllerLayout', JSON.stringify(layout));
 }
 
-function loadLayout() {
+export function loadLayout() {
 	const saved = localStorage.getItem('controllerLayout');
 	if (saved) {
 		try {
@@ -463,7 +464,7 @@ function loadLayout() {
 }
 
 // Add this function to scripts/controller.js
-function setDefaultLayout() {
+export function setDefaultLayout() {
 	// Only set default if no saved layout exists
 	if (!localStorage.getItem('controllerLayout')) {
 		const controller = document.getElementById('controller');
@@ -580,57 +581,15 @@ function checkForOverlaps() {
 	}
 }
 
-// Add this to end of window.onload to verify no overlaps
 function verifyNoOverlaps() {
 	// Use setTimeout to ensure layout is completed
 	setTimeout(checkForOverlaps, 500);
 }
 
-// Add this to ensure layout adapts to screen size changes
-let lastWidth = window.innerWidth;
-let lastHeight = window.innerHeight;
-
-window.addEventListener('resize', () => {
-	// Only trigger if size change is significant (>20%)
-	const widthChange = Math.abs(window.innerWidth - lastWidth) / lastWidth;
-	const heightChange = Math.abs(window.innerHeight - lastHeight) / lastHeight;
-
-	if (widthChange > 0.2 || heightChange > 0.2) {
-		// Update last dimensions
-		lastWidth = window.innerWidth;
-		lastHeight = window.innerHeight;
-
-		// If in edit mode, offer to reset layout
-		if (isEditMode && confirm('Screen size changed significantly. Reset layout?')) {
-			localStorage.removeItem('controllerLayout');
-			setDefaultLayout();
-			applyRotations();
-		}
+// On page load, set the select to the saved control type (if any)
+export function loadControlType() {
+	const savedType = localStorage.getItem('controlType');
+	if (savedType) {
+		changeInputType(); // Update the UI accordingly
 	}
-});
-
-// Initialize
-window.onload = () => {
-	// Initialize aspect ratios first
-	initAspectRatios();
-
-	// Load saved preferences
-	loadControlType();
-	loadLayout();
-
-	// If no saved layout, set default grid-based layout
-	setDefaultLayout();
-
-	// Apply other settings
-	applyRotations();
-	updateControlInteractivity();
-
-	// Wait for layout to settle, then check for overlaps
-	setTimeout(() => {
-		// Only for development/debugging
-		// checkForOverlaps();
-
-		// Finally toggle to use mode
-		toggleMode();
-	}, 100);
-};
+}
