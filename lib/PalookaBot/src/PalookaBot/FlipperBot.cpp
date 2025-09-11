@@ -40,6 +40,7 @@ namespace PalookaBot
 
 	// Private constructor
 	FlipperBot::FlipperBot(const byte FLIPPER_PIN,
+			const adc1_channel_t batteryChannel, const float rTop, const float rBot,
 			const byte LEFT_PWM_PIN, const byte LEFT_DIRECTION_PIN,
 			const byte RIGHT_PWM_PIN, const byte RIGHT_DIRECTION_PIN,
 			const byte BOOST_PIN,
@@ -47,6 +48,7 @@ namespace PalookaBot
 			const byte EN5V_PIN, const byte DVR_SLEEP_PIN,
 			const byte BATTERY_PIN)
 		: EN5V_PIN(EN5V_PIN), DVR_SLEEP_PIN(DVR_SLEEP_PIN),
+		battery(batteryChannel, rTop, rBot),
 		FLIPPER_PIN(FLIPPER_PIN),
 		FLIPPER_MAX_ANGLE(180), FLIPPER_MIN_ANGLE(0),
 		wheelRight(RIGHT_PWM_PIN, RIGHT_DIRECTION_PIN),
@@ -88,6 +90,8 @@ namespace PalookaBot
 		// Using a broader pulse width range for better compatibility
 		// with a variety of servos (500-2500 μs)
 		flipper.attach(FLIPPER_PIN, 500, 2500);
+
+		battery.begin();
 	}
 
 	void FlipperBot::setLedOn(const bool isOn) const
@@ -198,13 +202,5 @@ namespace PalookaBot
 	{
 		wheelLeft.stop();
 		wheelRight.stop();
-	}
-
-	int FlipperBot::getBatteryPercentage() const
-	{
-		int adcValue = analogRead(36);
-		Serial.print("ADC: ");
-		Serial.println(adcValue);
-		return adcValue;
 	}
 }
