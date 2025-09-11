@@ -1,3 +1,5 @@
+import { saveLayout } from './controller.js';
+
 export function resetLayout() {
 	// Remove any custom layout from localStorage
 	localStorage.removeItem('controllerLayout');
