@@ -19,12 +19,20 @@
 				<div id="controller" class="edit-mode">
 					<!-- Battery -->
 					<div class="control-element button-element" id="batteryContainer" data-aspect-ratio="2">
-						<div class="button-container">
-							<div id="battery">0%</div>
-							<div id="battery-pos-terminal"></div>
+						<div class="button-container battery-wrap">
+							<div class="battery" aria-hidden="true">
+								<div class="bars" id="bars">
+									<div class="bar level-1 inactive" data-level="1"></div>
+									<div class="bar level-2 inactive" data-level="2"></div>
+									<div class="bar level-3 inactive" data-level="3"></div>
+									<div class="bar level-4 inactive" data-level="4"></div>
+									<div class="bar level-5 inactive" data-level="5"></div>
+								</div>
+							</div>
+							<div class="nub" aria-hidden="true"></div>
+							<div class="rotate-handle">Rotate</div>
+							<div class="resize-handle">Resize</div>
 						</div>
-						<div class="rotate-handle">Rotate</div>
-						<div class="resize-handle">Resize</div>
 					</div>
 
 					<!-- Button -->
