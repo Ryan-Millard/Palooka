@@ -7,7 +7,10 @@
 #include "esp_adc_cal.h"
 
 #include "Motor.h"
+#include "Battery.h"
 
+// TODO: Reset function on IO5, when LOW, factory reset
+// TODO: Show a warning before users enable the boost button
 namespace PalookaBot
 {
 	// FlipperBot represents a two-wheeled battlebot based on the Mootbotv1_241122 hardware.
@@ -23,6 +26,9 @@ namespace PalookaBot
 			// ========== GPIO Pins ==========
 			const byte EN5V_PIN; // Servo
 			const byte DVR_SLEEP_PIN;   // Motors use for charging - switch to low when charging
+
+			// ========== Battery ==========
+			Battery battery;
 
 			// ========== Flipper/Arm ==========
 			const byte FLIPPER_PIN; // See flipper below
@@ -48,6 +54,7 @@ namespace PalookaBot
 			// ========== Private constructor for singleton pattern ==========
 			// The default parameters correspond to the recommended hardware configuration.
 			FlipperBot(const byte FLIPPER_PIN = 27,
+					const adc1_channel_t batteryChannel = ADC1_CHANNEL_0, const float rTop = 6800.0f, const float rBot = 470.0f,
 					const byte LEFT_PWM_PIN = 25, const byte LEFT_DIRECTION_PIN = 26,
 					const byte RIGHT_PWM_PIN = 32, const byte RIGHT_DIRECTION_PIN = 33,
 					const byte BOOST_PIN = 15,
@@ -93,10 +100,8 @@ namespace PalookaBot
 			// stopMoving() halts all movement by stopping both wheels.
 			void stopMoving() const;
 
-			int getBatteryPercentage() const;
-								 // 4.5V = charging, otherwise battery
-								 // 4.2 = fully charged battery
-								 // 3.7 = flat for battery - switch off device
+			inline int getBatteryPercentage() { return battery.readPercent(); }
+			inline bool calibrateBattery() { return battery.calibrate(); }
 
 			// ========== Cleanup ==========
 			static void destroyInstance();
