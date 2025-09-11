@@ -233,48 +233,6 @@ details.clickable > summary {
 	display: flex;
 	align-items: center;
 }
-.battery {
-	flex: 1;
-	height: 100%;
-	border: 3px solid var(--cyan-light);
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 4px;
-	box-sizing: border-box;
-}
-.nub {
-	width: 7%;
-	height: 28%;
-	background: var(--cyan-light);
-}
-.bars {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: stretch;
-	width: 100%;
-	height: 100%;
-	gap: 4px;
-}
-.bar {
-	flex: 1;
-	background: transparent;
-	box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08);
-	opacity: 0.18;
-	transform: scaleY(0.95);
-	transform-origin: bottom;
-	transition: opacity 0.25s, background-color 0.25s, transform 0.25s;
-}
-.bar.active {
-	opacity: 1;
-	transform: scaleY(1);
-}
-.bar.level-1.active { background: #ff4d4f; }
-.bar.level-2.active { background: #ff7a45; }
-.bar.level-3.active { background: #ffd666; }
-.bar.level-4.active { background: #b7eb8f; }
-.bar.level-5.active { background: #73d13d; }
 
 #batteryContainer, #flipButtonContainer {
 	transform: rotate(90deg);

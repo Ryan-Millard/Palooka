@@ -1,6 +1,9 @@
 import { calibrateBattery } from './battery.js';
 import { setupFormSubmissionHandler } from './forms.js';
 import { handleFactoryReset } from './factory_reset.js';
+import { setupBatteryWebsocket } from '@/utils/battery_websocket.js';
+
+setupBatteryWebsocket();
 
 // Battery calibration
 document.getElementById('battery-calibrator').addEventListener('click', calibrateBattery);

@@ -2,7 +2,8 @@ import { isEditMode, startDrag, toggleMode, updateControlInteractivity } from '.
 import { toggleFullscreen } from './fullscreen.js';
 import { changeInputType } from './switch_control_type.js';
 import { loadControlType, loadLayout, } from './controller.js';
-import { sendFlipData, sendSliderData, setupBatteryWebsocket } from './web_socket_manager.js';
+import { sendFlipData, sendSliderData } from './web_socket_manager.js';
+import { setupBatteryWebsocket } from '@/utils/battery_websocket.js';
 import { handleResetBtnClick } from './reset_controller_layout.js';
 import { editText } from './edit_text.js';
 import {
