@@ -19,4 +19,4 @@ def deploy_filesystem(source, target, env):
         sys.exit(result)
 
 # Register the custom target "deploy_fs"
-env.AddTarget("deploy_fs", None, deploy_filesystem)
+env.AddTarget("deployfs", None, deploy_filesystem)
