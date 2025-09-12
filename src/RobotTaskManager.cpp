@@ -1,6 +1,26 @@
 #include "RobotTaskManager.h"
 
 namespace Robot {
+	bool RobotTaskManager::requestBatteryCalibration(TickType_t timeout) {
+		uint32_t reply{0};
+		TaskHandle_t caller = xTaskGetCurrentTaskHandle();
+		if (!caller || !robotTaskHandle) return false;
+
+		return (
+				// =========================== RACE CONDITION ===========================
+				// The line below uses a single task notification to send the caller handle.
+				// If multiple tasks call this function at the same time, the second caller
+				// may overwrite the notification, causing the first caller to potentially
+				// time out. For this application, we accept this limitation since
+				// battery calibration is low-priority and exact return value isn't critical.
+				xTaskNotify(robotTaskHandle, (uint32_t)caller, eSetValueWithOverwrite)
+				&&
+				xTaskNotifyWait(0, 0, &reply, timeout) // Wait for reply from Robot task
+				&&
+				reply // Implicit cast to bool: 0 -> false, non-zero -> true
+			   );
+	}
+
 	void RobotTaskManager::begin() {
 		robot.begin();
 	}
@@ -13,16 +33,16 @@ namespace Robot {
 
 	void RobotTaskManager::startTask() {
 		// Create a queue for robot commands (queue length of 10).
-		robotQueue = xQueueCreate(10, sizeof(PalookaNetwork::CommandData));
+		websockQueue = xQueueCreate(10, sizeof(PalookaNetwork::CommandData));
 
 		// Create the hardware control task pinned to core 1.
 		xTaskCreatePinnedToCore(
 			RobotTaskManager::RobotTask,
-			"RobotTask",	// Task name
+			"RobotTask",
 			4096,			// Stack size
 			this,			// Parameter
 			2,				// Priority
-			nullptr,		// Task handle
+			&robotTaskHandle,
 			1				// Pin to core 1
 		);
 	}
@@ -49,6 +69,13 @@ namespace Robot {
 
 			handleWebsocketCommands(); // Non-blocking
 
+			// Calibration Request checks
+			uint32_t callerHandle{0};
+			if (xTaskNotifyWait(0, 0, &callerHandle, 0) == pdTRUE) {
+				bool result{robot.calibrateBattery()};
+				xTaskNotify((TaskHandle_t)callerHandle, result, eSetValueWithOverwrite);
+			}
+
 			// Minor yield for other tasks to execute
 			vTaskDelay(pdMS_TO_TICKS(1));
 		}
@@ -58,7 +85,7 @@ namespace Robot {
 	{
 		PalookaNetwork::CommandData cmdData;
 		// Wait for a command with a 10ms timeout
-		if(xQueueReceive(robotQueue, &cmdData, pdMS_TO_TICKS(10)) != pdPASS) { return; }
+		if(xQueueReceive(websockQueue, &cmdData, pdMS_TO_TICKS(10)) != pdPASS) { return; }
 
 		// Process slider control data
 		if(cmdData.hasSlider)

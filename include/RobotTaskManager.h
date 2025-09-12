@@ -23,14 +23,18 @@ namespace Robot {
 				instance = new RobotTaskManager(*manager);
 				return *instance;
 			}
-			QueueHandle_t& getQueue() { return robotQueue; }
+
+			inline QueueHandle_t& getQueue() { return websockQueue; }
+			bool requestBatteryCalibration(TickType_t timeout = pdMS_TO_TICKS(5000)); // 5 second wait
 
 			void begin();
 			void startTask();
 		private:
 			PalookaBot::FlipperBot& robot;
 			PalookaNetwork::AccessPointManager& apManager;
-			QueueHandle_t robotQueue;
+
+			TaskHandle_t robotTaskHandle = nullptr;
+			QueueHandle_t websockQueue;
 
 			static void RobotTask(void* pvParameters);
 			void robotTaskLoop();
