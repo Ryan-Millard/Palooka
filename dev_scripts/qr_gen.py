@@ -295,7 +295,7 @@ def qr_action(target, source, env):
 
 # Register custom target with PlatformIO
 env.AddCustomTarget(
-    "qr-gen",
+    "qr_gen",
     None,
     qr_action,
     title="QR / sticker generator",
