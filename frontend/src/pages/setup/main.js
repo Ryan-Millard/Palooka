@@ -1,3 +1,4 @@
+import Modal from '@/utils/Modal.js';
 import { calibrateBattery } from './battery.js';
 import { setupFormSubmissionHandler } from './forms.js';
 import { handleFactoryReset } from './factory_reset.js';
@@ -6,7 +7,27 @@ import { setupBatteryWebsocket } from '@/utils/battery_websocket.js';
 setupBatteryWebsocket();
 
 // Battery calibration
-document.getElementById('battery-calibrator').addEventListener('click', calibrateBattery);
+document.getElementById('battery-calibrator').addEventListener('click', () => {
+	const confirmCallback = async () => {
+		const succeeded = await calibrateBattery();
+		const modal = new Modal({
+			title: succeeded ? "Success" : "Failure",
+			message: succeeded ? "Our battery has been calibrated comrade!" : "System error - please try again comrade.",
+			buttons: Modal.Buttons.CONFIRM_ONLY,
+			yesBtnText: "Close",
+		});
+		if (!succeeded) modal.dataColor = "red";
+		modal.showModal();
+	};
+
+	new Modal({
+		title: "Calibrate Battery",
+		message: "Before calibrating, ensure the Palooka is not charging, comrade!",
+		buttons: Modal.Buttons.YES_CANCEL,
+		yesBtnText: "Calibrate",
+		onConfirm: confirmCallback
+	}).showModal();
+});
 
 // Change logo to red color & apply in correct place
 fetch('img/star.svg')

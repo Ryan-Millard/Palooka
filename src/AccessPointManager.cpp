@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 
 #include "AccessPointManager.h"
+#include "RobotTaskManager.h"
 
 namespace PalookaNetwork {
 	namespace {
@@ -129,8 +130,14 @@ namespace PalookaNetwork {
 			ESP.restart();
 		}
 
-		void handleCalibrateBattery(WebServer* server){
-			server->send(200, "text/plain", "Calibrating battery...");
+		void handleCalibrateBattery(WebServer* server) {
+			const char* success = Robot::RobotTaskManager::getInstance().requestBatteryCalibration() ? "true" : "false";
+			const char responseTemplate[] = "{\"success\": %s}";
+			size_t responseSize = sizeof(responseTemplate) + strlen(success);
+
+			char response[responseSize];
+			snprintf(response, responseSize, responseTemplate, success);
+			server->send(200, "application/json", response);
 		}
 
 		void handleFactoryReset(WebServer* server) {
