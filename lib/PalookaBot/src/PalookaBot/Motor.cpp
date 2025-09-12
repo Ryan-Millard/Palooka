@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include "Motor.h"
+#include "PalookaBot/Motor.h"
 
 namespace PalookaBot
 {
