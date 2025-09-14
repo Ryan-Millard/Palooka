@@ -1,27 +1,29 @@
-# This target automatically detects an attached ESP32 board, reads its MAC address,
-# and generates a small, printable Wi-Fi QR code sticker for easy network access.
-#
-# Usage: pio run -t qr-gen
-#
-# Optional dependencies (install in the same Python environment used by PlatformIO):
-#   pip install --user pillow qrcode wifi-qrcode-generator pyserial
-#   - pillow: image generation and manipulation
-#   - qrcode: generates QR codes manually if wifi-qrcode-generator is unavailable
-#   - wifi-qrcode-generator: preferred library for Wi-Fi QR codes
-#   - pyserial: detects and reads MAC addresses from the ESP32 via serial
+# Reads ESP32 MAC address & generates QR code based on it in assets/qr/
+# Usage: pio run -t qr_gen
+
+# This file both registers the `qr_gen` PlatformIO target and exposes helpers
+# for other scripts (e.g. append_qr_to_pdf.py) to reuse.
 
 import os
 import re
 import subprocess
-import hashlib
 import shutil
 import sys
+import time
 from pathlib import Path
 
-# SCons import for PlatformIO extension
-Import("env")
+# Detect SCons / PlatformIO execution environment. Import("env") only when available.
+_scons_available = True
+try:
+    Import  # if NameError -> not running as SCons script
+except NameError:
+    _scons_available = False
 
-# Try imports for image generation
+if _scons_available:
+    # Import env provided by SCons/PlatformIO into module globals
+    Import("env")
+
+# Optional imaging libraries
 try:
     from PIL import Image, ImageDraw, ImageFont
 except Exception:
@@ -32,7 +34,7 @@ try:
 except Exception:
     qrcode = None
 
-# Try wifi-qrcode-generator (optional, best-effort)
+# wifi-qrcode-generator optional (best-effort)
 try:
     from wifi_qrcode_generator.generator import wifi_qrcode
 except Exception:
@@ -52,88 +54,7 @@ def run_cmd(cmd, timeout=10):
     except Exception:
         return None
 
-def make_wifi_qr_image_try_library(ssid):
-    if wifi_qrcode is None:
-        return None
-    call_variants = [
-        (ssid, False, "", None),
-        (ssid, False, None, None),
-        (ssid,),
-        (ssid, False),
-    ]
-    for args in call_variants:
-        try:
-            qrobj = wifi_qrcode(*args)
-            if hasattr(qrobj, "make_image"):
-                img = qrobj.make_image()
-                return img.convert("RGB")
-            if isinstance(qrobj, Image.Image) if Image else False:
-                return qrobj.convert("RGB")
-        except TypeError:
-            continue
-        except Exception:
-            return None
-    return None
-
-def make_wifi_qr_image_manual_open(ssid, box_size=8, border=4):
-    if qrcode is None:
-        return None
-    payload = f'WIFI:T:nopass;S:{ssid};;'
-    qr = qrcode.QRCode(box_size=box_size, border=border)
-    qr.add_data(payload)
-    qr.make(fit=True)
-    img = qr.make_image()
-    return img.convert("RGB")
-
-def make_sticker_image(ssid, dashboard_url, outpath: Path):
-    """
-    Tiny Wi-Fi QR + SSID text below.
-    Minimal padding around QR code, keeps padding below text.
-    """
-    if Image is None or qrcode is None:
-        print("Pillow/qrcode not available – skipping image generation.")
-        return None
-
-    # Generate QR code with smallest reasonable box/border
-    qr_wifi = make_wifi_qr_image_try_library(ssid)
-    if qr_wifi is None:
-        qr_wifi = make_wifi_qr_image_manual_open(ssid, box_size=4, border=1)
-    if qr_wifi is None:
-        print("Could not create Wi-Fi QR image (missing libs).")
-        return None
-
-    # Minimal padding around QR
-    padding_qr = 2  # small padding around QR
-    padding_below_text = 5  # keep original padding below text
-
-    draw = ImageDraw.Draw(qr_wifi)
-    try:
-        font = ImageFont.truetype("DejaVuSans.ttf", 10)
-    except Exception:
-        font = ImageFont.load_default()
-
-    text = f"{ssid}"  # Only SSID to save space
-
-    # Measure text
-    bbox = draw.textbbox((0,0), text, font=font)
-    text_w = bbox[2] - bbox[0]
-    text_h = bbox[3] - bbox[1]
-
-    # New canvas size: minimal around QR + space for text
-    W = qr_wifi.width + padding_qr * 2
-    H = qr_wifi.height + text_h + padding_qr + padding_below_text  # minimal above QR, keep below text
-
-    canvas = Image.new("RGB", (W, H), "white")
-    canvas.paste(qr_wifi, (padding_qr, padding_qr))
-
-    draw = ImageDraw.Draw(canvas)
-    text_x = (W - text_w) // 2
-    text_y = qr_wifi.height + padding_qr  # text right below QR
-    draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
-
-    canvas.save(outpath)
-    return outpath
-
+# --- Serial port / MAC helpers (unchanged logic, exported) ---
 def detect_serial_port():
     p = os.environ.get("UPLOAD_PORT") or os.environ.get("PIO_UPLOAD_PORT")
     if p:
@@ -218,7 +139,6 @@ def read_mac_from_device(port, serial_timeout=5):
         return None
 
     try:
-        import time
         ser.dtr = False
         ser.rts = False
         time.sleep(0.05)
@@ -264,40 +184,131 @@ def read_mac_from_device(port, serial_timeout=5):
 
     return None
 
-def qr_action(target, source, env):
-    print("==== qr-gen: generate QR/sticker for attached device ====")
+# --- QR creation helpers (exported both as on-disk saver and in-memory creator) ---
+def make_wifi_qr_image_try_library(ssid):
+    if wifi_qrcode is None:
+        return None
+    call_variants = [
+        (ssid, False, "", None),
+        (ssid, False, None, None),
+        (ssid,),
+        (ssid, False),
+    ]
+    for args in call_variants:
+        try:
+            qrobj = wifi_qrcode(*args)
+            if hasattr(qrobj, "make_image"):
+                img = qrobj.make_image()
+                return img.convert("RGB")
+            if Image and isinstance(qrobj, Image.Image):
+                return qrobj.convert("RGB")
+        except TypeError:
+            continue
+        except Exception:
+            return None
+    return None
+
+def make_wifi_qr_image_manual_open(ssid, box_size=8, border=4):
+    if qrcode is None:
+        return None
+    payload = f'WIFI:T:nopass;S:{ssid};;'
+    qr = qrcode.QRCode(box_size=box_size, border=border)
+    qr.add_data(payload)
+    qr.make(fit=True)
+    img = qr.make_image()
+    return img.convert("RGB")
+
+def make_sticker_image_obj(ssid, dashboard_url=None):
+    """
+    Return a PIL.Image object that is the sticker (QR + SSID text).
+    Does NOT save to disk. If Pillow or qrcode is unavailable, returns None.
+    """
+    if Image is None or qrcode is None:
+        print("Pillow or qrcode not available; cannot create in-memory sticker image.")
+        return None
+
+    qr_wifi = make_wifi_qr_image_try_library(ssid)
+    if qr_wifi is None:
+        qr_wifi = make_wifi_qr_image_manual_open(ssid, box_size=4, border=1)
+    if qr_wifi is None:
+        print("Could not create Wi-Fi QR image (missing libs).")
+        return None
+
+    padding_qr = 2
+    padding_below_text = 5
+
+    draw = ImageDraw.Draw(qr_wifi)
+    try:
+        font = ImageFont.truetype("DejaVuSans.ttf", 10)
+    except Exception:
+        font = ImageFont.load_default()
+
+    text = f"{ssid}"
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_w = bbox[2] - bbox[0]
+    text_h = bbox[3] - bbox[1]
+
+    W = qr_wifi.width + padding_qr * 2
+    H = qr_wifi.height + text_h + padding_qr + padding_below_text
+
+    canvas_img = Image.new("RGB", (W, H), "white")
+    canvas_img.paste(qr_wifi, (padding_qr, padding_qr))
+
+    draw = ImageDraw.Draw(canvas_img)
+    text_x = (W - text_w) // 2
+    text_y = qr_wifi.height + padding_qr
+    draw.text((text_x, text_y), text, font=font, fill=(0, 0, 0))
+
+    return canvas_img
+
+def create_qr_for_attached_device(save_png=True, out_dir=OUT_DIR):
+    """
+    Detect the serial-attached device, read MAC, produce a sticker.
+    If save_png is True: saves PNG to out_dir and returns (Path_to_png, ssid).
+    If save_png is False: returns (PIL.Image, ssid).
+    """
     port = detect_serial_port()
     if not port:
-        print("No port: aborting QR generation.")
-        return 1
+        print("No serial port found.")
+        return (None, None)
 
     mac = read_mac_from_device(port)
     if not mac:
         print("Failed to read MAC from device.")
-        print("You can run manually: python <path-to-esptool.py> --port <PORT> read_mac")
-        return 1
+        return (None, None)
 
     ssid = f"Palooka_{mac.upper()}"
-    dashboard = f"http://192.168.4.1/"  # unused now, kept for compatibility
+    dashboard = "http://192.168.4.1/"
 
-    print("SSID:", ssid)
-    ssid_filename = ssid.replace(":", "-")
-    out_png = OUT_DIR / f"{ssid_filename}.png"
-    img_path = make_sticker_image(ssid, dashboard, out_png)
-    if img_path:
-        print("Saved sticker PNG:", img_path)
+    img_obj = make_sticker_image_obj(ssid, dashboard)
+    if img_obj is None:
+        # fallback: just return ssid string so caller can handle
+        return (None, ssid)
+
+    if save_png:
+        ssid_filename = ssid.replace(":", "-")
+        out_png = out_dir / f"{ssid_filename}.png"
+        out_png.parent.mkdir(parents=True, exist_ok=True)
+        img_obj.save(out_png)
+        return (out_png, ssid)
     else:
-        wifi_payload = f'WIFI:T:nopass;S:{ssid};;'
-        print("Wi-Fi QR payload (copy into a QR generator):")
-        print(wifi_payload)
-    print("Done.")
-    return 0
+        return (img_obj, ssid)
 
-# Register custom target with PlatformIO
-env.AddCustomTarget(
-    "qr_gen",
-    None,
-    qr_action,
-    title="QR / sticker generator",
-    description="Detects attached board, reads MAC, and generates Wi-Fi (open) QR sticker"
-)
+def qr_action(target, source, env):
+    print("==== qr-gen: generate QR/sticker for attached device ====")
+    path_or_obj, ssid = create_qr_for_attached_device(save_png=True)
+    if path_or_obj:
+        print("Saved sticker PNG:", path_or_obj)
+        return 0
+    else:
+        print("Failed to create sticker PNG. SSID payload (if MAC read):", ssid)
+        return 1
+
+if _scons_available:
+    env.AddCustomTarget(
+        "qr_gen",
+        None,
+        qr_action,
+        title="QR / sticker generator",
+        description="Detects attached board, reads MAC, and generates Wi-Fi (open) QR sticker (PNG)"
+    )
