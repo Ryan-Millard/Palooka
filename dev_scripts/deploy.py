@@ -12,14 +12,8 @@ def deploy_firmware_and_filesystem(source, target, env):
         sys.exit(result)
 
     # Build & Upload filesystem
-    result = env.Execute("pio run -t deploy_fs")
+    result = env.Execute("pio run -t deployfs")
     if result != 0:
-        sys.exit(result)
-
-    # Monitor device
-    result = env.Execute("pio device monitor")
-    if result != 0:
-        print("Monitoring failed. Exiting.")
         sys.exit(result)
 
 # Register the custom target "deploy"
