@@ -1,0 +1,27 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/dev_scripts"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"         # Use "chore" for dependency updates
+      include: "scope"        # Can include the ecosystem as scope, e.g., "pip"
+
+  # Node.js frontend dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"         # "chore" for npm dependency updates
+      include: "scope"        # Will include "npm" as the scope
+
+# ⚠  PlatformIO libraries (lib_deps) are not automatically updated by Dependabot.
+# ⚠  Manual update or GitHub Action is recommended.
