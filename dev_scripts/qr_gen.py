@@ -55,11 +55,45 @@ def run_cmd(cmd, timeout=10):
         return None
 
 # --- Serial port / MAC helpers (unchanged logic, exported) ---
+def _is_valid_serial_port(port):
+    # Accept: 'COMx', '/dev/tty*', or similar
+    if not port or not isinstance(port, str):
+        return False
+    if re.match(r"^(COM[0-9]+)$", port):  # Windows
+        return True
+    if re.match(r"^/dev/tty[A-Za-z0-9_.-]+$", port):  # Linux/macOS
+        return True
+    return False
+
 def detect_serial_port():
     p = os.environ.get("UPLOAD_PORT") or os.environ.get("PIO_UPLOAD_PORT")
     if p:
-        print("Using UPLOAD_PORT from env:", p)
-        return p
+        if _is_valid_serial_port(p):
+            print("Using UPLOAD_PORT from env:", p)
+            return p
+        else:
+            print("Refusing suspicious port value from environment variable:", repr(p))
+    try:
+        import serial.tools.list_ports as list_ports
+        ports = list_ports.comports()
+        if ports:
+            for port in ports:
+                desc = (port.description or "") + " " + (port.manufacturer or "")
+                if any(k in desc for k in ("CP210", "CH340", "FTDI", "Silicon", "USB Serial")):
+                    print("Auto-detected serial port:", port.device)
+                    return port.device
+            print("Auto-detected serial port (fallback):", ports[0].device)
+            return ports[0].device
+    except Exception:
+        pass
+    pio = shutil.which("pio") or shutil.which("platformio")
+    if pio:
+        out = run_cmd([pio, "device", "list"])
+        if out:
+            m = re.search(r'(COM\d+|/dev/tty[A-Za-z0-9_.-]+)', out)
+            if m:
+                port = m.group(1)
+                print("Found port from 'pio device list':", port)
     try:
         import serial.tools.list_ports as list_ports
         ports = list_ports.comports()
