@@ -61,3 +61,6 @@ data
 
 # Assets - not tied to development of individual boards
 assets
+
+# Python Virtual Environment
+.venv
