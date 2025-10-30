@@ -1,10 +1,9 @@
 #include <Preferences.h>
-
-#include <Preferences.h>
 #include <ArduinoJson.h>
 
 #include "AccessPointManager.h"
 #include "RobotTaskManager.h"
+#include "system/NVSUtils.h"
 
 namespace PalookaNetwork {
 	namespace {
@@ -98,29 +97,34 @@ namespace PalookaNetwork {
 				return;
 			}
 
-			Serial.println("Received POST data:");
-			Serial.print("Name: ");
-			Serial.println(name);
-			Serial.print("Password: ");
-			Serial.println(password);
+			if (!System::Utils::isNVSAvailable()) {
+				Serial.println("NVS not available");
+				const char* jsonResponse{
+					R"delimiter(
+					{
+						"status": "error",
+						"message": "NVS not available"
+					}
+					)delimiter"
+				};
+				server->send(500, "application/json", jsonResponse);
+				return;
+			}
 
 			Preferences preferences;
-			// Initialize preferences with the namespace "MyApp"
-			preferences.begin("Palooka", false);  // Read-write mode
-
-			// Save the user's input
+			preferences.begin("Palooka", false);
 			preferences.putString("AP_Name", name);
 			preferences.putString("AP_Password", password);
-
-			preferences.end(); // Close the preferences
+			preferences.end();
 
 			const char* jsonResponse{
 				R"delimiter(
 				{
-						"status": "ok"
+					"status": "ok"
 				}
 				)delimiter"
 			};
+
 			server->send(200, "application/json", jsonResponse);
 		}
 
@@ -141,11 +145,7 @@ namespace PalookaNetwork {
 		}
 
 		void handleFactoryReset(WebServer* server) {
-			// Clear all saved preferences
-			Preferences preferences;
-			preferences.begin("Palooka", false);  // Open in read-write mode
-			preferences.clear();				  // Erase all keys in this namespace
-			preferences.end();					// Close preferences
+			System::Utils::wipeNVSPartition();
 
 			const char* jsonResponse{
 				R"delimiter(
