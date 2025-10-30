@@ -3,6 +3,7 @@
 
 #include "AccessPointManager.h"
 #include "RobotTaskManager.h"
+#include "system/NVSUtils.h"
 
 namespace PalookaNetwork {
 	namespace {
@@ -96,30 +97,22 @@ namespace PalookaNetwork {
 				return;
 			}
 
-			Serial.println("Received POST data:");
-			Serial.print("Name: ");
-			Serial.println(name);
-			Serial.print("Password: ");
-			Serial.println(password);
+			if (!System::Utils::isNVSAvailable()) {
+				server->send(500, "application/json", R"({"status": "error", "message": "NVS not available"})");
+				return;
+			}
 
 			Preferences preferences;
-			// Initialize preferences with the namespace "MyApp"
-			preferences.begin("Palooka", false);  // Read-write mode
-
-			// Save the user's input
+			if (!preferences.begin("Palooka", false)) {
+				server->send(500, "application/json",
+						R"({"status":"error","message":"Failed to open preferences namespace"})");
+				return;
+			}
 			preferences.putString("AP_Name", name);
 			preferences.putString("AP_Password", password);
+			preferences.end();
 
-			preferences.end(); // Close the preferences
-
-			const char* jsonResponse{
-				R"delimiter(
-				{
-						"status": "ok"
-				}
-				)delimiter"
-			};
-			server->send(200, "application/json", jsonResponse);
+			server->send(200, "application/json", R"({"status": "ok"})");
 		}
 
 		void handleRestart(WebServer* server) {
@@ -139,11 +132,7 @@ namespace PalookaNetwork {
 		}
 
 		void handleFactoryReset(WebServer* server) {
-			// Clear all saved preferences
-			Preferences preferences;
-			preferences.begin("Palooka", false);  // Open in read-write mode
-			preferences.clear();				  // Erase all keys in this namespace
-			preferences.end();					// Close preferences
+			System::Utils::wipeNVSPartition();
 
 			const char* jsonResponse{
 				R"delimiter(
