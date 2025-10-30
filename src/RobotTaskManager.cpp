@@ -109,10 +109,8 @@ namespace Robot {
 			robot.move(cmdData.x, cmdData.y);
 		}
 		// Process flip command
-		else if(cmdData.hasFlip)
-		{
-			robot.flip();
-		}
+		else if(cmdData.flip) { robot.flip(); }
+		else if(cmdData.toggleBoost) { robot.toggleBoost(); }
 		else
 		{
 			Serial.println("Unknown command structure.");

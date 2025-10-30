@@ -144,7 +144,10 @@ namespace PalookaNetwork
 		else if(doc.containsKey("flip") && doc["flip"])
 		{
 			cmdData.flip = true;
-			cmdData.hasFlip = true;
+		}
+		else if(doc.containsKey("toggleBoost") && doc["toggleBoost"])
+		{
+			cmdData.toggleBoost = true;
 		}
 
 		// Enqueue the compact command data for processing by the robotControlTask.
