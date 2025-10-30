@@ -16,6 +16,11 @@ a {
 a[data-color="gray-light"] { --color: var(--gray-light); }
 a[data-color="white"] { --color: var(--white); }
 
+.togglable.active {
+	background: var(--cyan-light);
+	color: var(--black);
+}
+
 * {
 	box-sizing: border-box;
 	font-family: 'Roboto Mono', monospace;

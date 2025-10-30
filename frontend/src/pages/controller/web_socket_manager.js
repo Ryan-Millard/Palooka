@@ -8,6 +8,13 @@ export function sendFlipData() {
 	ws.send(data);
 }
 
+export function sendBoostData() {
+	const toggleBoost = true;
+	const data = JSON.stringify({ toggleBoost });
+	console.log(data);
+	ws.send(data);
+}
+
 export function sendSliderData(sliderName, value) {
 	const data = JSON.stringify({ sliderName, value });
 	console.log(data);
