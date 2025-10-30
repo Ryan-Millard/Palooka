@@ -7,7 +7,7 @@ Robot::RobotTaskManager& robotManager{Robot::RobotTaskManager::getInstance(&apMa
 
 void setup() {
 	Serial.begin(115200);
-	System::ResetService::begin();
+	System::ResetService::begin(5, 10000UL, 30000UL); // 10 & 30 seconds respectively
 
 	if (!apManager.begin()) {
 		Serial.println("Palooka Access Point failed in setup()");

@@ -98,21 +98,34 @@ namespace PalookaNetwork {
 			}
 
 			if (!System::Utils::isNVSAvailable()) {
-				server->send(500, "application/json", R"({"status": "error", "message": "NVS not available"})");
+				Serial.println("NVS not available");
+				const char* jsonResponse{
+					R"delimiter(
+					{
+						"status": "error",
+						"message": "NVS not available"
+					}
+					)delimiter"
+				};
+				server->send(500, "application/json", jsonResponse);
 				return;
 			}
 
 			Preferences preferences;
-			if (!preferences.begin("Palooka", false)) {
-				server->send(500, "application/json",
-						R"({"status":"error","message":"Failed to open preferences namespace"})");
-				return;
-			}
+			preferences.begin("Palooka", false);
 			preferences.putString("AP_Name", name);
 			preferences.putString("AP_Password", password);
 			preferences.end();
 
-			server->send(200, "application/json", R"({"status": "ok"})");
+			const char* jsonResponse{
+				R"delimiter(
+				{
+					"status": "ok"
+				}
+				)delimiter"
+			};
+
+			server->send(200, "application/json", jsonResponse);
 		}
 
 		void handleRestart(WebServer* server) {
