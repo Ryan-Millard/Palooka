@@ -39,6 +39,7 @@ namespace PalookaBot
 			// ========== Wheels ==========
 			// Each Motor instance controls one wheel.
 			const byte BOOST_PIN;
+			static bool isBoosted;
 			const Motor wheelRight; // Motor A
 			const Motor wheelLeft; // Motor B (configured as inverted to match the physical layout of the robot)
 
@@ -83,7 +84,7 @@ namespace PalookaBot
 
 			// ========== Flipper Movement functions ==========
 			void setBoostMode(const bool isInBoostMode);	// Careful - causes servo (flipper damage)
-			void toggleBoostMode();							// Careful - causes servo (flipper damage)
+			void toggleBoost();							// Careful - causes servo (flipper damage)
 			void moveFlipper(byte angle);
 			void flip();
 

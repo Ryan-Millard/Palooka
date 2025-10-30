@@ -45,12 +45,12 @@ namespace PalookaNetwork
 
 	struct CommandData {
 		char sliderName[16];
+		bool hasSlider;
 		int value;
 		float x, y;
-		bool flip;
-		bool hasSlider;
 		bool hasJoystick;
-		bool hasFlip;
+		bool flip;
+		bool toggleBoost;
 	};
 
 	class AccessPoint

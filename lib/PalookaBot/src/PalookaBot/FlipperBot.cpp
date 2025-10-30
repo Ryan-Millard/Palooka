@@ -6,6 +6,7 @@ namespace PalookaBot
 	// Initialize static members
 	FlipperBot* FlipperBot::instance = nullptr;
 	std::mutex FlipperBot::instanceMutex;
+	bool FlipperBot::isBoosted = false;
 
 	// Static method to get the singleton instance
 	FlipperBot& FlipperBot::getInstance()
@@ -133,22 +134,27 @@ namespace PalookaBot
 		}
 	}
 
-	void FlipperBot::setBoostMode(const bool isInBoostMode) {
-		Serial.print("Is in boost mode: ");
-		Serial.println(isInBoostMode);
-		if(!isInBoostMode) {
-			pinMode(BOOST_PIN, INPUT);
+	void FlipperBot::setBoostMode(const bool newBoostState) {
+		if (isBoosted == newBoostState) return;
+
+		isBoosted = newBoostState;
+
+		Serial.print("Boost mode: ");
+		Serial.println(isBoosted ? "ENABLED" : "DISABLED");
+
+		if (isBoosted) {
+			pinMode(BOOST_PIN, OUTPUT);
+			digitalWrite(BOOST_PIN, LOW); // Enable boost
 			return;
 		}
 
-		pinMode(BOOST_PIN, OUTPUT);
-		digitalWrite(BOOST_PIN, LOW);
+		delay(50); // Give circuit time to settle
+		pinMode(BOOST_PIN, INPUT);    // Disable boost
 	}
 
-	void FlipperBot::toggleBoostMode() {
-		static bool isInBoostMode{false};	// Default is off - see begin()
-		isInBoostMode = !isInBoostMode;
-		setBoostMode(isInBoostMode);
+	void FlipperBot::toggleBoost() {
+		isBoosted = !isBoosted;
+		setBoostMode(isBoosted);
 	}
 
 	void FlipperBot::moveFlipper(byte angle)
