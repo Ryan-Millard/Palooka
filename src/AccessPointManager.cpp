@@ -1,6 +1,4 @@
 #include <Preferences.h>
-
-#include <Preferences.h>
 #include <ArduinoJson.h>
 
 #include "AccessPointManager.h"

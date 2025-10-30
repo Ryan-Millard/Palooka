@@ -1,3 +1,5 @@
+#include <Preferences.h>
+
 #include "AccessPoint.h"
 #include "RobotTaskManager.h"
 
@@ -22,7 +24,6 @@ namespace PalookaNetwork
 		}
 
 		Preferences preferences;
-		// Initialize preferences with the namespace "MyApp"
 		preferences.begin("Palooka", false);  // Read-write mode
 
 		String AP_Name = preferences.getString("AP_Name", SSID.c_str()); // SSID is default SSID for the AP

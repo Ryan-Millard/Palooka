@@ -8,7 +8,6 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include <functional>
-#include <Preferences.h>
 
 extern QueueHandle_t robotQueue;
 
