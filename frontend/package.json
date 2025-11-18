@@ -9,7 +9,7 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
-		"glob": "^11.0.3",
+		"glob": "^11.1.0",
 		"vite": "^7.1.11"
 	}
 }
