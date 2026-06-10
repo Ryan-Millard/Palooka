@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This project has been superseded by the newer, more user-friendly [Kijani](https://github.com/zaplakkies/Kijani).
+
 <h1 align="center">🥊 Palooka</h1>
 
 <p align="center">
