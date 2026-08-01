@@ -1,5 +1,35 @@
-> [!IMPORTANT]
-> This project has been superseded by the newer, more user-friendly [Kijani](https://github.com/zaplakkies/Kijani).
+> [!CAUTION]
+> This project was designed on v1 and v2 of the [Kijani](https://github.com/ithegi/Kijani) PCB prototypes.
+>
+> This repository is no longer maintained as the board it runs on is outdated. You may use it as a source of inspiration, however
+> no guarantees can be made based on the quality or security of the code in this result.
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
 
 <h1 align="center">🥊 Palooka</h1>
 
